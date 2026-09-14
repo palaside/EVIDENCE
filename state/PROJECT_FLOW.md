@@ -65,14 +65,15 @@ graph TD
         QuietCut["Smart Quiet Zone Detector (1.30x Lookahead)"]
         BlockFit["Slip-Block-Fit (807x1115 / 645x890 Canvas)"]
         Audit["Auto-Audit Quality Gate (100% Pass)"]
-        PDFGen["PDF Synthesis: Evidence_Chat_{prefix}.pdf"]
+        PDFGen["High-Speed PyMuPDF C-Binding Streaming Synthesis"]
+        MasterMerge["Master Volume Merger (fitz.insert_pdf -> Combined Master PDF)"]
     end
 
     subgraph SLIP_SEARCH ["🔍 3. Post-PDF Page Indexing (Search_Slip)"]
-        PageRender["Render PDF Page to OpenCV BGR"]
+        PageRender["Render PDF Page to OpenCV BGR (PyMuPDF High-Speed Pixmap)"]
         BadgeScan["HSV Green Success Badge Detection"]
         TextScan["Tesseract OCR Transaction Data Extractor"]
-        SlipIndex["Export: Slip_Index.xlsx & Slip_Index.json"]
+        SlipIndex["Export: 10-Column Sarabun Center-Aligned Grid (Excel & JSON)"]
     end
 
     subgraph SLIP_OCR ["💳 4. Universal 18-Bank Slip Engine (OCR_Slip)"]

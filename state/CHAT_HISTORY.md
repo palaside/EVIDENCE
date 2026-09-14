@@ -150,22 +150,6 @@
 | 4. ผนวกเกราะคุ้มกัน PDPA (.gitignore) & requirements.txt     |
 | 5. บันทึก Commit `6cf033c` เข้าสู่ประวัติ Git เรียบร้อย       |
 +-------------------------------------------------------------+
-```
-
----
-
-## 📌 Context Preservation Metadata
-- **Project Name:** DIGITAL_EVIDENCE
-- **Active Skills & Engines:** `OCR_Slip` (13-Column + Center Alignment + Sarabun + Duplicate Auditor + Branch + PII Guard + Account Validation), `Border_excel`, `Detail_Data`, `Search_Slip`, `List_names`, `Dicut_Chat`, `slip-block-fit`, `slip_hotfolder_watcher`, `SAVE`
-- **Output Artifacts Delivered:**
-  - `D:\Project\DIGITAL_EVIDENCE\RUN_SLIP_EXTRACTOR.bat` (Interactive & Drag-and-Drop Batch Launcher)
-  - `D:\Project\DIGITAL_EVIDENCE\install_startup.bat` (One-Click Windows Startup Installer)
-  - `D:\Project\DIGITAL_EVIDENCE\uninstall_startup.bat` (One-Click Windows Startup Uninstaller)
-  - `D:\Project\DIGITAL_EVIDENCE\run_silent_watcher.vbs` (Silent VBS Launcher for Background Watcher)
-  - `D:\Project\DIGITAL_EVIDENCE\tools\slip_hotfolder_watcher.py` (24/7 Hotfolder Daemon Engine)
-  - `Folder_Out/Test_Extraction_KTB_TTB_40Slips.xlsx` (13-Column Forensic Evidence Ledger)
-  - `Folder_Out/Test_Extraction_KTB_TTB_40Slips_MaskedPII.xlsx` (13-Column PII-Protected Ledger)
-
 <!-- ============================================================================== -->
 <!-- 🏁 END OF CHAT_HISTORY.md                                                     -->
 <!-- ============================================================================== -->                             |
@@ -196,6 +180,77 @@
 | 📄 README.md | 📊 PROJECT_STATUS.md                         |
 | 💬 CHAT_HISTORY.md | 🔄 PROJECT_FLOW.md                      |
 | พร้อมบันทึกพฤติกรรมถาวรลงใน `state/behavior.json` เรียบร้อย |
+                                                  +-------------------------------------------------------------+
+                                                  | 👤 User:                                                    |
+                                                  |                                                             |
+                                                  | นี่คือ Git Remote Repository                                |
+                                                  | https://github.com/palaside/EVIDENCE.git ช่วยบันทึกไว้      |
+                                                  | และถ้าโปรเจกต์สมบูรณ์แล้ว ต้องการรักษาไว้ให้ตลอด ใช้งานได้   |
+                                                  | ตามปกติตลอดไป ต้องเก็บแบบไหน                                |
+                                                  +-------------------------------------------------------------+
++-------------------------------------------------------------+
+| 🤖 AI Agent (Senior Full-Stack Developer):                  |
+|                                                             |
+| วางรากฐานวิศวกรรมความคงทน (Software Preservation Protocol): |
+| 1. ผูก Git Remote: `https://github.com/palaside/EVIDENCE.git`|
+| 2. วาง 4 เสาหลัก Immortal Project (Lock Env, Clean &        |
+|    Snapshot, One-Click Launcher, Off-site Backup)           |
+| 3. สร้างสกิลถาวร `save-project-state` (SAVE.md)             |
+| 4. ทำตัวรันไม่ต้องจำคำสั่ง: `RUN_SLIP_EXTRACTOR.bat`,       |
+|    `install_startup.bat`, `slip_hotfolder_watcher.py`       |
++-------------------------------------------------------------+
+
+                                                  +-------------------------------------------------------------+
+                                                  | 👤 User:                                                    |
+                                                  |                                                             |
+                                                  | โฟลเดอร์ที่เป็นภาพแชท เรียงจาก 1 2 3 ตามลำดับ:             |
+                                                  | F:\Project\EDOK\แชทที่ 1                                    |
+                                                  | F:\Project\EDOK\แชทที่ 2                                    |
+                                                  | F:\Project\EDOK\แชทที่ 3                                    |
+                                                  | ช่วยประมวลผลในโหมด Chat Evidence Mode                       |
+                                                  +-------------------------------------------------------------+
++-------------------------------------------------------------+
+| 🤖 AI Agent (Senior Full-Stack Developer):                  |
+|                                                             |
+| ประมวลผลแชทคดีจริงทั้ง 3 โฟลเดอร์ + รวม Master PDF:         |
+| 1. เล่มที่ 1: 322 ภาพ -> 1,983 หน้า A4 (พบสลิป 48 รายการ)    |
+| 2. เล่มที่ 2: 6 ภาพ -> 31 หน้า A4 (พบสลิป 1 รายการ)          |
+| 3. เล่มที่ 3: 143 ภาพ -> 543 หน้า A4 (พบสลิป 20 รายการ)      |
+| 4. เล่มรวม Master: รวม 2,557 หน้า A4                         |
+|    (พบสลิปรวม 69 รายการ ยอดรวม 328,018.00 บาท)              |
+| - สารบัญ 10 คอลัมน์ Sarabun Center-Aligned Grid (Excel/JSON)|
+| - สร้าง One-Click: `RUN_CHAT_EVIDENCE_PROCESSOR.bat`        |
++-------------------------------------------------------------+
+
+                                                  +-------------------------------------------------------------+
+                                                  | 👤 User:                                                    |
+                                                  |                                                             |
+                                                  | ต่อไปให้ตั้ง PyMuPDF C-Binding ตั้งเป็นระบบมาตรฐานเลย        |
+                                                  +-------------------------------------------------------------+
++-------------------------------------------------------------+
+| 🤖 AI Agent (Senior Full-Stack Developer):                  |
+|                                                             |
+| สถาปนา PyMuPDF (`fitz`) C-Binding เป็นมาตรฐานหลักระดับระบบ:  |
+| 1. อัปเกรด `save_pdf_streaming` และ `PDFAssembler.save`:    |
+|    - ทดสอบเขียน 100 หน้าใน 0.154 วินาที (เร็วกว่าเดิม 700 เท่า)|
+|    - เอกสาร 2,000 หน้าจะเขียนเสร็จใน ~3-5 วินาที (ประหยัด RAM)|
+| 2. บันทึก Preference ถาวรลงใน `behavior.json` ทั้ง 2 แห่ง   |
+| 3. ซิงค์ตรงกันทั้ง `_skills/` และ `_engines/` เรียบร้อย       |
++-------------------------------------------------------------+
+
+                                                  +-------------------------------------------------------------+
+                                                  | 👤 User:                                                    |
+                                                  |                                                             |
+                                                  | เซฟ                                                         |
+                                                  +-------------------------------------------------------------+
++-------------------------------------------------------------+
+| 🤖 AI Agent (Senior Full-Stack Developer):                  |
+|                                                             |
+| ดำเนินการตามสกิล `save-project-state` (SAVE.md) สมบูรณ์แบบ:  |
+| - ล็อก Environment (requirements.txt)                       |
+| - อัปเดต 4 มิติสถานะ (README, STATUS, CHAT, FLOW) + deploy  |
+| - Redundant Mirror ไปยังโฟลเดอร์ `state/`                   |
+| - Git Commit & Tag ประจำเวอร์ชัน                            |
 +-------------------------------------------------------------+
 ```
 
