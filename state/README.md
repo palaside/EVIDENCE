@@ -38,6 +38,32 @@
 
 ---
 
+## 🌟 0. ⚡ คู่มือใช้งานแบบไม่ต้องพิมพ์คำสั่ง (Zero-Command Automation)
+
+### 1. ระบบเฝ้าโฟลเดอร์อัตโนมัติ 24 ชม. (Hot Folder Background Service)
+* **โฟลเดอร์รับงาน:** [`EVIDENCE_IN`](file:///d:/Project/DIGITAL_EVIDENCE/EVIDENCE_IN)
+* **โฟลเดอร์ผลลัพธ์:** [`Folder_Out`](file:///d:/Project/DIGITAL_EVIDENCE/Folder_Out)
+* **วิธีใช้งาน:**
+  - นำรูปสลิป หรือโฟลเดอร์สลิปมาวางไว้ใน `EVIDENCE_IN`
+  - เซอร์วิสหลังบ้าน [`tools/slip_hotfolder_watcher.py`](file:///d:/Project/DIGITAL_EVIDENCE/tools/slip_hotfolder_watcher.py) จะตรวจจับไฟล์ใหม่ สกัดข้อมูลด้วย OCR + QR Code + PII Guard และสร้างไฟล์ Excel (ฟอนต์ Sarabun จัดกึ่งกลาง) ส่งไปยัง `Folder_Out` ให้อัตโนมัติทันที 24 ชม.
+
+### 2. ติดตั้งให้เริ่มทำงานพร้อมเปิดเครื่อง Windows (Auto Startup) — *แก้ปัญหาลง Windows ใหม่*
+* **ไฟล์ติดตั้งคลิกเดียว:** [`install_startup.bat`](file:///d:/Project/DIGITAL_EVIDENCE/install_startup.bat)
+* **ไฟล์ถอนการติดตั้ง:** [`uninstall_startup.bat`](file:///d:/Project/DIGITAL_EVIDENCE/uninstall_startup.bat)
+* **เมื่อลง Windows ใหม่ในอนาคต:**
+  1. เปิดไดรฟ์ `D:\Project\DIGITAL_EVIDENCE` (ไฟล์ทั้งหมดของคุณยังอยู่ที่เดิม ไม่หายไปกับการลง Windows)
+  2. ดับเบิลคลิก [`install_startup.bat`](file:///d:/Project/DIGITAL_EVIDENCE/install_startup.bat) **เพียง 1 ครั้ง**
+  3. ระบบจะค้นหาตำแหน่ง Python และสร้างทางลัดเข้าสู่โฟลเดอร์ Windows Startup (`shell:startup`) ให้อัตโนมัติทันที
+  4. ทุกครั้งที่เปิดคอมพิวเตอร์ ระบบจะตื่นขึ้นมาทำงานเงียบๆ อยู่เบื้องหลัง (Background Silent Mode ไม่มีหน้าต่างดำกวนใจ)
+
+### 3. ทางลัดแบบลากไฟล์มาหย่อนทับ (Drag & Drop Launcher)
+* **ไฟล์โปรแกรม:** [`RUN_SLIP_EXTRACTOR.bat`](file:///d:/Project/DIGITAL_EVIDENCE/RUN_SLIP_EXTRACTOR.bat)
+* **วิธีใช้งาน:**
+  - **ลากวางทันที:** คลิกค้างที่ไฟล์รูปสลิป หรือโฟลเดอร์ที่มีสลิป แล้วลากมาหย่อนทับไอคอน `RUN_SLIP_EXTRACTOR.bat` ระบบจะเริ่มสกัดและเปิดโฟลเดอร์ผลลัพธ์ให้ทันที
+  - **กดเลือกเมนู:** ดับเบิลคลิกเปิด จะมีเมนูภาษาไทย [1]-[6] ให้เลือกโหมดได้ง่ายๆ เช่น สแกนปกติ, สแกนพร้อมเซ็นเซอร์ข้อมูลส่วนบุคคล PDPA, หรือกดติดตั้ง Startup ได้ในปุ่มเดียว
+
+---
+
 ## 🗺️ 2. 🚀 Project Roadmap & Milestones
 
 ```
