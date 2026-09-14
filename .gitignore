@@ -27,6 +27,7 @@ _archive/
 *.log
 *.tmp
 tools/*.log
+scratch/
 
 # Operating System Files
 Thumbs.db

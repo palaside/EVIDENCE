@@ -18,6 +18,17 @@ import tempfile
 
 FEATHER_PX = 12  # ตามสเปก: Alpha Gradient 12 แถวพิกเซลที่รอยต่อ
 
+try:
+    from search_slip import detect_slip_in_image
+except ImportError:
+    _search_slip_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "Search_Slip", "scripts")
+    if os.path.exists(_search_slip_dir) and _search_slip_dir not in sys.path:
+        sys.path.insert(0, _search_slip_dir)
+    try:
+        from search_slip import detect_slip_in_image
+    except ImportError:
+        detect_slip_in_image = None
+
 
 def natural_sort_key(s):
     return [int(text) if text.isdigit() else text.lower() for text in re.split('([0-9]+)', s)]
@@ -473,7 +484,14 @@ class PDFAssembler:
         draw.text((b_lbl[2], line1_y), mode_str, fill="#111827", font=self.fonts["header_val"])
 
         # Corroborated line: CORROBORATED : [value] (ตัวอักษร Sarabun Thin)
-        corrob_str = str(corroborated) if corroborated else "-"
+        if mode_str == "CHAT":
+            if corroborated and str(corroborated).strip() not in ["", "-", "None"]:
+                corrob_str = str(corroborated).strip()
+            else:
+                corrob_str = "บทสนทนาต่อเนื่อง"
+        else:
+            corrob_str = str(corroborated) if (corroborated and str(corroborated).strip() not in ["", "-", "None"]) else "-"
+
         draw.text((text_x, line2_y), "CORROBORATED : ", fill="#111827", font=self.fonts["header_lbl"])
         b_corrob = draw.textbbox((text_x, line2_y), "CORROBORATED : ", font=self.fonts["header_lbl"])
         draw.text((b_corrob[2], line2_y), corrob_str, fill="#111827", font=self.fonts["header_val"])
@@ -502,7 +520,7 @@ class PDFAssembler:
 
         self.pdf_pages.append(a4_canvas)
 
-    def add_10col_landscape_summary_page(self, item_names, slip_data_list=None):
+    def add_10col_landscape_summary_page(self, item_names, slip_data_list=None, mode="SLIP", page_num=None, corroborated=None):
         """
         Renders the official 10-column Summary Table in A4 LANDSCAPE (1406 x 993 px)
         with expanded columns and text centered both horizontally and vertically in each cell.
@@ -532,16 +550,25 @@ class PDFAssembler:
         line1_y = header_y + 8
         line2_y = header_y + 40
 
+        # Mode line: MODE : SLIP หรือ CHAT ตามปกติ
+        mode_str = "CHAT" if mode and mode.upper().startswith("CHAT") else "SLIP"
         draw.text((text_x, line1_y), "MODE : ", fill="#111827", font=self.fonts["header_lbl"])
         b_lbl = draw.textbbox((text_x, line1_y), "MODE : ", font=self.fonts["header_lbl"])
-        draw.text((b_lbl[2], line1_y), "SUMMARY", fill="#111827", font=self.fonts["header_val"])
+        draw.text((b_lbl[2], line1_y), mode_str, fill="#111827", font=self.fonts["header_val"])
+
+        # Corroborated line
+        if mode_str == "CHAT":
+            default_corrob = "ตารางสรุปการแนบสลิป"
+        else:
+            default_corrob = "สารบัญสรุปธุรกรรมทางการเงิน"
+        corrob_str = str(corroborated) if corroborated else default_corrob
 
         draw.text((text_x, line2_y), "CORROBORATED : ", fill="#111827", font=self.fonts["header_lbl"])
         b_corrob = draw.textbbox((text_x, line2_y), "CORROBORATED : ", font=self.fonts["header_lbl"])
-        draw.text((b_corrob[2], line2_y), "สารบัญสรุปธุรกรรมทางการเงิน", fill="#111827", font=self.fonts["header_val"])
+        draw.text((b_corrob[2], line2_y), corrob_str, fill="#111827", font=self.fonts["header_val"])
 
-        # Page number on right
-        page_str = f"{len(self.pdf_pages)+1} (SUMMARY)"
+        # Page number on right (ตัวเลขหน้าปกติ)
+        page_str = str(page_num) if page_num is not None else str(len(self.pdf_pages)+1)
         b_pval = draw.textbbox((0, 0), page_str, font=self.fonts["header_val"])
         b_plbl = draw.textbbox((0, 0), "PAGE : ", font=self.fonts["header_lbl"])
         total_page_w = (b_plbl[2] - b_plbl[0]) + (b_pval[2] - b_pval[0])
@@ -551,28 +578,33 @@ class PDFAssembler:
         b_pr = draw.textbbox((page_x, line1_y), "PAGE : ", font=self.fonts["header_lbl"])
         draw.text((b_pr[2], line1_y), page_str, fill="#111827", font=self.fonts["header_val"])
 
-        # Title Box
-        title_y = 110
-        draw.rectangle([margin_l, title_y, margin_l + content_w, title_y + 40], fill="#F1F5F9", outline="#003366", width=2)
-        title_text = "ใบสรุปรายการธุรกรรมทางการเงิน (DETAIL DATA SUMMARY STATEMENT)"
-        try:
-            bbox = draw.textbbox((0, 0), title_text, font=self.fonts["title"])
-            title_w = bbox[2] - bbox[0]
-            title_x = (landscape_w - title_w) // 2
-        except Exception:
-            title_x = margin_l + 20
-        draw.text((title_x, title_y + 9), title_text, fill="#003366", font=self.fonts["title"])
+        # Table Layout & Headers
+        if mode_str == "CHAT":
+            # เอาแถบแบนเนอร์ชื่อตาราง (รูปที่ 1) ออกตามคำสั่ง ตารางเริ่มทันที
+            tbl_top = 105
+            headers = ["หน้าระบุสลิป", "วันที่ - เวลา", "ธนาคารผู้โอน", "ชื่อผู้โอน", "จำนวนเงิน (บาท)", "ชื่อผู้รับโอน", "ธนาคารผู้รับ", "บันทึก", "รหัสอ้างอิง", "สถานะหลักฐาน"]
+            col_w = [112, 130, 105, 145, 110, 165, 115, 90, 125, 105]  # sum = 1202
+        else:
+            # โหมดสลิป: แสดง Title Box
+            title_y = 110
+            draw.rectangle([margin_l, title_y, margin_l + content_w, title_y + 40], fill="#F1F5F9", outline="#003366", width=2)
+            title_text = "ใบสรุปรายการธุรกรรมทางการเงิน (DETAIL DATA SUMMARY STATEMENT)"
+            try:
+                bbox = draw.textbbox((0, 0), title_text, font=self.fonts["title"])
+                title_w = bbox[2] - bbox[0]
+                title_x = (landscape_w - title_w) // 2
+            except Exception:
+                title_x = margin_l + 20
+            draw.text((title_x, title_y + 9), title_text, fill="#003366", font=self.fonts["title"])
 
-        # 10 Columns Expanded to 1202 px
-        # [ลำดับ, วันที่, เวลา, ธนาคารผู้โอน, ชื่อผู้โอน, จำนวนเงิน, ชื่อผู้รับ, ธนาคารผู้รับ, บันทึกช่วยจำ, หมายเหตุ]
-        col_w = [52, 105, 75, 125, 180, 110, 180, 125, 125, 125]  # sum = 1202
-        headers = ["ลำดับ", "วันที่", "เวลา", "ธนาคารผู้โอน", "ชื่อผู้โอน", "จำนวนเงิน", "ชื่อผู้รับ", "ธนาคารผู้รับ", "บันทึกช่วยจำ", "หมายเหตุ"]
+            tbl_top = title_y + 50
+            headers = ["ลำดับ", "วันที่", "เวลา", "ธนาคารผู้โอน", "ชื่อผู้โอน", "จำนวนเงิน", "ชื่อผู้รับ", "ธนาคารผู้รับ", "บันทึกช่วยจำ", "หมายเหตุ"]
+            col_w = [52, 105, 75, 125, 180, 110, 180, 125, 125, 125]  # sum = 1202
 
-        tbl_top = title_y + 50
         cur_x = margin_l
         for i, h in enumerate(headers):
-            draw.rectangle([cur_x, tbl_top, cur_x + col_w[i], tbl_top + 34], fill="#E2E8F0", outline="#333333", width=1)
-            # Center header text in cell
+            hdr_bg = "#FEF3C7" if (mode_str == "CHAT" and i == 0) else "#E2E8F0"
+            draw.rectangle([cur_x, tbl_top, cur_x + col_w[i], tbl_top + 34], fill=hdr_bg, outline="#94A3B8" if mode_str == "CHAT" else "#333333", width=1)
             try:
                 t_box = draw.textbbox((0, 0), h, font=self.fonts["table_header"])
                 tw = t_box[2] - t_box[0]
@@ -582,14 +614,14 @@ class PDFAssembler:
             except Exception:
                 tx = cur_x + 5
                 ty = tbl_top + 7
-            draw.text((tx, ty), h, fill="black", font=self.fonts["table_header"])
+            draw.text((tx, ty), h, fill="#0F172A" if mode_str == "CHAT" else "black", font=self.fonts["table_header"])
             cur_x += col_w[i]
 
         # Draw up to 20 Rows (ตรงสเปก Excel 20/หน้า; เรขาคณิตพอดีที่ row_h 32)
         row_y = tbl_top + 34
         row_h = 32
-        total_rows = max(len(item_names), 10)
-        display_rows = min(total_rows, 20)
+        total_rows = max(len(item_names) if item_names else 0, len(slip_data_list) if slip_data_list else 0)
+        display_rows = min(max(total_rows, 10), 20)
 
         for idx in range(display_rows):
             cur_x = margin_l
@@ -597,45 +629,71 @@ class PDFAssembler:
 
             if slip_data_list and idx < len(slip_data_list):
                 d = slip_data_list[idx]
-                vals = [
-                    str(idx + 1),
-                    d.get("date", "-"),
-                    d.get("time", "-"),
-                    d.get("sender_bank", "-"),
-                    d.get("sender_name", "-"),
-                    d.get("amount", "-"),
-                    d.get("receiver_name", "-"),
-                    d.get("receiver_bank", "-"),
-                    d.get("memo", "-"),
-                    d.get("remarks", "-")
-                ]
+                if mode_str == "CHAT":
+                    p_raw = str(d.get("page_no") or d.get("page") or d.get("chat_page") or "")
+                    p_disp = f"หน้า {p_raw}" if (p_raw and not p_raw.startswith("หน้า")) else (p_raw or "-")
+                    dt = str(d.get("date_time") or (str(d.get("date", "")) + (" - " + str(d.get("time", "")) if d.get("time") else "")) or "-")
+                    vals = [
+                        p_disp,
+                        dt,
+                        str(d.get("sender_bank") or "-"),
+                        str(d.get("sender_name") or d.get("sender") or "-"),
+                        str(d.get("amount") or "-"),
+                        str(d.get("receiver_name") or d.get("receiver") or "-"),
+                        str(d.get("receiver_bank") or "-"),
+                        str(d.get("memo") or "-"),
+                        str(d.get("ref_id") or "-"),
+                        str(d.get("status") or d.get("remarks") or "ตรวจสอบแล้วครบถ้วน")
+                    ]
+                else:
+                    vals = [
+                        str(idx + 1),
+                        str(d.get("date", "-")),
+                        str(d.get("time", "-")),
+                        str(d.get("sender_bank", "-")),
+                        str(d.get("sender_name", "-")),
+                        str(d.get("amount", "-")),
+                        str(d.get("receiver_name", "-")),
+                        str(d.get("receiver_bank", "-")),
+                        str(d.get("memo", "-")),
+                        str(d.get("remarks", "-"))
+                    ]
             elif idx < len(item_names):
                 name = item_names[idx]
-                vals = [str(idx + 1), datetime.datetime.now().strftime("%d/%m/%y"), "-", "-", name, "-", "-", "-", "-", "-"]
+                if mode_str == "CHAT":
+                    vals = [f"หน้า {idx+1}", "-", "-", "-", "-", "-", "-", "-", "-", "-"]
+                else:
+                    vals = [str(idx + 1), datetime.datetime.now().strftime("%d/%m/%y"), "-", "-", name, "-", "-", "-", "-", "-"]
             else:
                 vals = [""] * 10
 
             for i, v in enumerate(vals):
-                draw.rectangle([cur_x, row_y, cur_x + col_w[i], row_y + row_h], fill=bg_col, outline="#D1D5DB", width=1)
+                cell_bg = "#FEF9C3" if (mode_str == "CHAT" and i == 0 and v and v != "-") else bg_col
+                draw.rectangle([cur_x, row_y, cur_x + col_w[i], row_y + row_h], fill=cell_bg, outline="#E2E8F0" if mode_str == "CHAT" else "#D1D5DB", width=1)
                 if v:
                     try:
-                        t_box = draw.textbbox((0, 0), str(v), font=self.fonts["body"])
+                        font_used = self.fonts["table_header"] if (mode_str == "CHAT" and i == 0) else self.fonts["body"]
+                        t_box = draw.textbbox((0, 0), str(v), font=font_used)
                         tw = t_box[2] - t_box[0]
                         th = t_box[3] - t_box[1]
-                        # Center in cell horizontally and vertically
                         tx = cur_x + max(2, (col_w[i] - tw) // 2)
                         ty = row_y + max(1, (row_h - th) // 2) - 2
                     except Exception:
+                        font_used = self.fonts["body"]
                         tx = cur_x + 5
                         ty = row_y + 6
-                    draw.text((tx, ty), str(v), fill="#111827", font=self.fonts["body"])
+                    text_color = "#B45309" if (mode_str == "CHAT" and i == 0) else "#111827"
+                    draw.text((tx, ty), str(v), fill=text_color, font=font_used)
                 cur_x += col_w[i]
             row_y += row_h
 
         # Total Summary box
         summary_box_y = row_y + 12
         draw.rectangle([margin_l, summary_box_y, margin_l + content_w, summary_box_y + 36], fill="#EFF6FF", outline="#2563EB", width=1)
-        sum_text = f"รวมรายการเอกสารหลักฐานทั้งหมด: {len(item_names)} รายการ"
+        if mode_str == "CHAT":
+            sum_text = f"รวมรายการสลิปหลักฐานที่แนบในบทสนทนาทั้งหมด: {len(slip_data_list) if slip_data_list else len(item_names)} รายการ"
+        else:
+            sum_text = f"รวมรายการเอกสารหลักฐานทั้งหมด: {len(item_names)} รายการ"
         try:
             bbox = draw.textbbox((0, 0), sum_text, font=self.fonts["body"])
             sw = bbox[2] - bbox[0]
@@ -733,6 +791,7 @@ def process_chat_pipeline(input_path, output_pdf, slip_data_list=None, chat_mode
         with tempfile.TemporaryDirectory() as tmp:
             paths = []
             global_page_idx = 0
+            slip_detected_count = 0
 
             for b_idx in range(total_batches):
                 b_start = b_idx * batch_size
@@ -762,7 +821,15 @@ def process_chat_pipeline(input_path, output_pdf, slip_data_list=None, chat_mode
                     global_page_idx += 1
                     page_slice = strip.crop((0, y1, strip.width, y2))
                     arr = cv2.cvtColor(np.asarray(page_slice), cv2.COLOR_RGB2BGR)
-                    assembler.add_single_page_image(arr, align="top", page_num=global_page_idx, mode="CHAT", corroborated="-")
+
+                    corrob_text = None
+                    if detect_slip_in_image is not None:
+                        has_slip, _ = detect_slip_in_image(arr)
+                        if has_slip:
+                            slip_detected_count += 1
+                            corrob_text = f"สลิปหลักฐานหน้าที่ {slip_detected_count} / สารบัญการเงิน ลำดับที่ {slip_detected_count}"
+
+                    assembler.add_single_page_image(arr, align="top", page_num=global_page_idx, mode="CHAT", corroborated=corrob_text)
                     page = assembler.pdf_pages.pop()
                     fp = os.path.join(tmp, f"p{global_page_idx:05d}.png")
                     page.save(fp)
@@ -771,12 +838,21 @@ def process_chat_pipeline(input_path, output_pdf, slip_data_list=None, chat_mode
                 del strip, pil_imgs
 
             if slip_data_list:
-                global_page_idx += 1
-                assembler.add_10col_landscape_summary_page(item_names, slip_data_list=slip_data_list)
-                summ = assembler.pdf_pages.pop()
-                fp = os.path.join(tmp, "summary.png")
-                summ.save(fp)
-                paths.append((fp, summ.size))
+                rows_per_page = 20
+                chunks = [slip_data_list[i:i + rows_per_page] for i in range(0, max(len(slip_data_list), 1), rows_per_page)]
+                for c_idx, chunk in enumerate(chunks):
+                    global_page_idx += 1
+                    assembler.add_10col_landscape_summary_page(
+                        item_names=[f"item_{i}" for i in range(len(chunk))],
+                        slip_data_list=chunk,
+                        mode="CHAT",
+                        page_num=global_page_idx,
+                        corroborated="ตารางสรุปการแนบสลิป"
+                    )
+                    summ = assembler.pdf_pages.pop()
+                    fp = os.path.join(tmp, f"summary_p{c_idx+1}.png")
+                    summ.save(fp)
+                    paths.append((fp, summ.size))
 
             print(f"Writing {len(paths)} pages to PDF via PyMuPDF C-Binding streaming...")
             mode = save_pdf_streaming(paths, output_pdf)
@@ -805,7 +881,7 @@ def process_chat_pipeline(input_path, output_pdf, slip_data_list=None, chat_mode
 
     # 2. Add the 10-Column Summary Statement Table in LANDSCAPE (owned by Detail_Data)
     if slip_data_list:
-        assembler.add_10col_landscape_summary_page(item_names, slip_data_list=slip_data_list)
+        assembler.add_10col_landscape_summary_page(item_names, slip_data_list=slip_data_list, mode="SLIP", page_num=len(images_to_process)+1)
 
     assembler.save()
     return len(assembler.pdf_pages)

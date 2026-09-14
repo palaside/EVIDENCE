@@ -79,6 +79,9 @@ graph TD
 - [x] **Slip Index Navigation Column ("หน้าระบุสลิป" + Direct PDF Hyperlinks):** ระบุเลขหน้าสลิปอย่างแม่นยำใน Excel คอลัมน์แรก พร้อมคลิกลิงก์กระโดดเปิด PDF หน้านั้นได้ทันที
 - [x] **Header Evidence Ribbon (Sarabun ExtraLight & Thin):** วางโลโก้ชิดซ้าย + MODE (SLIP/CHAT) + CORROBORATED (ภาพแชทหน้าที่... / สารบัญแชท ลำดับที่...) + PAGE ตาม Reference
 - [x] **Footer Evidence Ribbon (Sarabun ExtraLight):** ข้อความกำกับความถูกต้อง 3 บรรทัดจัดกึ่งกลางเต็มความกว้างบล็อก พร้อมแก้ไขคำผิดเป็น "เป็นเพียงเครื่องมือ..."
+- [x] **Dynamic Corroboration for Chat Mode:** แยกสถานะอัตโนมัติ: หน้าคุยปกติแสดง `CORROBORATED : บทสนทนาต่อเนื่อง` และหน้าที่ตรวจพบสลิปแสดง `CORROBORATED : สลิปหลักฐานหน้าที่ [X] / สารบัญการเงิน ลำดับที่ [Y]`
+- [x] **Chat Mode Landscape Summary Statement (A4 ต่อท้ายเล่มแชท):** เพิ่มใบสรุปต่อท้ายเล่มแชทอัตโนมัติ ตัดกล่องแบนเนอร์ชื่อตารางออกตามสั่ง เริ่มตารางทันทีใต้ Ribbon หัวกระดาษ `MODE : CHAT` + `CORROBORATED : ตารางสรุปการแนบสลิป` พร้อมตาราง 10 คอลัมน์ตรงตามรูปที่ 2 (คอลัมน์แรก `หน้าระบุสลิป` ไฮไลต์สีทอง/อำพัน) แบ่งหน้าละ 20 แถว
+- [x] **Header Mode Consistency Standard:** บังคับค่า `MODE : ` ให้มีเพียง `SLIP` หรือ `CHAT` เท่านั้น (ตัดคำว่า `SUMMARY` และ `(SUMMARY)` ออกทั้งหมด) รักษากฎความเป็นเอกภาพ 100%
 
 ### 🟡 2.2 In-Progress & Pending Features ([ ])
 - [ ] **Cover Page PDF Merger:** ออปชันแทรกหน้าสารบัญสลิป (Page Index) เข้าเป็นหน้าแรก (Page 1) ของตัวเล่ม PDF หลักฐาน

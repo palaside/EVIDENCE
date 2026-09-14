@@ -6,6 +6,16 @@ from PIL import Image, ImageDraw, ImageFont
 
 
 def get_sarabun_fonts():
+    candidates_extralight = [
+        r"C:\Windows\Fonts\Sarabun-ExtraLight.ttf",
+        r"C:\Users\EVE\AppData\Local\Microsoft\Windows\Fonts\Sarabun-ExtraLight.ttf",
+        r"C:\Windows\Fonts\Sarabun-Light.ttf",
+    ]
+    candidates_thin = [
+        r"C:\Windows\Fonts\Sarabun-Thin.ttf",
+        r"C:\Users\EVE\AppData\Local\Microsoft\Windows\Fonts\Sarabun-Thin.ttf",
+        r"C:\Windows\Fonts\Sarabun-Light.ttf",
+    ]
     candidates_light = [
         r"C:\Windows\Fonts\Sarabun-Light.ttf",
         r"C:\Users\EVE\AppData\Local\Microsoft\Windows\Fonts\Sarabun-Light.ttf",
@@ -19,19 +29,27 @@ def get_sarabun_fonts():
         r"C:\Windows\Fonts\tahomabd.ttf",
     ]
 
+    font_el_path = next((p for p in candidates_extralight if os.path.exists(p)), None)
+    font_th_path = next((p for p in candidates_thin if os.path.exists(p)), None)
     font_light_path = next((p for p in candidates_light if os.path.exists(p)), None)
     font_bold_path = next((p for p in candidates_bold if os.path.exists(p)), None)
 
     try:
+        f_hdr_lbl = ImageFont.truetype(font_el_path or "arial.ttf", 18)
+        f_hdr_val = ImageFont.truetype(font_th_path or "arial.ttf", 18)
+        f_footer = ImageFont.truetype(font_el_path or font_light_path or "arial.ttf", 16)
         f_header = ImageFont.truetype(font_bold_path or "arial.ttf", 18)
         f_title = ImageFont.truetype(font_bold_path or "arial.ttf", 15)
         f_tbl_hdr = ImageFont.truetype(font_bold_path or "arial.ttf", 12)
         f_body = ImageFont.truetype(font_light_path or "arial.ttf", 12)
         f_small = ImageFont.truetype(font_light_path or "arial.ttf", 11)
     except Exception:
-        f_header = f_title = f_tbl_hdr = f_body = f_small = ImageFont.load_default()
+        f_hdr_lbl = f_hdr_val = f_footer = f_header = f_title = f_tbl_hdr = f_body = f_small = ImageFont.load_default()
 
     return {
+        "header_lbl": f_hdr_lbl,
+        "header_val": f_hdr_val,
+        "footer": f_footer,
         "header": f_header,
         "title": f_title,
         "table_header": f_tbl_hdr,
@@ -107,18 +125,40 @@ def generate_summary_pdf(input_json_path, output_pdf_path, logo_img=None):
         draw = ImageDraw.Draw(canvas)
         timestamp = datetime.datetime.now().strftime("%d/%m/%Y : %H.%M")
 
-        # Header Block
-        draw.text((margin_l, 30), "EVIDENCE", fill="black", font=fonts["header"])
-        draw.text((margin_l, 55), f"PAGE: {page_num} / {total_pages} (DETAIL DATA SUMMARY)", fill="black", font=fonts["body"])
-        draw.text((margin_l, 78), timestamp, fill="black", font=fonts["body"])
-
+        # Header Block: Header Evidence Ribbon (A4 Landscape)
+        header_y = 25
         if logo_img:
-            logo_x = landscape_w - margin_r - logo_img.width
-            logo_y = 25
             if logo_img.mode == "RGBA":
-                canvas.paste(logo_img, (logo_x, logo_y), logo_img)
+                canvas.paste(logo_img, (margin_l, header_y), logo_img)
             else:
-                canvas.paste(logo_img, (logo_x, logo_y))
+                canvas.paste(logo_img, (margin_l, header_y))
+            text_x = margin_l + logo_img.width + 20
+        else:
+            text_x = margin_l
+
+        line1_y = header_y + 8
+        line2_y = header_y + 40
+
+        # Mode line: MODE : SLIP
+        draw.text((text_x, line1_y), "MODE : ", fill="#111827", font=fonts["header_lbl"])
+        b_lbl = draw.textbbox((text_x, line1_y), "MODE : ", font=fonts["header_lbl"])
+        draw.text((b_lbl[2], line1_y), "SLIP", fill="#111827", font=fonts["header_val"])
+
+        # Corroborated line: สารบัญสรุปธุรกรรมทางการเงิน
+        draw.text((text_x, line2_y), "CORROBORATED : ", fill="#111827", font=fonts["header_lbl"])
+        b_corrob = draw.textbbox((text_x, line2_y), "CORROBORATED : ", font=fonts["header_lbl"])
+        draw.text((b_corrob[2], line2_y), "สารบัญสรุปธุรกรรมทางการเงิน", fill="#111827", font=fonts["header_val"])
+
+        # Page number on right
+        page_str = f"{page_num} / {total_pages}" if total_pages > 1 else str(page_num)
+        b_pval = draw.textbbox((0, 0), page_str, font=fonts["header_val"])
+        b_plbl = draw.textbbox((0, 0), "PAGE : ", font=fonts["header_lbl"])
+        total_page_w = (b_plbl[2] - b_plbl[0]) + (b_pval[2] - b_pval[0])
+        page_x = landscape_w - margin_r - total_page_w
+
+        draw.text((page_x, line1_y), "PAGE : ", fill="#111827", font=fonts["header_lbl"])
+        b_pr = draw.textbbox((page_x, line1_y), "PAGE : ", font=fonts["header_lbl"])
+        draw.text((b_pr[2], line1_y), page_str, fill="#111827", font=fonts["header_val"])
 
         # Title Box
         title_y = 110
@@ -203,17 +243,17 @@ def generate_summary_pdf(input_json_path, output_pdf_path, logo_img=None):
             sx = margin_l + 15
         draw.text((sx, summary_box_y + 8), sum_text, fill="#1E40AF", font=fonts["body"])
 
-        # Footer Disclaimer Centered
-        footer_start_y = landscape_h - 68
-        line_spacing = 17
+        # Footer Disclaimer Centered (Sarabun ExtraLight)
+        footer_start_y = landscape_h - 85
+        line_spacing = 22
         for i, line in enumerate(disclaimer_lines):
             try:
-                bbox = draw.textbbox((0, 0), line, font=fonts["small"])
+                bbox = draw.textbbox((0, 0), line, font=fonts["footer"])
                 line_w = bbox[2] - bbox[0]
                 line_x = (landscape_w - line_w) // 2
             except Exception:
                 line_x = margin_l
-            draw.text((line_x, footer_start_y + (i * line_spacing)), line, fill="#555555", font=fonts["small"])
+            draw.text((line_x, footer_start_y + (i * line_spacing)), line, fill="#333333", font=fonts["footer"])
 
         pdf_pages.append(canvas)
 
