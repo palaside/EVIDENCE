@@ -286,6 +286,14 @@ def save_pdf_streaming(pages, output_pdf):
 
 
 def get_sarabun_fonts():
+    candidates_extralight = [
+        r"C:\Windows\Fonts\Sarabun-ExtraLight.ttf",
+        r"C:\Users\EVE\AppData\Local\Microsoft\Windows\Fonts\Sarabun-ExtraLight.ttf",
+    ]
+    candidates_thin = [
+        r"C:\Windows\Fonts\Sarabun-Thin.ttf",
+        r"C:\Users\EVE\AppData\Local\Microsoft\Windows\Fonts\Sarabun-Thin.ttf",
+    ]
     candidates_light = [
         r"C:\Windows\Fonts\Sarabun-Light.ttf",
         r"C:\Users\EVE\AppData\Local\Microsoft\Windows\Fonts\Sarabun-Light.ttf",
@@ -299,25 +307,33 @@ def get_sarabun_fonts():
         r"C:\Windows\Fonts\tahomabd.ttf",
     ]
 
-    font_light_path = next((p for p in candidates_light if os.path.exists(p)), None)
-    font_bold_path  = next((p for p in candidates_bold  if os.path.exists(p)), None)
+    font_extralight_path = next((p for p in candidates_extralight if os.path.exists(p)), None)
+    font_thin_path       = next((p for p in candidates_thin if os.path.exists(p)), None)
+    font_light_path      = next((p for p in candidates_light if os.path.exists(p)), None)
+    font_bold_path       = next((p for p in candidates_bold  if os.path.exists(p)), None)
 
     try:
-        f_header = ImageFont.truetype(font_bold_path or "arial.ttf", 18)
-        f_title  = ImageFont.truetype(font_bold_path or "arial.ttf", 15)
-        f_tbl_hdr= ImageFont.truetype(font_bold_path or "arial.ttf", 12)
-        f_body   = ImageFont.truetype(font_light_path or "arial.ttf", 12)
-        f_small  = ImageFont.truetype(font_light_path or "arial.ttf", 11)
-        f_xs     = ImageFont.truetype(font_light_path or "arial.ttf", 9)
+        f_header_lbl = ImageFont.truetype(font_extralight_path or font_light_path or "arial.ttf", 17)
+        f_header_val = ImageFont.truetype(font_thin_path or font_light_path or "arial.ttf", 17)
+        f_header     = ImageFont.truetype(font_bold_path or "arial.ttf", 18)
+        f_title      = ImageFont.truetype(font_bold_path or "arial.ttf", 15)
+        f_tbl_hdr    = ImageFont.truetype(font_bold_path or "arial.ttf", 12)
+        f_body       = ImageFont.truetype(font_light_path or "arial.ttf", 12)
+        f_small      = ImageFont.truetype(font_light_path or "arial.ttf", 11)
+        f_footer     = ImageFont.truetype(font_extralight_path or font_light_path or "arial.ttf", 16)
+        f_xs         = ImageFont.truetype(font_light_path or "arial.ttf", 9)
     except Exception:
-        f_header = f_title = f_tbl_hdr = f_body = f_small = f_xs = ImageFont.load_default()
+        f_header_lbl = f_header_val = f_header = f_title = f_tbl_hdr = f_body = f_small = f_footer = f_xs = ImageFont.load_default()
 
     return {
+        "header_lbl": f_header_lbl,
+        "header_val": f_header_val,
         "header": f_header,
         "title": f_title,
         "table_header": f_tbl_hdr,
         "body": f_body,
         "small": f_small,
+        "footer": f_footer,
         "xs": f_xs,
     }
 
@@ -337,8 +353,8 @@ class PDFAssembler:
         self.fonts = get_sarabun_fonts()
 
         self.disclaimer_lines = [
-            '"DIGITAL EVIDENCE เป็นเพียงการเครื่องมืออำนวยความสะดวกให้กับผู้ว่าจ้าง โดยไม่ได้ดัดแปลง แก้ไข เพิ่ม-ลบ เนื้อหา',
-            'จากต้นฉบับใดๆ และไม่มีส่วนเกี่ยวข้องใดๆกับเนื้อหาในเอกสาร เป็นเพียงเครื่องมือที่ทำงานเกี่ยวกับระบบไฟล์',
+            '"DIGITAL EVIDENCE เป็นเพียงเครื่องมืออำนวยความสะดวกให้กับผู้ว่าจ้าง โดยไม่ได้ดัดแปลง แก้ไข เพิ่ม-ลบ เนื้อหา',
+            'จากต้นฉบับใดๆ และไม่มีส่วนเกี่ยวข้องใดๆ กับเนื้อหาในเอกสาร เป็นเพียงเครื่องมือที่ทำงานเกี่ยวกับระบบไฟล์',
             'เอกสารแบบอิเล็กทรอนิกส์ เท่านั้น"',
         ]
 
@@ -365,7 +381,7 @@ class PDFAssembler:
 
         self.pdf_pages = []
 
-    def add_single_page_image(self, img_bgr, align="center", page_num=None):
+    def add_single_page_image(self, img_bgr, align="center", page_num=None, mode=None, corroborated=None):
         """
         Renders exactly 1 slip / image centered on its OWN dedicated Portrait A4 page.
         align="center" (สลิปรายใบ ตามมาตรฐาน slip-block-fit 645x890)
@@ -433,30 +449,56 @@ class PDFAssembler:
         a4_canvas.paste(block_canvas, (paste_x, paste_y))
 
         draw = ImageDraw.Draw(a4_canvas)
-        timestamp = datetime.datetime.now().strftime("%d/%m/%Y : %H.%M")
         page_str = str(page_num) if page_num is not None else str(len(self.pdf_pages)+1)
-        draw.text((self.margin_left, 45),  "EVIDENCE",              fill="black",   font=self.fonts["header"])
-        draw.text((self.margin_left, 72),  f"PAGE: {page_str}",      fill="black", font=self.fonts["body"])
-        draw.text((self.margin_left, 97),  timestamp,              fill="black",   font=self.fonts["body"])
 
+        # 1. Header Evidence Ribbon (ตาม reference รูปที่ 1)
+        header_y = 38
         if self.logo_img:
-            logo_x = self.portrait_w - self.margin_right - self.logo_img.width
-            logo_y = 35
             if self.logo_img.mode == 'RGBA':
-                a4_canvas.paste(self.logo_img, (logo_x, logo_y), self.logo_img)
+                a4_canvas.paste(self.logo_img, (self.margin_left, header_y), self.logo_img)
             else:
-                a4_canvas.paste(self.logo_img, (logo_x, logo_y))
+                a4_canvas.paste(self.logo_img, (self.margin_left, header_y))
+            text_x = self.margin_left + self.logo_img.width + 20
+        else:
+            text_x = self.margin_left
 
-        footer_start_y = self.margin_top + self.block_height + 30
-        line_spacing = 18
+        line1_y = header_y + 8
+        line2_y = header_y + 40
+
+        # Mode line: MODE : SLIP หรือ CHAT (ตัวอักษร Sarabun Thin)
+        mode_str = "SLIP" if mode and mode.upper().startswith("SLIP") else ("CHAT" if mode and mode.upper().startswith("CHAT") else ("SLIP" if align == "center" else "CHAT"))
+
+        draw.text((text_x, line1_y), "MODE : ", fill="#111827", font=self.fonts["header_lbl"])
+        b_lbl = draw.textbbox((text_x, line1_y), "MODE : ", font=self.fonts["header_lbl"])
+        draw.text((b_lbl[2], line1_y), mode_str, fill="#111827", font=self.fonts["header_val"])
+
+        # Corroborated line: CORROBORATED : [value] (ตัวอักษร Sarabun Thin)
+        corrob_str = str(corroborated) if corroborated else "-"
+        draw.text((text_x, line2_y), "CORROBORATED : ", fill="#111827", font=self.fonts["header_lbl"])
+        b_corrob = draw.textbbox((text_x, line2_y), "CORROBORATED : ", font=self.fonts["header_lbl"])
+        draw.text((b_corrob[2], line2_y), corrob_str, fill="#111827", font=self.fonts["header_val"])
+
+        # Right: PAGE : [number]
+        b_pval = draw.textbbox((0, 0), page_str, font=self.fonts["header_val"])
+        b_plbl = draw.textbbox((0, 0), "PAGE : ", font=self.fonts["header_lbl"])
+        total_page_w = (b_plbl[2] - b_plbl[0]) + (b_pval[2] - b_pval[0])
+        page_x = self.portrait_w - self.margin_right - total_page_w
+
+        draw.text((page_x, line1_y), "PAGE : ", fill="#111827", font=self.fonts["header_lbl"])
+        b_pr = draw.textbbox((page_x, line1_y), "PAGE : ", font=self.fonts["header_lbl"])
+        draw.text((b_pr[2], line1_y), page_str, fill="#111827", font=self.fonts["header_val"])
+
+        # 2. Footer Evidence Ribbon (ตาม reference รูปที่ 2)
+        footer_start_y = self.margin_top + self.block_height + 28
+        line_spacing = 22
         for i, line in enumerate(self.disclaimer_lines):
             try:
-                bbox = draw.textbbox((0, 0), line, font=self.fonts["small"])
+                bbox = draw.textbbox((0, 0), line, font=self.fonts["footer"])
                 line_w = bbox[2] - bbox[0]
                 line_x = (self.portrait_w - line_w) // 2
             except Exception:
                 line_x = self.margin_left
-            draw.text((line_x, footer_start_y + (i * line_spacing)), line, fill="#555555", font=self.fonts["small"])
+            draw.text((line_x, footer_start_y + (i * line_spacing)), line, fill="#333333", font=self.fonts["footer"])
 
         self.pdf_pages.append(a4_canvas)
 
@@ -476,18 +518,38 @@ class PDFAssembler:
         draw = ImageDraw.Draw(a4_canvas)
         timestamp = datetime.datetime.now().strftime("%d/%m/%Y : %H.%M")
 
-        # Header Block
-        draw.text((margin_l, 30),  "EVIDENCE",              fill="black",   font=self.fonts["header"])
-        draw.text((margin_l, 55),  f"PAGE: {len(self.pdf_pages)+1} (SUMMARY)", fill="black", font=self.fonts["body"])
-        draw.text((margin_l, 78),  timestamp,              fill="black",   font=self.fonts["body"])
-
+        # Header Block: Header Evidence Ribbon (A4 Landscape)
+        header_y = 25
         if self.logo_img:
-            logo_x = landscape_w - margin_r - self.logo_img.width
-            logo_y = 25
             if self.logo_img.mode == 'RGBA':
-                a4_canvas.paste(self.logo_img, (logo_x, logo_y), self.logo_img)
+                a4_canvas.paste(self.logo_img, (margin_l, header_y), self.logo_img)
             else:
-                a4_canvas.paste(self.logo_img, (logo_x, logo_y))
+                a4_canvas.paste(self.logo_img, (margin_l, header_y))
+            text_x = margin_l + self.logo_img.width + 20
+        else:
+            text_x = margin_l
+
+        line1_y = header_y + 8
+        line2_y = header_y + 40
+
+        draw.text((text_x, line1_y), "MODE : ", fill="#111827", font=self.fonts["header_lbl"])
+        b_lbl = draw.textbbox((text_x, line1_y), "MODE : ", font=self.fonts["header_lbl"])
+        draw.text((b_lbl[2], line1_y), "SUMMARY", fill="#111827", font=self.fonts["header_val"])
+
+        draw.text((text_x, line2_y), "CORROBORATED : ", fill="#111827", font=self.fonts["header_lbl"])
+        b_corrob = draw.textbbox((text_x, line2_y), "CORROBORATED : ", font=self.fonts["header_lbl"])
+        draw.text((b_corrob[2], line2_y), "สารบัญสรุปธุรกรรมทางการเงิน", fill="#111827", font=self.fonts["header_val"])
+
+        # Page number on right
+        page_str = f"{len(self.pdf_pages)+1} (SUMMARY)"
+        b_pval = draw.textbbox((0, 0), page_str, font=self.fonts["header_val"])
+        b_plbl = draw.textbbox((0, 0), "PAGE : ", font=self.fonts["header_lbl"])
+        total_page_w = (b_plbl[2] - b_plbl[0]) + (b_pval[2] - b_pval[0])
+        page_x = landscape_w - margin_r - total_page_w
+
+        draw.text((page_x, line1_y), "PAGE : ", fill="#111827", font=self.fonts["header_lbl"])
+        b_pr = draw.textbbox((page_x, line1_y), "PAGE : ", font=self.fonts["header_lbl"])
+        draw.text((b_pr[2], line1_y), page_str, fill="#111827", font=self.fonts["header_val"])
 
         # Title Box
         title_y = 110
@@ -582,17 +644,17 @@ class PDFAssembler:
             sx = margin_l + 15
         draw.text((sx, summary_box_y + 9), sum_text, fill="#1E40AF", font=self.fonts["body"])
 
-        # Footer Disclaimer Centered
-        footer_start_y = landscape_h - 75
-        line_spacing = 18
+        # Footer Disclaimer Centered (Sarabun ExtraLight)
+        footer_start_y = landscape_h - 85
+        line_spacing = 22
         for i, line in enumerate(self.disclaimer_lines):
             try:
-                bbox = draw.textbbox((0, 0), line, font=self.fonts["small"])
+                bbox = draw.textbbox((0, 0), line, font=self.fonts["footer"])
                 line_w = bbox[2] - bbox[0]
                 line_x = (landscape_w - line_w) // 2
             except Exception:
                 line_x = margin_l
-            draw.text((line_x, footer_start_y + (i * line_spacing)), line, fill="#555555", font=self.fonts["small"])
+            draw.text((line_x, footer_start_y + (i * line_spacing)), line, fill="#333333", font=self.fonts["footer"])
 
         self.pdf_pages.append(a4_canvas)
 
@@ -700,7 +762,7 @@ def process_chat_pipeline(input_path, output_pdf, slip_data_list=None, chat_mode
                     global_page_idx += 1
                     page_slice = strip.crop((0, y1, strip.width, y2))
                     arr = cv2.cvtColor(np.asarray(page_slice), cv2.COLOR_RGB2BGR)
-                    assembler.add_single_page_image(arr, align="top", page_num=global_page_idx)
+                    assembler.add_single_page_image(arr, align="top", page_num=global_page_idx, mode="CHAT", corroborated="-")
                     page = assembler.pdf_pages.pop()
                     fp = os.path.join(tmp, f"p{global_page_idx:05d}.png")
                     page.save(fp)
@@ -731,7 +793,15 @@ def process_chat_pipeline(input_path, output_pdf, slip_data_list=None, chat_mode
             continue
 
         trimmed_img = trim_outer_padding(img)
-        assembler.add_single_page_image(trimmed_img)
+        corrob = None
+        if slip_data_list and idx < len(slip_data_list):
+            c_item = slip_data_list[idx]
+            if isinstance(c_item, dict):
+                p_no = c_item.get("chat_page") or c_item.get("page_no") or c_item.get("page")
+                i_no = c_item.get("chat_index") or c_item.get("index") or (idx + 1)
+                if p_no:
+                    corrob = f"ภาพแชทหน้าที่ {p_no} / สารบัญแชท ลำดับที่ {i_no}"
+        assembler.add_single_page_image(trimmed_img, align="center", page_num=idx+1, mode="SLIP", corroborated=corrob)
 
     # 2. Add the 10-Column Summary Statement Table in LANDSCAPE (owned by Detail_Data)
     if slip_data_list:
