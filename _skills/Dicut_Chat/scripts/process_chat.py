@@ -623,45 +623,62 @@ def process_chat_pipeline(input_path, output_pdf, slip_data_list=None, chat_mode
     assembler = PDFAssembler(output_path=output_pdf)
 
     if chat_mode and len(images_to_process) > 1:
-        # โหมดแชทยาว: เย็บด้วย feather -> หั่น quiet-zone -> ยัดชิดบน -> เซฟแบบ streaming
-        print(f"Chat mode: stitching {len(images_to_process)} images with {FEATHER_PX}px feather...")
-        pil_imgs = []
-        for img_p in images_to_process:
-            img = imread_unicode(img_p)
-            if img is None:
-                print(f"Warning: Could not read {img_p}")
-                continue
-            trimmed = trim_outer_padding(img)
-            pil_imgs.append(Image.fromarray(trimmed[:, :, ::-1]))
-        if not pil_imgs:
-            print("No readable images")
-            return 0
-        strip = feather_stitch(pil_imgs)
-        sw = assembler.block_width / strip.width
-        strip = strip.resize((assembler.block_width, max(1, int(strip.height * sw))),
-                             Image.Resampling.LANCZOS)
-        cuts = quiet_cuts(strip, assembler.block_height)
-        print(f"Packed into {len(cuts)} page(s), top-aligned (Pull-Scale-Pack)...")
+        # โหมดแชทยาว: แบ่งเป็นแบทช์ปลอดภัย (สูงสุด 35 ภาพ/แบทช์) ป้องกัน OOM บนภาพขนาดยาวระดับ 6,000+ px
+        batch_size = 35
+        total_batches = (len(images_to_process) + batch_size - 1) // batch_size
+        print(f"Chat mode: processing {len(images_to_process)} images in {total_batches} batch(es) (max {batch_size}/batch)...")
+
         with tempfile.TemporaryDirectory() as tmp:
             paths = []
-            for i, (y1, y2, needs_scale) in enumerate(cuts):
-                page_slice = strip.crop((0, y1, strip.width, y2))
-                arr = cv2.cvtColor(np.asarray(page_slice), cv2.COLOR_RGB2BGR)
-                assembler.add_single_page_image(arr, align="top", page_num=i+1)
-                page = assembler.pdf_pages.pop()
-                fp = os.path.join(tmp, f"p{i:03d}.png")
-                page.save(fp)
-                paths.append((fp, page.size))
-            # ตารางสรุป 10 คอลัมน์เป็นกรรมสิทธิ์ของ Detail_Data บทสนทนาแชทไม่มีสรุปการเงิน
+            global_page_idx = 0
+
+            for b_idx in range(total_batches):
+                b_start = b_idx * batch_size
+                b_end = min(len(images_to_process), b_start + batch_size)
+                batch_files = images_to_process[b_start:b_end]
+                print(f"  [Batch {b_idx + 1}/{total_batches}] Stitching images {b_start + 1} to {b_end} with {FEATHER_PX}px feather...")
+
+                pil_imgs = []
+                for img_p in batch_files:
+                    img = imread_unicode(img_p)
+                    if img is None:
+                        print(f"    Warning: Could not read {img_p}")
+                        continue
+                    trimmed = trim_outer_padding(img)
+                    pil_imgs.append(Image.fromarray(trimmed[:, :, ::-1]))
+
+                if not pil_imgs:
+                    continue
+
+                strip = feather_stitch(pil_imgs)
+                sw = assembler.block_width / strip.width
+                strip = strip.resize((assembler.block_width, max(1, int(strip.height * sw))),
+                                     Image.Resampling.LANCZOS)
+                cuts = quiet_cuts(strip, assembler.block_height)
+
+                for i, (y1, y2, needs_scale) in enumerate(cuts):
+                    global_page_idx += 1
+                    page_slice = strip.crop((0, y1, strip.width, y2))
+                    arr = cv2.cvtColor(np.asarray(page_slice), cv2.COLOR_RGB2BGR)
+                    assembler.add_single_page_image(arr, align="top", page_num=global_page_idx)
+                    page = assembler.pdf_pages.pop()
+                    fp = os.path.join(tmp, f"p{global_page_idx:05d}.png")
+                    page.save(fp)
+                    paths.append((fp, page.size))
+
+                del strip, pil_imgs
+
             if slip_data_list:
+                global_page_idx += 1
                 assembler.add_10col_landscape_summary_page(item_names, slip_data_list=slip_data_list)
                 summ = assembler.pdf_pages.pop()
                 fp = os.path.join(tmp, "summary.png")
                 summ.save(fp)
                 paths.append((fp, summ.size))
-            del strip, pil_imgs
+
+            print(f"Writing {len(paths)} pages to PDF via ReportLab streaming...")
             mode = save_pdf_streaming(paths, output_pdf)
-            print(f"Saved chat PDF ({mode}) -> {os.path.basename(output_pdf)}")
+            print(f"Saved chat PDF ({mode}) -> {os.path.basename(output_pdf)} ({len(paths)} pages)")
             return len(paths)
 
     print(f"Found {len(images_to_process)} unique slip(s). Processing 1-slip-per-page (Sarabun Light)...")

@@ -257,10 +257,14 @@ def export_to_excel(items, excel_path):
     ws = wb.active
     ws.title = "สารบัญสลิปหลักฐาน"
 
+    # Page Setup: A4 Landscape
+    ws.page_setup.orientation = ws.ORIENTATION_LANDSCAPE
+    ws.page_setup.paperSize = ws.PAPERSIZE_A4
+
     # Title header
     ws.merge_cells("A1:J1")
     ws["A1"] = "ตารางสารบัญสลิปธุรกรรมหลักฐานดิจิทัล (Forensic Slip Index)"
-    ws["A1"].font = Font(name="Cordia New", size=16, bold=True, color="1F497D")
+    ws["A1"].font = Font(name="Sarabun", size=16, bold=True, color="1F497D")
     ws["A1"].alignment = Alignment(horizontal="center", vertical="center")
     ws.row_dimensions[1].height = 30
 
@@ -270,9 +274,9 @@ def export_to_excel(items, excel_path):
         "รหัสอ้างอิงธุรกรรม", "สถานะหลักฐาน"
     ]
 
-    header_font = Font(name="Cordia New", size=13, bold=True, color="FFFFFF")
+    header_font = Font(name="Sarabun", size=12, bold=True, color="FFFFFF")
     header_fill = PatternFill(start_color="1F497D", end_color="1F497D", fill_type="solid")
-    center_align = Alignment(horizontal="center", vertical="center")
+    center_align = Alignment(horizontal="center", vertical="center", wrap_text=True)
     thin_border = Border(
         left=Side(style="thin", color="D3D3D3"),
         right=Side(style="thin", color="D3D3D3"),
@@ -289,8 +293,8 @@ def export_to_excel(items, excel_path):
         cell.alignment = center_align
         cell.border = thin_border
 
-    data_font = Font(name="Cordia New", size=12)
-    bold_font = Font(name="Cordia New", size=12, bold=True)
+    data_font = Font(name="Sarabun", size=11)
+    bold_font = Font(name="Sarabun", size=11, bold=True)
 
     for r_idx, item in enumerate(items, 3):
         ws.row_dimensions[r_idx].height = 22
@@ -314,12 +318,22 @@ def export_to_excel(items, excel_path):
             cell.value = val
             cell.font = bold_font if col_idx in (1, 5) else data_font
             cell.border = thin_border
-            if col_idx in (1, 2, 3, 7, 10):
-                cell.alignment = Alignment(horizontal="center", vertical="center")
-            elif col_idx == 5:
-                cell.alignment = Alignment(horizontal="right", vertical="center")
-            else:
-                cell.alignment = Alignment(horizontal="left", vertical="center")
+            cell.alignment = center_align
+
+    # Disclaimer footer centered
+    disclaimer_start_row = len(items) + 4
+    disclaimer_lines = [
+        "เอกสารนี้สร้างขึ้นโดยระบบอัตโนมัติ เพื่อใช้เป็นสารบัญอ้างอิงพยานหลักฐานในสำนวนคดี",
+        "ข้อมูลทั้งหมดถูกสกัดจากภาพถ่ายหน้าจอสนทนาและเอกสารจริง โดยไม่มีการดัดแปลงหรือแต่งเติมเนื้อหาใดๆ",
+        "กรุณาตรวจสอบความถูกต้องร่วมกับเอกสารฉบับจริงก่อนนำไปใช้ในกระบวนการทางกฎหมาย"
+    ]
+    for idx, d_line in enumerate(disclaimer_lines):
+        r = disclaimer_start_row + idx
+        ws.merge_cells(start_row=r, start_column=1, end_row=r, end_column=10)
+        d_cell = ws.cell(row=r, column=1)
+        d_cell.value = d_line
+        d_cell.font = Font(name="Sarabun", size=9, italic=True, color="666666")
+        d_cell.alignment = Alignment(horizontal="center", vertical="center")
 
     # Column widths
     col_widths = [15, 22, 18, 22, 18, 25, 18, 18, 24, 18]
