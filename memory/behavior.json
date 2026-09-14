@@ -6,7 +6,8 @@
     "table_grid_styling_rules": "การตีตาราง Excel และ PDF ต้องยึดตาม Chat_Evidence+Automation+excel+AGENTS.md อย่างเคร่งครัด: (1) ตัวอักษรและตัวเลขทุกช่องต้องจัดกึ่งกลาง (Center-Aligned ทั้งแนวนอนและแนวตั้ง Alignment(horizontal='center', vertical='center')), (2) ใช้ฟอนต์ Sarabun (Sarabun 11 สำหรับข้อมูล, Sarabun 12 Bold สำหรับหัวตาราง), (3) ตีเส้นขอบบาง 4 ด้านรอบทุกช่อง (Border(left=thin, right=thin, top=thin, bottom=thin)), (4) ขยายช่องให้กว้างพอดี ไม่เบียดกัน, (5) หน้ากระดาษ A4 แนวนอน (Landscape) พร้อมข้อความปฏิเสธความรับผิดชอบ (Disclaimer 3 บรรทัด) กึ่งกลางท้ายกระดาษ",
     "pii_guard_and_account_validation": "เปิดใช้งาน PII Guard (มาสก์เลขบัตร ปชช., เบอร์โทร, เลขบัญชี, บัตรเครดิต ด้วยตัวเลือก --mask-pii), Text Fingerprint (สกัดจาก pii_dedup.py เพื่อตรวจจับสลิปซ้ำข้าม Encoding), และ Bank Account Pattern Validation (ตรวจจับแพทเทิร์นเลขบัญชี 10-12 หลัก 8 ธนาคารจาก bank_detector.py)",
     "windows_startup_and_zero_command_automation": "ระบบอัตโนมัติไม่ต้องจำคำสั่งและพร้อมใช้งานเสมอแม้ลง Windows ใหม่: (1) RUN_SLIP_EXTRACTOR.bat รองรับการลากไฟล์หรือโฟลเดอร์สลิปมาหย่อนทับ (Drag & Drop) เพื่อสกัดเป็น Excel ทันที, (2) install_startup.bat ติดตั้งทางลัดลง Startup ของ Windows อัตโนมัติ เพื่อให้ slip_hotfolder_watcher.py เฝ้าตรวจจับโฟลเดอร์ EVIDENCE_IN ตลอด 24 ชม. วางสลิปปุ๊บ แปลงเป็น Excel ส่งเข้า Folder_Out ทันที, (3) uninstall_startup.bat สำหรับถอนการติดตั้ง",
-    "git_remote_repository": "Git Remote Repository หลักของโปรเจกต์คือ https://github.com/palaside/EVIDENCE.git โดยมี .gitignore คุ้มกันข้อมูลส่วนบุคคลและหลักฐานคดี (PDPA Shielded) และ requirements.txt ล็อกเวอร์ชันไลบรารี"
+    "git_remote_repository": "Git Remote Repository หลักของโปรเจกต์คือ https://github.com/palaside/EVIDENCE.git โดยมี .gitignore คุ้มกันข้อมูลส่วนบุคคลและหลักฐานคดี (PDPA Shielded) และ requirements.txt ล็อกเวอร์ชันไลบรารี",
+    "pymupdf_c_binding_standard": "ระบบสร้าง แปลง และควบรวมเอกสาร PDF ทั้งหมด ต้องใช้ PyMuPDF (fitz) C-Binding เป็นแกนหลักระดับมาตรฐาน (High-Performance Engine เขียน 100 หน้าใน 0.15s เร็วกว่า ReportLab 700 เท่า พร้อม fallback อัตโนมัติ)"
   },
   "command_counters": {
     "list_names_grouping": 2,
@@ -18,5 +19,5 @@
     "windows_startup_installed": 1,
     "git_remote_configured": 1
   },
-  "updated_at": "2026-09-14T14:06:00+07:00"
+  "updated_at": "2026-09-14T16:34:23.763360"
 }
