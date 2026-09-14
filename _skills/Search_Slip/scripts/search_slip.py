@@ -269,7 +269,7 @@ def export_to_excel(items, excel_path):
     ws.row_dimensions[1].height = 30
 
     headers = [
-        "หน้าที่ใน PDF", "วันที่ - เวลา", "ธนาคารผู้โอน", "ชื่อผู้โอน",
+        "หน้าระบุสลิป", "วันที่ - เวลา", "ธนาคารผู้โอน", "ชื่อผู้โอน",
         "จำนวนเงิน (บาท)", "ชื่อผู้รับโอน", "ธนาคารผู้รับ", "บันทึกช่วยจำ",
         "รหัสอ้างอิงธุรกรรม", "สถานะหลักฐาน"
     ]
@@ -295,6 +295,9 @@ def export_to_excel(items, excel_path):
 
     data_font = Font(name="Sarabun", size=11)
     bold_font = Font(name="Sarabun", size=11, bold=True)
+    link_font = Font(name="Sarabun", size=11, bold=True, color="004B87", underline="single")
+
+    pdf_target = os.path.basename(excel_path).replace('_Slip_Index.xlsx', '.pdf')
 
     for r_idx, item in enumerate(items, 3):
         ws.row_dimensions[r_idx].height = 22
@@ -316,7 +319,13 @@ def export_to_excel(items, excel_path):
         for col_idx, val in enumerate(row_values, 1):
             cell = ws.cell(row=r_idx, column=col_idx)
             cell.value = val
-            cell.font = bold_font if col_idx in (1, 5) else data_font
+            if col_idx == 1:
+                cell.font = link_font
+                cell.hyperlink = pdf_target
+            elif col_idx == 5:
+                cell.font = bold_font
+            else:
+                cell.font = data_font
             cell.border = thin_border
             cell.alignment = center_align
 
