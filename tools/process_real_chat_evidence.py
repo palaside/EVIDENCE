@@ -131,6 +131,28 @@ def run_pipeline():
         master_slips = search_slips_in_pdf(combined_pdf)
         log(f"✅ สารบัญรวมเสร็จสมบูรณ์: {combined_xlsx} (พบสลิปรวม {len(master_slips)} รายการ)")
 
+        # 4. Generate Front Cover & Financial Index Dossier
+        log(f"\n📑 กำลังสร้างหน้าปกสรุปสำนวนคดีและแทรกสารบัญเป็นหน้าแรก (Cover Page & Front Index)...")
+        from generate_cover_page import build_front_dossier_pdf, merge_cover_to_master_pdf
+        front_pdf = os.path.join(OUT_DIR, "Evidence_Chat_Master_Front_Cover_and_Index.pdf")
+        with_cover_pdf = os.path.join(OUT_DIR, "Evidence_Chat_Master_Combined_Vol1_to_3_With_Cover.pdf")
+        build_front_dossier_pdf(combined_json, front_pdf, start_page_num=1)
+        merge_cover_to_master_pdf(combined_pdf, front_pdf, with_cover_pdf)
+        log(f"✅ สร้างและผสานเล่มพร้อมหน้าปกเสร็จสมบูรณ์ -> {with_cover_pdf}")
+
+        # 5. Generate Cryptographic Hash Manifest
+        log(f"\n🔐 กำลังคำนวณและประทับตรารับรองพยานหลักฐาน (Cryptographic Hash Manifest SHA-256)...")
+        from evidence_hash_manifest import generate_hash_manifest
+        manifest_targets = [
+            with_cover_pdf,
+            combined_pdf,
+            front_pdf,
+            combined_xlsx,
+            combined_json
+        ]
+        manifest_res = generate_hash_manifest(manifest_targets, OUT_DIR, case_title="สำนวนพยานหลักฐานแชทจริง (Volume 1-3)")
+        log(f"✅ ประทับตรารับรอง SHA-256 Checksum เรียบร้อย: {manifest_res['certificate_pdf']}")
+
     total_elap = time.time() - start_all
     log(f"\n================================================================================")
     log(f"🎉 ประมวลผลพยานหลักฐานแชทจริงทั้ง 3 ชุดเสร็จสมบูรณ์ทั้งหมดในเวลา: {total_elap:.1f} วินาที")

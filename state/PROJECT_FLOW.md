@@ -3,12 +3,12 @@
 <!-- 👤 ROLE: SENIOR FULL-STACK DEVELOPER AGENT                                     -->
 <!-- 📦 PROJECT: DIGITAL_EVIDENCE                                                   -->
 <!-- 🌐 LANGUAGE: 🇺🇸 100% ENGLISH SPECIFICATION (OPTIMIZED FOR AI CONTEXT WINDOW)  -->
-<!-- 📅 UPDATED: 2026-09-14T12:46:45+07:00                                          -->
+<!-- 📅 UPDATED: 2026-09-14T23:45:00+07:00                                          -->
 <!-- ============================================================================== -->
 
 # 🔄 SYSTEM DATA FLOW & INTERACTION ARCHITECTURE — DIGITAL_EVIDENCE
 
-> **Operational Purpose:** This specification provides an exhaustive, end-to-end technical blueprint of the execution flow, system interaction nodes, and programmatic constraints governing the `DIGITAL_EVIDENCE` suite. Designed specifically to grant subsequent coding agents deterministic context inheritance under the strict constitutional Honesty Rule (Zero-Guessing / Zero-Hallucination), Universal 18-Bank Coverage, and Forensic Duplicate Slip Auditing.
+> **Operational Purpose:** This specification provides an exhaustive, end-to-end technical blueprint of the execution flow, system interaction nodes, and programmatic constraints governing the `DIGITAL_EVIDENCE` suite. Designed specifically to grant subsequent coding agents deterministic context inheritance under the strict constitutional Honesty Rule (Zero-Guessing / Zero-Hallucination), Stage Forensic Smart Zoom & Crop, Universal 18-Bank Coverage, Cryptographic Hash Manifests, and the Three-Tier Slip Architecture.
 
 ---
 
@@ -27,24 +27,41 @@
  [STAGE 4: Quiet Zone Lookahead Slicing (Dicut_Chat)]
        │
        ▼
- [STAGE 5: Slip-Block-Fit Dynamic Background Canvas Standardization]
+ [STAGE 5: Forensic Smart Zoom & Pure White Canvas Engine]
+       │   ├── Stage 1: Container Penetration (A4 / Outer Border Stripping)
+       │   ├── Stage 2: Mobile UI & Dark Bar Elimination (Micro-trim 2px)
+       │   └── Canvas: Pure White (#FFFFFF) 900px Vertical Zoom (Zero Grey Gutter)
        │
        ▼
- [STAGE 6: Forensic Quality Gate & PDF Assembly]
+ [STAGE 6: Forensic Quality Gate & High-Speed PyMuPDF C-Binding Assembly]
        │
-       ├──► [STAGE 7A: Post-PDF Slip Detection & Page Indexing (Search_Slip)]
+       ├──► [STAGE 7A: Executive Dossier & Front Index Merger (generate_cover_page)]
+       │          ├── Page 1: Portrait Dossier Cover with Evidence Ribbon
+       │          ├── Pages 2-5: 10-Column Landscape Slip Index with Gold Highlights
+       │          └── Fast C-Binding Stream Stitching: 2,562 Pages in 6.81s
        │
-       └──► [STAGE 7B: Universal 18-Bank Slip Engine with Forensic Auditor (OCR_Slip)]
-                  ├── Pre-processing: Morphological Background Subtraction + CLAHE
-                  ├── QR Cryptographic Parser: EMVCo Tag 02 (Ref ID) + Tag 00/01 (3-Digit BOT Bank Code)
-                  ├── Text Engine: Local Tesseract (tha+eng) Multi-Pass OCR
-                  ├── Normalization: Thai Ligature Whitespace Stripping
-                  ├── SSOT Master Dictionary: 18 Thai Financial Institutions
-                  ├── Metadata Enrichment: Bank Branch (สาขา) Extraction into Memo
-                  ├── Forensic Audit: In-Batch & Cross-Batch Duplicate Slip Detection
-                  ├── Grid Engine & Typography: Sarabun Font + 100% Center-Aligned Cells + 4-Sided Thin Borders
-                  ├── Print Layout: A4 Landscape (1406x993 px) + Centered 3-Line Legal Disclaimer
-                  └── Legal Ledger: 13-Column Excel (Warning Cell Highlighting) + JSON
+       ├──► [STAGE 7B: Cryptographic Evidence Hash Certification (evidence_hash_manifest)]
+       │          ├── SHA-256 + MD5 64KB Binary Streaming
+       │          ├── Certificate Synthesis: EVIDENCE_HASH_CERTIFICATE.pdf
+       │          └── Legal Manifest: EVIDENCE_HASH_MANIFEST.sha256 & .json
+       │
+       ├──► [STAGE 7C: Universal 18-Bank Slip Engine with Forensic Auditor (OCR_Slip)]
+       │          ├── Pre-processing: Morphological Background Subtraction + CLAHE
+       │          ├── QR Cryptographic Parser: EMVCo Tag 02 (Ref ID) + Tag 00/01 (BOT Code)
+       │          ├── Text Engine: Local Tesseract (tha+eng) Multi-Pass OCR
+       │          ├── Normalization: Thai Ligature Whitespace Stripping
+       │          ├── SSOT Master Dictionary: 18 Thai Financial Institutions
+       │          ├── Metadata Enrichment: Bank Branch (สาขา) Extraction into Memo
+       │          ├── Three-Tier Architecture:
+       │          │     ├── Tier 1 (Priority 1): Master Unique 560 Slips (1.54M THB)
+       │          │     ├── Tier 2 (Reference): Stem Dedup 1,160 Slips
+       │          │     └── Tier 3 (Reference): Full Raw 2,792 Slips
+       │          └── Duplicate Auditor: DUPLICATE_SLIP_AUDIT_REPORT.xlsx (2,232 mapped)
+       │
+       └──► [STAGE 7D: Correlated Evidence Engine (Skill Only / only-corroborated)]
+                  ├── Visual Stamp & Time-Window Matching
+                  ├── Smoking Gun Pairing: [Chat Order] ⟷ [Bank Slip]
+                  └── Executive Court Edition: ~100-200 Pages High-Impact Dossier
 ```
 
 ---
@@ -58,101 +75,78 @@ graph TD
         InSlip["EVIDENCE_IN/"]
         PortableSlips["Portable/INBOX_SLIPS/"]
         PortableChats["Portable/INBOX_CHATS/"]
-        ExtFolder["External Repositories (e.g. F:/Project/EDOK/)"]
+        ExtFolder["F:/Project/EDOK/Duplicates/Done (2,792 Files)"]
     end
 
     subgraph CHAT_ENGINE ["📱 2. Chat Processing Pipeline (List_names + Dicut_Chat)"]
         Sort["Natural Sort & Prefix Extraction"]
         CleanBand["Strip Dark Navigation Bands"]
         QuietCut["Smart Quiet Zone Detector (1.30x Lookahead)"]
-        BlockFit["Slip-Block-Fit (807x1115 / 645x890 Canvas)"]
+        SmartZoom["Stage Forensic Smart Zoom & Crop (#FFFFFF Canvas)"]
         Audit["Auto-Audit Quality Gate (100% Pass)"]
-        PDFGen["High-Speed PyMuPDF C-Binding Streaming Synthesis"]
-        MasterMerge["Master Volume Merger (fitz.insert_pdf -> Combined Master PDF)"]
+        PDFGen["PyMuPDF C-Binding Streaming Synthesis"]
+        CoverMerge["Cover & 10-Col Front Index Merger"]
+        HashCert["Cryptographic Hash Manifest (SHA-256)"]
     end
 
-    subgraph SLIP_SEARCH ["🔍 3. Post-PDF Page Indexing (Search_Slip)"]
-        PageRender["Render PDF Page to OpenCV BGR (PyMuPDF High-Speed Pixmap)"]
-        BadgeScan["HSV Green Success Badge Detection"]
-        TextScan["Tesseract OCR Transaction Data Extractor"]
-        SlipIndex["Export: 10-Column Sarabun Center-Aligned Grid (Excel & JSON)"]
+    subgraph SLIP_TIERS ["💳 3. Three-Tier Slip Architecture"]
+        ManifestClust["Perceptual Hash Clustering (slips_dedup_manifest.json)"]
+        Tier1["Tier 1: Master Unique 560 Slips (Priority 1)"]
+        Tier2["Tier 2: Stem Dedup 1,160 Slips (Reference Reserve)"]
+        Tier3["Tier 3: Full Raw 2,792 Slips (Reference Reserve)"]
+        DupReport["DUPLICATE_SLIP_AUDIT_REPORT.xlsx (2,232 Duplicates Mapped)"]
     end
 
-    subgraph SLIP_OCR ["💳 4. Universal 18-Bank Slip Engine (OCR_Slip)"]
-        MorphFilter["Morphological Background Subtraction (gray / bg * 255)"]
-        CLAHE["CLAHE Contrast Enhancement"]
-        EMVCoRef["EMVCo Tag 02 Ref ID Parser"]
-        BOTBankCode["EMVCo Tag 00/01: 3-Digit BOT Bank Code"]
-        LocalOCR["Local Tesseract Multi-Pass OCR (tha+eng)"]
-        SpaceStrip["Thai Whitespace Stripping & Normalization"]
-        Dict18["Master Dictionary: 18 Thai Banks"]
-        BranchExt["Bank Branch (สาขา) Extraction -> Memo"]
-        PIIGuard["PII Guard: Mask Thai ID 13d, Tel 10d, CC 16d (--mask-pii)"]
-        Fingerprint["Text Fingerprint Hashing (SHA-256 slice)"]
-        AccountCheck["Bank Account Pattern Validation (10-12 digits)"]
-        DupAuditor["Forensic Duplicate Slip Auditor (In-batch + Printed Log)"]
-        HotWatcher["Hot Folder Watcher Daemon (slip_hotfolder_watcher.py)"]
-        BatchLauncher["One-Click Launcher (RUN_SLIP_EXTRACTOR.bat Drag & Drop)"]
-        StartupService["Windows Startup Hook (install_startup.bat)"]
-        Ledger13["Export: 13-Column Legal Ledger (Excel & JSON)"]
+    subgraph CORRELATION ["⚖️ 4. Skill Only: Executive Court Corroboration"]
+        Correlator["Correlation Engine: Time Window + Visual Stamp"]
+        SmokingGun["Paired Sequence: [Chat Page] ⟷ [Slip Page]"]
+        CourtExec["Executive Court Edition (~100-200 Pages)"]
     end
 
-    subgraph ARCHIVE ["🏛️ 5. Preservation & Constitutional Governance"]
-        BatchArch["processed/Case_{ID}/Batch_{TS}/"]
-        Memory["memory/behavior.json + memory/mistakes.md"]
-        PrintedLog["memory/printed_slips.log"]
+    subgraph IMMORTAL ["🏛️ 5. Immortal Agent Protocol (Twin Engine)"]
+        SaveSkill["save-project-state (Freeze Engine)"]
+        ResumeSkill["resume-project-state (Hydrate Engine)"]
+        Checkpoint["LATEST_CHECKPOINT.md (Session Truth)"]
+        StateTool["tools/open_project_state.py (0.05s Briefing)"]
         StateBackup["state/ Redundant Backup Mirror"]
-        Constitution["AGENTS.md (Strict Zero-Guessing Rule)"]
     end
 
-    InChat --> Sort --> CleanBand --> QuietCut --> BoxFit --> Audit --> PDFGen
-    PDFGen --> PageRender --> BadgeScan --> TextScan --> SlipIndex
-    InSlip --> MorphFilter
-    ExtFolder --> MorphFilter
-    MorphFilter --> CLAHE --> LocalOCR
-    MorphFilter --> EMVCoRef
-    MorphFilter --> BOTBankCode
-    LocalOCR --> SpaceStrip --> Dict18
-    LocalOCR --> BranchExt
-    BranchExt --> DupAuditor
-    EMVCoRef --> DupAuditor
-    BOTBankCode --> DupAuditor
-    PrintedLog --> DupAuditor
-    DupAuditor --> Ledger13
-    PDFGen --> BatchArch
-    Ledger13 --> Memory
-    Memory --> StateBackup
-    Constitution -.-> Dict18
+    InChat --> Sort --> CleanBand --> QuietCut --> SmartZoom --> Audit --> PDFGen
+    PDFGen --> CoverMerge --> HashCert
+    ExtFolder --> ManifestClust
+    ManifestClust --> Tier1 --> DupReport
+    ManifestClust --> Tier2
+    ManifestClust --> Tier3
+    PDFGen --> Correlator
+    Tier1 --> Correlator
+    Correlator --> SmokingGun --> CourtExec
+    SaveSkill --> Checkpoint --> ResumeSkill
+    Checkpoint --> StateTool
+    SaveSkill --> StateBackup
 ```
 
 ---
 
 ## 🔒 3. ⚖️ Business Logic Constraints & Forensic Audit Specifications
 
-### 3.1 Forensic Duplicate Slip & Printed Log Auditing
-- **In-Batch Duplicate Detection:** Identifies repeated Transaction Reference IDs or identical filename stems within the same run. Marks repeated entries as `⚠️ สลิปซ้ำ (Ref ซ้ำกับ ลำดับ X)` and points to the original occurrence.
-- **Cross-Batch Historical Verification:** Compares Ref IDs and filenames against `memory/printed_slips.log` (or external `printed_slips.txt`). Flags previously processed slips as `⚠️ เคยพิมพ์แล้ว (Printed)`.
-- **Visual Evidence Warning:** In the Excel ledger, duplicate rows are styled with an amber background (`#FFF2CC`) and bold red font (`#C00000`) in Column 13 (`สถานะการตรวจสอบ`).
+### 3.1 Stage Forensic Smart Zoom & Crop Standard
+- **Stage 1 (Container Stripping):** Discards extreme 3px border noise, isolates inner active evidence bounding boxes, and punches through outer A4 containers or scanner margins.
+- **Stage 2 (Mobile UI & Dark Bar Elimination):** Scans row brightness means across top and bottom regions, detecting mobile status/navigation bars (< 85 brightness). Employs 2px micro-trimming to eliminate hairline black seams.
+- **Pure White Canvas Guarantee:** All standalone slips are placed on pure white (`#FFFFFF`) canvases scaled to `target_h = 900 px` (aspect ratio locked). The use of corner-median background fills on slips is strictly forbidden to prevent grey/slate border artifacts.
 
-### 3.2 Bank Branch Extraction into Memo
-- Scans OCR text for counter slip or ATM identifiers matching `(?:สาขา|Branch)[\s:]*([^\n\r,]+)`.
-- Enriches the transaction `memo` field with `สาขา: [Branch Name]` without overwriting user-specified notes.
+### 3.2 Three-Tier Slip Architecture & Duplicate Mapping
+- **Tier 1 (Master Unique):** 560 verified unique slips ($1,547,803.68$ THB across 187 dates). Rendered into `Evidence_Slips_Master_Unique_560.pdf` (588 pages).
+- **Audit Verification Mapping:** `DUPLICATE_SLIP_AUDIT_REPORT.xlsx` maps all 2,232 excluded duplicate files directly to their master counterpart with cluster verification status.
+- **Tiers 2 & 3 (Reference Reserves):** 1,160 stem-dedup slips and 2,792 full raw files archived in `Folder_Out/Reference_Archives/` for historical audit preservation.
 
-### 3.3 3-Digit BOT Financial Institution Code Standard
-- In compliance with the Bank of Thailand (BOT) National QR Code Standard, embeds a 3-digit institutional code within `Tag 00 -> Sub-tag 01` of the EMVCo payload:
-  - `002`: BBL, `004`/`005`: KBANK, `006`: KTB, `011`: TTB, `014`: SCB, `025`: BAY, `030`: GSB, `034`: BAAC, `066`/`069`: KKP, `024`: UOB, `022`: CIMB, `073`: LHBANK, etc.
+### 3.3 Skill Only (Executive Court Edition Protocol)
+- Filters out non-transactional casual conversation pages.
+- Correlates chat payment directives with actual bank transfer slips into consecutive paired pages.
+- Reduces voluminous 2,500+ page chat files into a high-density, court-ready 100–200 page dossier.
 
-### 3.4 Strict Zero-Guessing Rule (Constitutional Mandate)
-- **Zero Tolerance for Hallucination:** Agents are strictly forbidden from guessing, inferring, or fabricating bank names, counterparty names, account numbers, or financial amounts.
-- Distorted OCR tokens (e.g. `Alovdsuma`) MUST NOT be guessed phonetically. They MUST bind to proven ground-truth bank accounts (e.g. `996-5` binds strictly to TTB).
-
-### 3.5 Standard Legal Grid & Typography Protocol (Chat Evidence Blueprint)
-- **Strict Center Alignment:** Every data, numerical, and status cell MUST be center-aligned across both horizontal and vertical axes (`Alignment(horizontal='center', vertical='center', wrap_text=True)`). Left or right bias is explicitly prohibited.
-- **Official Typography:** The table strictly employs the `Sarabun` font family (`Sarabun` 16pt bold for Title, 12pt bold for Headers, 11pt regular for Data cells, 9pt for Disclaimer).
-- **Full Perimeter Borders:** Every active cell is bounded by 4-sided crisp thin borders (`Border(left=thin, right=thin, top=thin, bottom=thin)`).
-- **A4 Landscape Dimensions:** Formatted for A4 Landscape printing ($1406 \times 993$ px, `orientation=landscape`, `paperSize=9`), with margins (Top 157px, Bottom 179px, Left/Right 102px).
-- **Centered Disclaimer Footer:** A 3-line legal disclaimer is merged and centered at the bottom of the ledger:
-  `"DIGITAL EVIDENCE เป็นเพียงการเครื่องมืออำนวยความสะดวกให้กับผู้ว่าจ้าง โดยไม่ได้ดัดแปลง แก้ไข เพิ่ม-ลบ เนื้อหา\nจากต้นฉบับใดๆ และไม่มีส่วนเกี่ยวข้องใดๆกับเนื้อหาในเอกสาร เป็นเพียงเครื่องมือที่ทำงานเกี่ยวกับระบบไฟล์\nเอกสารแบบอิเล็กทรอนิกส์ เท่านั้น"`
+### 3.4 Cryptographic Hash Manifest Standard (Section 26, 28)
+- Every compiled master dossier is hashed via SHA-256 and MD5 using 64KB chunk binary streaming.
+- Generates official `EVIDENCE_HASH_CERTIFICATE.pdf` and machine-verifiable `.sha256` manifests.
 
 ---
 
@@ -160,10 +154,10 @@ graph TD
 
 | Failure Mode | Trigger Condition | Deterministic Recovery Strategy |
 | :--- | :--- | :--- |
-| **QR Code Unreadable** | Glare, compression artifacts, or partial crop | Fall back immediately to Multi-Pass OCR regex pattern matching (`202\d{15,19}`, `A[A-Za-z0-9]{14,21}`, `N\d{20,26}`) |
-| **Thai Spacing Desync** | Tesseract inserts spaces between glyphs | Execute `t_clean = text.replace(' ', '').lower()` before regex evaluation |
-| **Duplicate Detected** | Ref ID or filename matched in batch or historical log | Annotate in Column 13 with sequence reference, apply visual amber fill, and preserve both records for forensic comparison |
-| **Unrecognized Bank** | Distorted OCR font not matching string patterns | Apply SSOT Account Mapping: Bind target recipient account numbers to bank entities |
+| **High Page Count OOM** | Processing 500+ to 2,800+ pages simultaneously | Stream pages sequentially to tempfile disk images and compile via PyMuPDF C-Binding (`save_pdf_streaming`) |
+| **Context Amnesia** | Agent opening new session / new chat turn | Ingest `LATEST_CHECKPOINT.md` via `tools/open_project_state.py` (0.05s) and resume exact previous state |
+| **QR Code Unreadable** | Glare, compression artifacts, or partial crop | Fall back immediately to Multi-Pass OCR regex pattern matching (`202\d{15,19}`, `A[A-Za-z0-9]{14,21}`) |
+| **Nested A4 Capture** | Phone screenshot pasted inside white document scan | Engage Stage 1 contour bounding box extraction followed by Stage 2 dark band stripping |
 
 <!-- ============================================================================== -->
 <!-- 🏁 END OF PROJECT_FLOW.md                                                     -->

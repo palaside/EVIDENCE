@@ -159,12 +159,15 @@ def main():
         print("   [2] ประมวลผลโหมดแชท  (CHAT MODE)  <- ดึงรูปจาก INBOX_CHATS")
         print("   [3] ประมวลผลแชทคดีจริงรวม 3 เล่ม (EDOK แชทที่ 1, 2, 3)")
         print("   [4] สแกนหาและทำสารบัญสลิป (Forensic Slip Index จากไฟล์ PDF)")
-        print("   [5] เปิดโฟลเดอร์รับไฟล์ (INBOX_SLIPS / INBOX_CHATS)")
-        print("   [6] เปิดโฟลเดอร์ผลลัพธ์ (OUTPUT FOLDER)")
+        print("   [5] สร้างหน้าปกและแทรกสารบัญหน้าแรก (Cover Page & Front Index Merger)")
+        print("   [6] คำนวณรหัสรับรองหลักฐานดิจิทัล (Cryptographic Hash Manifest SHA-256)")
+        print("   [7] เปิดโฟลเดอร์รับไฟล์ (INBOX_SLIPS / INBOX_CHATS)")
+        print("   [8] เปิดโฟลเดอร์ผลลัพธ์ (OUTPUT FOLDER)")
+        print("   [9] ตรวจสอบสถานะและฟื้นคืนชีพความจำ (Open/Resume Session Checkpoint)")
         print("\n   [0] ออกจากโปรแกรม")
         print("=" * 68)
 
-        choice = input("เลือกคำสั่ง [0-6]: ").strip()
+        choice = input("เลือกคำสั่ง [0-9]: ").strip()
 
         if choice == "1":
             run_slip_mode()
@@ -187,10 +190,34 @@ def main():
                 print("[!] ไม่พบไฟล์ที่ระบุ")
             input("\nกด Enter เพื่อกลับสู่เมนูหลัก...")
         elif choice == "5":
+            cover_script = os.path.join(CORE_DIR, "generate_cover_page.py")
+            if os.path.exists(cover_script):
+                subprocess.run([sys.executable, cover_script])
+                open_folder(OUTPUT_DIR)
+            else:
+                print(f"[!] ไม่พบสคริปต์ {cover_script}")
+            input("\nกด Enter เพื่อกลับสู่เมนูหลัก...")
+        elif choice == "6":
+            hash_script = os.path.join(CORE_DIR, "evidence_hash_manifest.py")
+            if os.path.exists(hash_script):
+                print(f"\n[*] กำลังคำนวณค่า SHA-256 สำหรับไฟล์ทั้งหมดใน {OUTPUT_DIR}...")
+                subprocess.run([sys.executable, hash_script, OUTPUT_DIR])
+                open_folder(OUTPUT_DIR)
+            else:
+                print(f"[!] ไม่พบสคริปต์ {hash_script}")
+            input("\nกด Enter เพื่อกลับสู่เมนูหลัก...")
+        elif choice == "7":
             open_folder(INBOX_SLIPS)
             open_folder(INBOX_CHATS)
-        elif choice == "6":
+        elif choice == "8":
             open_folder(OUTPUT_DIR)
+        elif choice == "9":
+            open_script = os.path.join(CORE_DIR, "open_project_state.py")
+            if os.path.exists(open_script):
+                subprocess.run([sys.executable, open_script])
+            else:
+                print(f"[!] ไม่พบสคริปต์ {open_script}")
+            input("\nกด Enter เพื่อกลับสู่เมนูหลัก...")
         elif choice == "0":
             break
 

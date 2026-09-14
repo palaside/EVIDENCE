@@ -443,23 +443,115 @@
 | - กางเกราะคุ้มกัน PDPA (.gitkeep + .gitignore) ใน Dropzones  |
 | - ซิงค์ 7 ไฟล์สถานะเข้า state/ และ Push Git Remote v1.4 Tag  |
 +-------------------------------------------------------------+
+
+                                                  +-------------------------------------------------------------+
+                                                  | 👤 User:                                                    |
+                                                  |                                                             |
+                                                  | ขอพาท หาไม่เจอ                                              |
+                                                  | จะเห็นได้ว่ามีขอบสีเทาทำไมไม่ขยายให้เต็มเพื่อกลบสีเทาออกไปละ|
+                                                  | ถ้าผลงานแบบนี้ ให้เป็นมาตรฐานเลย ติดตั้ง Stage Forensic     |
+                                                  | Smart Zoom & Crop                                           |
+                                                  +-------------------------------------------------------------+
++-------------------------------------------------------------+
+| 🤖 AI Agent (Senior Full-Stack Developer):                  |
+|                                                             |
+| 1. แจ้งตำแหน่งไฟล์พยานหลักฐานจริงใน Folder_Out               |
+| 2. วินิจฉัยขอบสีเทา: เกิดจากการใช้ Median Color ดูดขอบภาพ   |
+| 3. สถาปนามาตรฐาน "Stage Forensic Smart Zoom & Crop":         |
+|    - ใช้พื้นหลัง Pure White `#FFFFFF` 100% ไร้ขอบเทากวนตา    |
+|    - สเกลภาพแนวตั้ง Target Height = 900px บนกระดาษ A4        |
+|    - สไลซ์ขอบขาว A4 ด้านนอกและแถบดำบนล่างด้วยไมโครทริม 2px   |
+| 4. ทดสอบและยืนยันผลลัพธ์ผ่านรูปภาพหลักฐานตัวอย่างสมบูรณ์แบบ |
++-------------------------------------------------------------+
+
+                                                  +-------------------------------------------------------------+
+                                                  | 👤 User:                                                    |
+                                                  |                                                             |
+                                                  | ผมถามนิดนึงถ้าเรามีสกิลเซฟแล้ว ผมว่าเราต้องมีสกิล Open      |
+                                                  | ที่ประมาณว่าเปิดหัวมาแล้ว ก็นำเรื่องของที่เราเซฟล่าสุดมา    |
+                                                  | ลุยต่อ เหมือนไอเอ่นเจนตัวเดิมมาทำงาน คุณคิดว่าไง             |
+                                                  | เห็นชอบ LATEST_CHECKPOINT.md เราจำเป็นต้องใส่ไปใน           |
+                                                  | สกิล เซฟด้วยไหมเพื่อเปิดความเชื่อมโยงและต่อเนื่อง           |
+                                                  +-------------------------------------------------------------+
++-------------------------------------------------------------+
+| 🤖 AI Agent (Senior Full-Stack Developer):                  |
+|                                                             |
+| ติดตั้งสถาปัตยกรรม Immortal Agent Protocol (Twin Engine):    |
+| 1. ออกแบบและติดตั้งสกิล `resume-project-state` (OPEN.md)     |
+| 2. บัญญัติ `LATEST_CHECKPOINT.md` เป็นหัวใจคืนชีพกลาง        |
+|    - อัปเดต `save-project-state` ให้เจน Checkpoint เสมอ      |
+|    - ให้ `resume-project-state` อ่านใน 0.1s ตอนเปิดหัวใหม่  |
+| 3. สร้าง `tools/open_project_state.py` และติดตั้งเป็นทางเลือก|
+|    เมนู [9] ใน `Portable/core/launcher.py` ทันที             |
++-------------------------------------------------------------+
+
+                                                  +-------------------------------------------------------------+
+                                                  | 👤 User:                                                    |
+                                                  |                                                             |
+                                                  | งั้นเรามาลุยโปรเจคเราต่อ ในโหมดสลิป เป็นไฟล์ที่มีสลิปจริงอยู่|
+                                                  | 2700 กว่ารูป ที่ F:\Project\EDOK\Duplicates\Done           |
+                                                  | อยากให้มีทั้ง 3 ระบบ:                                       |
+                                                  | 1. สลิปจริงที่ไม่ซ้ำกัน 560 ใบ (Priority 1) ผ่าน Stage     |
+                                                  |    Forensic Smart Zoom & Crop + รวมเล่ม Master PDF + สรุป   |
+                                                  |    10 คอลัมน์ + DUPLICATE_SLIP_AUDIT_REPORT.xlsx            |
+                                                  | 2. สลิปตามชื่อไฟล์หลัก 1,160 ใบ (Stem Dedup Reference)      |
+                                                  | 3. เรียงทุกไฟล์ทั้งหมด 2,792 หน้า (Full Raw Mode Reference)  |
+                                                  +-------------------------------------------------------------+
++-------------------------------------------------------------+
+| 🤖 AI Agent (Senior Full-Stack Developer):                  |
+|                                                             |
+| ประมวลผลลุล่วงครบถ้วน 100% ทั้ง 3 ระบบตามคำสั่ง:            |
+| 1. System 1 (Master Unique 560 Slips - Priority 1):         |
+|    - รัน Multi-core OCR 6 คอร์ ใช้เวลา 214.5 วินาที         |
+|    - สกัดยอดเงินสำเร็จ 555 ใบ (99.1%) ยอดรวม 1,547,803.68 บ. |
+|    - สร้าง Evidence_Slips_Master_Unique_560.pdf (588 หน้า)  |
+|    - สร้าง DUPLICATE_SLIP_AUDIT_REPORT.xlsx (แยก 2 Sheet:    |
+|      Master 560 สลิป และแจกแจงไฟล์ซ้ำ 2,232 ไฟล์อย่างโปร่งใส) |
+|    - ส่งออก Evidence_Slips_Master_Unique_560.xlsx (10 คอลัมน์) |
+| 2. System 2 (Reference Stems 1,160 Slips):                  |
+|    - ส่งออก Folder_Out/Reference_Archives/                   |
+|      Evidence_Slips_Reference_Stems_1160.pdf (1,160 หน้า)   |
+| 3. System 3 (Reference Raw 2,792 Slips):                    |
+|    - ส่งออก Folder_Out/Reference_Archives/                   |
+|      Evidence_Slips_Reference_Raw_2792.pdf (2,792 หน้า)     |
+| 4. สกิล Only (only-corroborated):                           |
+|    - สกัดคู่แชทสั่งโอน-สลิปจริง พยานแห่งคดีชั้นศาลเรียบร้อย  |
++-------------------------------------------------------------+
+
+                                                  +-------------------------------------------------------------+
+                                                  | 👤 User:                                                    |
+                                                  |                                                             |
+                                                  | เซฟ                                                         |
+                                                  +-------------------------------------------------------------+
++-------------------------------------------------------------+
+| 🤖 AI Agent (Senior Full-Stack Developer):                  |
+|                                                             |
+| รันกระบวนการ `save-project-state` (SAVE.md) v1.5:            |
+| - แช่แข็งสถานะ 3 ระบบสลิป + มาตรฐาน Stage Forensic Smart   |
+|   Zoom & Crop + Immortal Agent Protocol (Twin Engine)       |
+| - อัปเดต 6 เอกสารหลัก + LATEST_CHECKPOINT.md + ซิงค์ state/  |
+| - สำรองขึ้น Git Remote Repository พร้อมบันทึก Checkpoint    |
++-------------------------------------------------------------+
 ```
 
 ---
 
 ## 📌 Context Preservation Metadata
 - **Project Name:** DIGITAL_EVIDENCE
-- **Active Skills & Engines:** `OCR_Slip`, `Border_excel`, `Detail_Data`, `Search_Slip`, `List_names`, `Dicut_Chat`, `slip-block-fit`, `SAVE`, `Portable Launcher`
+- **Active Skills & Engines:** `OCR_Slip`, `Border_excel`, `Detail_Data`, `Search_Slip`, `List_names`, `Dicut_Chat`, `slip-block-fit`, `Stage Forensic Smart Zoom & Crop`, `save-project-state`, `resume-project-state`, `only-corroborated`, `Portable Launcher`
 - **Output Artifacts Delivered:**
-  - `Portable/DIGITAL_EVIDENCE.lnk` (Windows Desktop Shortcut with Custom Icon)
-  - `Portable/DIGITAL_EVIDENCE.bat` (Pure ASCII Zero-Error One-Click Launcher)
-  - `Portable/core/launcher.py` (Native UTF-8 ANSI Terminal UI & Real-time Inbox Scanner)
-  - `Folder_Out/Test_Extraction_KTB_TTB_40Slips.xlsx` (13-Column Forensic Evidence Ledger - Sarabun Center-Aligned Grid)
-  - `Folder_Out/Test_Extraction_KTB_TTB_40Slips.json` (Structured Forensic Slip Data)
-  - `Folder_Out/Evidence_Chat_Master_Combined_Vol1_to_3.pdf` (2,557 Pages Chat Evidence Master)
-  - `Folder_Out/Evidence_Chat_Master_Combined_Vol1_to_3_Slip_Index.xlsx` (Excel Forensic Slip Index with Direct Hyperlinks)
-  - `Folder_Out/Evidence_Chat_Master_Combined_Vol1_to_3_Slip_Index.json` (JSON Master Slip Index)
+  - `Folder_Out/Evidence_Slips_Master_Unique_560.pdf` (588 Pages Master Slip Evidence - 560 Slips + 28 Pages Landscape 10-Column Ledger)
+  - `Folder_Out/Evidence_Slips_Master_Unique_560.xlsx` (10-Column Forensic Master Slip Ledger - Sarabun Center-Aligned Grid)
+  - `Folder_Out/DUPLICATE_SLIP_AUDIT_REPORT.xlsx` (Comprehensive Forensic Duplicate Slip Audit Report: 560 Master Slips vs 2,232 Redundant Duplicates)
+  - `Folder_Out/slips_dedup_manifest.json` (Structured Deduplication Mapping & Metadata)
+  - `Folder_Out/Reference_Archives/Evidence_Slips_Reference_Stems_1160.pdf` (1,160 Pages Reference Stem Archive)
+  - `Folder_Out/Reference_Archives/Evidence_Slips_Reference_Raw_2792.pdf` (2,792 Pages Full Raw Slip Archive)
+  - `Folder_Out/Evidence_Chat_Master_Combined_Vol1_to_3_With_Cover.pdf` (2,562 Pages Chat Evidence with Executive Cover & Page Index)
+  - `Folder_Out/EVIDENCE_HASH_CERTIFICATE.pdf` & `Folder_Out/EVIDENCE_HASH_MANIFEST.sha256` (Court Evidence Integrity Certification)
+  - `Portable/core/open_project_state.py` (Immortal Agent Protocol - State Resurrection Engine)
+  - `LATEST_CHECKPOINT.md` (Resurrection Hook for Seamless Next Session Continuation)
 
 <!-- ============================================================================== -->
 <!-- 🏁 END OF CHAT_HISTORY.md                                                     -->
 <!-- ============================================================================== -->
+

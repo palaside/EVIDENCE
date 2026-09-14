@@ -9,6 +9,7 @@ import os
 import sys
 import re
 import cv2
+import numpy as np
 import json
 import hashlib
 import argparse
@@ -389,6 +390,67 @@ def detect_receiver_bank(text: str) -> str:
 
     return 'บัญชีปลายทาง'
 
+def forensic_smart_zoom_crop(img_bgr, tol=240):
+    """
+    Stage Forensic Smart Zoom & Crop:
+    Pre-processes nested slips (slips pasted on white A4, mobile screenshot bars, dark borders)
+    before OCR & QR detection to eliminate noise and isolate the authentic slip payload.
+    """
+    if img_bgr is None or img_bgr.size == 0:
+        return img_bgr
+    try:
+        h, w = img_bgr.shape[:2]
+        gray = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2GRAY)
+        
+        # --- Stage 1: Strip Outer A4 White Container / Blank Margins ---
+        inner = gray.copy()
+        inner[:3, :] = 255
+        inner[-3:, :] = 255
+        inner[:, :3] = 255
+        inner[:, -3:] = 255
+        mask = (inner < tol).astype(np.uint8)
+        contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        
+        if contours:
+            valid_cnts = [cnt for cnt in contours if cv2.contourArea(cnt) > 200]
+            if valid_cnts:
+                concat_pts = np.vstack(valid_cnts)
+                bx, by, bw, bh = cv2.boundingRect(concat_pts)
+                if (bw * bh) < 0.92 * (w * h) and bw > 100 and bh > 100:
+                    img_bgr = img_bgr[by:by+bh, bx:bx+bw]
+                    gray = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2GRAY)
+                    h, w = img_bgr.shape[:2]
+
+        # --- Stage 2: Mobile Screenshot UI & Dark Bar Elimination ---
+        row_means = np.mean(gray, axis=1)
+        has_dark_top = np.mean(row_means[:min(15, h)]) < 85
+        has_dark_bottom = np.mean(row_means[-min(15, h):]) < 85
+        
+        if has_dark_top or has_dark_bottom:
+            top_cut = 0
+            if has_dark_top:
+                for r in range(10, min(h // 2, 200)):
+                    if np.mean(row_means[r:r+4]) > 115:
+                        top_cut = r
+                        break
+            
+            bottom_cut = h
+            if has_dark_bottom:
+                for r in range(h - 1, max(top_cut + 100, h // 2), -1):
+                    if np.mean(row_means[r-3:r+1]) > 85:
+                        bottom_cut = r + 1
+                        break
+            
+            top_cut = min(top_cut + 2, h - 10)
+            bottom_cut = max(bottom_cut - 2, top_cut + 10)
+            
+            if (bottom_cut - top_cut) >= 150:
+                img_bgr = img_bgr[top_cut:bottom_cut, :]
+                
+        return img_bgr
+    except Exception:
+        return img_bgr
+
 def extract_slip_data(image_input, default_bank: str = None) -> dict:
     """
     Extract 10-column financial evidence data from a bank transfer slip image.
@@ -402,6 +464,9 @@ def extract_slip_data(image_input, default_bank: str = None) -> dict:
     else:
         filename = "memory_image"
         img = image_input
+
+    # Apply Stage Forensic Smart Zoom & Crop standard
+    img = forensic_smart_zoom_crop(img)
 
     data = {
         "filename": filename,

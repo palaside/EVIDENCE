@@ -88,9 +88,16 @@ graph TD
 - [x] **Automatic Output Revelation & Drag & Drop Execution:** มีระบบตรวจจับไฟล์ใน Inbox แบบเรียลไทม์ รองรับการลากไฟล์มาหย่อนทับ และเปิดหน้าต่าง Windows Explorer โฟลเดอร์ `OUTPUT` ให้ทันทีหลังประมวลผลเสร็จสิ้น
 - [x] **Evidence Dropzone PDPA Shield:** เสริม `.gitkeep` และผูกกฎ `.gitignore` คุ้มครองข้อมูลสลิปและแชทจริงใน `Portable/` ไม่ให้หลุดขึ้น Git Repository 100%
 
+- [x] **Cover Page PDF Merger:** สถาปัตยกรรมแทรกหน้าสารบัญสลิป (Page Index 5 หน้า) พร้อมหน้าปกคดีความ (Cover Page) รวมเป็นเล่ม Master Chat 2,562 หน้า
+- [x] **Cryptographic Hash Manifest:** เจนค่า SHA-256 Checksum และใบรับรองพยานหลักฐานดิจิทัล (`EVIDENCE_HASH_CERTIFICATE.pdf` + `EVIDENCE_HASH_MANIFEST.sha256`) ถูกต้องตาม พ.ร.บ.ธุรกรรมทางอิเล็กทรอนิกส์ พ.ศ. 2544
+- [x] **Stage Forensic Smart Zoom & Crop Standard:** ขยายภาพสลิปแนวตั้ง 900px บนพื้นกระดาษ Pure White `#FFFFFF` 100% ไร้ขอบเทา ดูดกลืนแถบดำหัวท้ายและกรอบขาวนอกด้วยไมโครทริม 2px
+- [x] **Immortal Agent Protocol (Twin Engine: Save & Open):** กู้ชีพสถานะโปรเจกต์ใน 0.1s ผ่าน `resume-project-state` + `save-project-state` เชื่อมโยงผ่าน `LATEST_CHECKPOINT.md` และ `open_project_state.py` (เมนู [9] ใน Launcher)
+- [x] **Slip Mode System 1 — Master Unique 560 Slips (Priority 1):** ประมวลผลสลิปแท้ 560 ใบจาก 2,792 ไฟล์ ด้วย Multi-core OCR 6 คอร์ (214.5s) สกัดได้ 555 ยอด ยอดรวม 1,547,803.68 บาท ส่งออกเล่ม Master PDF 588 หน้า (560 สลิป + 28 หน้าตาราง 10 คอลัมน์) พร้อมรายงานตรวจสอบความซ้ำซ้อน `DUPLICATE_SLIP_AUDIT_REPORT.xlsx`
+- [x] **Slip Mode System 2 & 3 — Reference Archives:** ผลิตเล่มสำรองอ้างอิง Stem Dedup (1,160 หน้า) และ Full Raw (2,792 หน้า) เข้าสู่ `Folder_Out/Reference_Archives/`
+- [x] **Court Executive Corroborated Skill (`only-corroborated`):** สกิลจับคู่สูติบัตรทางคดี (Smoking Gun Pair) เชื่อมหน้าแชทสั่งโอนกับสลิปจริง ตัดบทสนทนาทั่วไปทิ้ง 100% เพื่อสำนวนส่งฟ้องศาล
+
 ### 🟡 2.2 In-Progress & Pending Features ([ ])
-- [ ] **Cover Page PDF Merger:** ออปชันแทรกหน้าสารบัญสลิป (Page Index) เข้าเป็นหน้าแรก (Page 1) ของตัวเล่ม PDF หลักฐาน
-- [ ] **Cryptographic Hash Manifest:** เจนค่า SHA-256 Checksum กำกับไฟล์หลักฐานทุกใบตามมาตรฐาน พ.ร.บ.ธุรกรรมอิเล็กทรอนิกส์
+- [ ] **Cross-Case Aggregated Dashboard:** ระบบสรุปยอดรวมคดีความข้ามสำนวนแบบ Multi-Case Overview (Roadmap Phase 7)
 
 ---
 

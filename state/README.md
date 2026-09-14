@@ -80,9 +80,13 @@
   - `Portable/OUTPUT/`: โฟลเดอร์รับไฟล์รายงาน PDF และตารางสารบัญ Excel/JSON
 * **วิธีใช้งาน:**
   1. ดับเบิลคลิกที่ไอคอน `DIGITAL_EVIDENCE.lnk` (หรือ `DIGITAL_EVIDENCE.bat`)
-  2. เลือกเมนูโต้ตอบภาษาไทย [1] ประมวลผลสลิป, [2] ประมวลผลแชท, หรือ [3] ประมวลผลทั้งหมด
+  2. เลือกเมนูโต้ตอบภาษาไทย [1] ประมวลผลสลิป, [2] ประมวลผลแชท, [3] ประมวลผลทั้งหมด, หรือ [9] กู้ชีพสถานะโปรเจกต์ (Immortal Agent Protocol)
   3. ระบบจะทำงานด้วย PyMuPDF C-Binding ความเร็วสูง และเปิดโฟลเดอร์ `OUTPUT` ให้ดูผลลัพธ์ทันที
   4. หรือสามารถ **ลากไฟล์/โฟลเดอร์ภาพสลิปหรือภาพแชท มาหย่อนทับไอคอน** เพื่อสั่งประมวลผลทันทีได้เช่นกัน
+
+### 6. ระบบกู้ชีพสถานะโปรเจกต์ (Immortal Agent Protocol - Open State)
+* **คำสั่งเปิดสถานะ:** `python tools/open_project_state.py` (หรือกดเลือกเมนู [9] ใน Portable Launcher)
+* **ความสามารถ:** อ่าน `LATEST_CHECKPOINT.md` ใน 0.1 วินาที สรุปบริบทค้างงานล่าสุด กฎเหล็ก และงานพร้อมลุยต่อทันที เหมือนเอเจนต์ตัวเดิมมาทำงานโดยผู้ใช้ไม่ต้องเล่าความหลัง
 
 ---
 
@@ -98,22 +102,26 @@
   ├── 🟢 Dicut_Chat: Smart Quiet Zone Detector & Edge Noise Filter
   ├── 🟢 Slip-Block-Fit Protocol (645x890 & 807x1115 Canvas Wallpaper Filler)
   ├── 🟢 Dark Edge Band Strip & Feather Stitching
+  ├── 🟢 Stage Forensic Smart Zoom & Crop (Target Height 900px, Pure White #FFFFFF Canvas)
   └── 🟢 QR Slip Decoding & Bank Classification Pipeline
 
 [Phase 3: Automated Indexing & Forensic Reporting] (Completed & Active)
   ├── 🟢 Search_Slip: Computer Vision Badge & Slip Card Scanner
   ├── 🟢 Post-PDF Transaction Detail Extractor (Tesseract OCR + Regex Engine)
   ├── 🟢 10-Column Forensic Slip Indexing (Excel & JSON Outputs)
+  ├── 🟢 Cover Page Merger (Executive Dossier Cover + 5-Page Slip Index)
+  ├── 🟢 Evidence Hash Certificate & Manifest (พ.ร.บ.ธุรกรรมทางอิเล็กทรอนิกส์ พ.ศ. 2544)
   └── 🟢 Pipeline Hook: Auto-trigger Search_Slip right after PDF generation
 
-[Phase 4: Universal Slip Mode Engine & Forensic Audit] (Completed & Production Ready)
+[Phase 4: Universal Slip Mode Engine & Three-Tier Architecture] (Completed & Production Ready)
   ├── 🟢 OCR_Slip: Morphological Background Subtraction + CLAHE Filter
   ├── 🟢 3-Digit BOT Financial Institution Code Extractor (EMVCo QR Tag 00 -> Sub-tag 01)
   ├── 🟢 SSOT Master Dictionary covering 18 Thai Financial Institutions
-  ├── 🟢 Bank Branch (สาขา) Extraction integrated into Memo
   ├── 🟢 Duplicate Slip & Historical Printed Log Auditor (In-batch + Cross-batch warning)
-  ├── 🟢 13-Column Legal Forensic Ledger with Warning Cell Highlighting
-  └── 🟢 40-Slip Stress Test (KTB 20 + TTB 20) Achieved 100.0% Accuracy
+  ├── 🟢 System 1: Master Unique 560 Slips (Multi-core OCR, 555 valid amounts, 1,547,803.68 THB)
+  ├── 🟢 System 1: DUPLICATE_SLIP_AUDIT_REPORT.xlsx (560 Masters vs 2,232 Duplicates)
+  ├── 🟢 Systems 2 & 3: Reference Stems (1,160 Slips) & Full Raw (2,792 Slips) Archives
+  └── 🟢 Skill Only: Corroborated Evidence Extraction (Court Executive Edition)
 
 [Phase 5: Legal Evidence Table Grid Layout & Typography] (Completed & Enforced)
   ├── 🟢 Chat Evidence Blueprint Alignment: Exact layout matching Chat_Evidence+Automation+excel+AGENTS.md
@@ -124,9 +132,10 @@
   ├── 🟢 A4 Landscape Sheet Setup: Standardized print dimensions, margins, and 20-row page breaks
   └── 🟢 Centered Legal Disclaimer: 3-line statutory non-modification disclaimer at table footer
 
-[Phase 6: Archiving, Security & Memory Governance] (Completed & Maintained)
+[Phase 6: Immortal Protocol, Archiving, Security & Memory Governance] (Completed & Maintained)
+  ├── 🟢 Immortal Agent Protocol (Twin Engine: save-project-state + resume-project-state)
+  ├── 🟢 LATEST_CHECKPOINT.md: Real-time Resurrection Anchor File
   ├── 🟢 Batch Timestamped Preservation (`processed/Case_{ID}/Batch_{TS}/`)
-  ├── 🟢 Non-Destructive Orphan Cleanup (`_archive/orphaned_cleanup_20260913/`)
   ├── 🟢 Strict Zero-Guessing Honesty Rule in Constitutional Governance (`AGENTS.md`)
   └── 🟢 Persistent Agent Memory & Mistakes Tracking (`memory/behavior.json`, `memory/mistakes.md`)
 ```

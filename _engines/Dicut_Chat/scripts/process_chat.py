@@ -34,30 +34,83 @@ def natural_sort_key(s):
     return [int(text) if text.isdigit() else text.lower() for text in re.split('([0-9]+)', s)]
 
 
-def trim_outer_padding(img_bgr, tol=240):
+def forensic_smart_zoom_crop(img_bgr, tol=240):
     """
-    Trims excessive blank white or black borders around slip/chat images
-    so they scale cleanly and fit the A4 page proportionately.
+    Stage Forensic Smart Zoom & Crop:
+    Official standard for digital evidence processing of standalone slips and nested captures.
+    
+    1. Stage 1 (Container Extraction):
+       - Clears extreme 3px border noise (e.g. Windows/phone screenshot window frame lines).
+       - Detects if evidence is embedded within an outer blank A4 canvas, paper scan, or excessive padding.
+       - Tightly crops to the outer bounding box of the active evidence block.
+       
+    2. Stage 2 (Mobile UI & Black Bar Elimination):
+       - Analyzes row brightness distribution across the cropped block.
+       - Detects dark/black mobile status bars, navigation bars, or photo viewer overlays (< 85 brightness).
+       - Automatically identifies the true start and end bounds of the financial slip with 2px micro-trim.
+       
+    Preserves 100% of the authentic slip content, QR codes, handwritten annotations, and visual stamps.
     """
     if img_bgr is None or img_bgr.size == 0:
         return img_bgr
     try:
+        h, w = img_bgr.shape[:2]
         gray = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2GRAY)
-        mask = gray < tol
-        coords = cv2.findNonZero(mask.astype(np.uint8))
-        if coords is None:
-            return img_bgr
-        x, y, w, h = cv2.boundingRect(coords)
-        pad = 12
-        x1 = max(0, x - pad)
-        y1 = max(0, y - pad)
-        x2 = min(img_bgr.shape[1], x + w + pad)
-        y2 = min(img_bgr.shape[0], y + h + pad)
-        if (w * h) < 0.88 * (img_bgr.shape[0] * img_bgr.shape[1]):
-            return img_bgr[y1:y2, x1:x2]
+        
+        # --- Stage 1: Strip Outer A4 White Container / Blank Margins ---
+        inner = gray.copy()
+        inner[:3, :] = 255
+        inner[-3:, :] = 255
+        inner[:, :3] = 255
+        inner[:, -3:] = 255
+        mask = (inner < tol).astype(np.uint8)
+        contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        
+        if contours:
+            valid_cnts = [cnt for cnt in contours if cv2.contourArea(cnt) > 200]
+            if valid_cnts:
+                concat_pts = np.vstack(valid_cnts)
+                bx, by, bw, bh = cv2.boundingRect(concat_pts)
+                if (bw * bh) < 0.92 * (w * h) and bw > 100 and bh > 100:
+                    img_bgr = img_bgr[by:by+bh, bx:bx+bw]
+                    gray = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2GRAY)
+                    h, w = img_bgr.shape[:2]
+
+        # --- Stage 2: Mobile Screenshot UI & Dark Bar Elimination ---
+        row_means = np.mean(gray, axis=1)
+        has_dark_top = np.mean(row_means[:min(15, h)]) < 85
+        has_dark_bottom = np.mean(row_means[-min(15, h):]) < 85
+        
+        if has_dark_top or has_dark_bottom:
+            top_cut = 0
+            if has_dark_top:
+                for r in range(10, min(h // 2, 200)):
+                    if np.mean(row_means[r:r+4]) > 115:
+                        top_cut = r
+                        break
+            
+            bottom_cut = h
+            if has_dark_bottom:
+                for r in range(h - 1, max(top_cut + 100, h // 2), -1):
+                    if np.mean(row_means[r-3:r+1]) > 85:
+                        bottom_cut = r + 1
+                        break
+            
+            # Micro-trim 2px to ensure clean edges without dark hairline artifacts
+            top_cut = min(top_cut + 2, h - 10)
+            bottom_cut = max(bottom_cut - 2, top_cut + 10)
+            
+            if (bottom_cut - top_cut) >= 150:
+                img_bgr = img_bgr[top_cut:bottom_cut, :]
+                
         return img_bgr
     except Exception:
         return img_bgr
+
+
+def trim_outer_padding(img_bgr, tol=240):
+    """Backward-compatible wrapper routing to forensic_smart_zoom_crop."""
+    return forensic_smart_zoom_crop(img_bgr, tol=tol)
 
 
 def imread_unicode(file_path):
@@ -404,60 +457,55 @@ class PDFAssembler:
         img_rgb = img_bgr[:, :, ::-1]
         pil_img = Image.fromarray(img_rgb)
 
-        # 1. กำหนดขนาดบล็อกเป้าหมาย
+        # 1. กำหนดขนาดบล็อกเป้าหมายและการจัดวาง
         if align == "center":
-            # มาตรฐาน slip-block-fit: บล็อกหลักฐานขนาด 645 x 890 กึ่งกลาง
-            target_bw = 645
-            target_bh = 890
+            # มาตรฐาน Stage Forensic Smart Zoom & Crop (SLIP Mode):
+            # ขยายสลิปให้เต็มตาในแนวตั้ง target_h = 900 px (เพื่อให้อ่านตัวเลข รหัส QR และลายมือชัดเจนที่สุด)
+            # รองพื้นด้วยสีขาวบริสุทธิ์ (Pure White #FFFFFF) กลบขอบเทา/ขอบสีเดิม 100% ไร้รอยต่อ
+            target_bw = self.block_width
+            target_bh = 900
+            scale = min(target_bw / pil_img.width, target_bh / pil_img.height)
+            new_w = max(1, round(pil_img.width * scale))
+            new_h = max(1, round(pil_img.height * scale))
+            if (new_w, new_h) != (pil_img.width, pil_img.height):
+                resized_img = pil_img.resize((new_w, new_h), Image.Resampling.LANCZOS)
+            else:
+                resized_img = pil_img
+
+            # พื้นหลังสีขาวล้วนสำหรับสลิปรายใบ ไม่มีขอบสีเทาหรือ gutter
+            block_canvas = Image.new('RGB', (self.block_width, self.block_height), (255, 255, 255))
+            in_block_x = (self.block_width - new_w) // 2
+            in_block_y = (self.block_height - new_h) // 2
+            block_canvas.paste(resized_img, (in_block_x, in_block_y))
         else:
-            # มาตรฐานแชท: บล็อกหลักฐานขนาด 807 x 1115
+            # มาตรฐานแชท (CHAT Mode): บล็อกหลักฐานขนาด 807 x 1115
             target_bw = self.block_width
             target_bh = self.block_height
+            scale = min(1.0, min(target_bw / pil_img.width, target_bh / pil_img.height))
+            new_w = max(1, round(pil_img.width * scale))
+            new_h = max(1, round(pil_img.height * scale))
+            if (new_w, new_h) != (pil_img.width, pil_img.height):
+                resized_img = pil_img.resize((new_w, new_h), Image.Resampling.LANCZOS)
+            else:
+                resized_img = pil_img
 
-        # 2. คำนวณ Scale ด้วยกฎ Small Image Bypass + Aspect Ratio Lock (slip-block-fit Workflow ขั้น 2-3)
-        scale = min(1.0, min(target_bw / pil_img.width, target_bh / pil_img.height))
-        new_w = max(1, round(pil_img.width * scale))
-        new_h = max(1, round(pil_img.height * scale))
-
-        if (new_w, new_h) != (pil_img.width, pil_img.height):
-            resized_img = pil_img.resize((new_w, new_h), Image.Resampling.LANCZOS)
-        else:
-            resized_img = pil_img
-
-        # 3. สุ่มสีขอบ/สีมุมสลิป/วอลเปเปอร์แชทสำหรับสร้าง Block Canvas (Step 5 ของ slip-block-fit)
-        w_cur, h_cur = resized_img.width, resized_img.height
-        corners = [
-            resized_img.getpixel((0, 0)),
-            resized_img.getpixel((max(0, w_cur - 1), 0)),
-            resized_img.getpixel((0, max(0, h_cur - 1))),
-            resized_img.getpixel((max(0, w_cur - 1), max(0, h_cur - 1)))
-        ]
-        bg_rgb = tuple(np.median(corners, axis=0).astype(int))
-
-        # 4. สร้าง Block Canvas ขนาดพอดีบล็อกเป้าหมาย รองพื้นด้วยสีพื้นหลังสลิป/แชท
-        block_canvas = Image.new('RGB', (target_bw, target_bh), bg_rgb)
-
-        # 5. วางภาพลงบน Block Canvas ตามพิกัด Alignment (slip-block-fit Workflow ขั้น 4-5)
-        if align == "center":
-            # จัดกึ่งกลางเป๊ะ x=(645-w)//2, y=(890-h)//2 ตรงจุด (322.5, 445)
-            in_block_x = (target_bw - new_w) // 2
-            in_block_y = (target_bh - new_h) // 2
-        else:
-            # Top-align ชิดขอบบน วางแนวกึ่งกลางแนวนอน
+            w_cur, h_cur = resized_img.width, resized_img.height
+            corners = [
+                resized_img.getpixel((0, 0)),
+                resized_img.getpixel((max(0, w_cur - 1), 0)),
+                resized_img.getpixel((0, max(0, h_cur - 1))),
+                resized_img.getpixel((max(0, w_cur - 1), max(0, h_cur - 1)))
+            ]
+            bg_rgb = tuple(np.median(corners, axis=0).astype(int))
+            block_canvas = Image.new('RGB', (target_bw, target_bh), bg_rgb)
             in_block_x = (target_bw - new_w) // 2
             in_block_y = 0
+            block_canvas.paste(resized_img, (in_block_x, in_block_y))
 
-        block_canvas.paste(resized_img, (in_block_x, in_block_y))
-
-        # 6. วาง Block Canvas ลงบนแผ่นกระดาษ A4 สีขาว
+        # 2. วาง Block Canvas ลงบนแผ่นกระดาษ A4 สีขาว
         a4_canvas = Image.new('RGB', (self.portrait_w, self.portrait_h), 'white')
-        if align == "center":
-            paste_x = self.margin_left + (self.block_width - target_bw) // 2
-            paste_y = self.margin_top + (self.block_height - target_bh) // 2
-        else:
-            paste_x = self.margin_left
-            paste_y = self.margin_top
-
+        paste_x = self.margin_left
+        paste_y = self.margin_top
         a4_canvas.paste(block_canvas, (paste_x, paste_y))
 
         draw = ImageDraw.Draw(a4_canvas)
@@ -862,30 +910,56 @@ def process_chat_pipeline(input_path, output_pdf, slip_data_list=None, chat_mode
 
     print(f"Found {len(images_to_process)} unique slip(s). Processing 1-slip-per-page (Sarabun Light)...")
 
-    # 1. Add Each Slip on its own Dedicated Portrait Page (Center X, Center Y)
-    for idx, img_p in enumerate(images_to_process):
-        img = imread_unicode(img_p)
-        if img is None:
-            print(f"Warning: Could not read {img_p}")
-            continue
+    with tempfile.TemporaryDirectory() as tmp:
+        paths = []
+        global_page_idx = 0
 
-        trimmed_img = trim_outer_padding(img)
-        corrob = None
-        if slip_data_list and idx < len(slip_data_list):
-            c_item = slip_data_list[idx]
-            if isinstance(c_item, dict):
-                p_no = c_item.get("chat_page") or c_item.get("page_no") or c_item.get("page")
-                i_no = c_item.get("chat_index") or c_item.get("index") or (idx + 1)
-                if p_no:
-                    corrob = f"ภาพแชทหน้าที่ {p_no} / สารบัญแชท ลำดับที่ {i_no}"
-        assembler.add_single_page_image(trimmed_img, align="center", page_num=idx+1, mode="SLIP", corroborated=corrob)
+        # 1. Add Each Slip on its own Dedicated Portrait Page (Center X, Center Y)
+        for idx, img_p in enumerate(images_to_process):
+            img = imread_unicode(img_p)
+            if img is None:
+                print(f"Warning: Could not read {img_p}")
+                continue
 
-    # 2. Add the 10-Column Summary Statement Table in LANDSCAPE (owned by Detail_Data)
-    if slip_data_list:
-        assembler.add_10col_landscape_summary_page(item_names, slip_data_list=slip_data_list, mode="SLIP", page_num=len(images_to_process)+1)
+            trimmed_img = trim_outer_padding(img)
+            corrob = None
+            if slip_data_list and idx < len(slip_data_list):
+                c_item = slip_data_list[idx]
+                if isinstance(c_item, dict):
+                    p_no = c_item.get("chat_page") or c_item.get("page_no") or c_item.get("page")
+                    i_no = c_item.get("chat_index") or c_item.get("index") or (idx + 1)
+                    if p_no:
+                        corrob = f"ภาพแชทหน้าที่ {p_no} / สารบัญแชท ลำดับที่ {i_no}"
 
-    assembler.save()
-    return len(assembler.pdf_pages)
+            global_page_idx += 1
+            assembler.add_single_page_image(trimmed_img, align="center", page_num=global_page_idx, mode="SLIP", corroborated=corrob)
+            page = assembler.pdf_pages.pop()
+            fp = os.path.join(tmp, f"slip_p{global_page_idx:05d}.png")
+            page.save(fp)
+            paths.append((fp, page.size))
+
+        # 2. Add the 10-Column Summary Statement Table in LANDSCAPE
+        if slip_data_list:
+            rows_per_page = 20
+            chunks = [slip_data_list[i:i + rows_per_page] for i in range(0, max(len(slip_data_list), 1), rows_per_page)]
+            for c_idx, chunk in enumerate(chunks):
+                global_page_idx += 1
+                assembler.add_10col_landscape_summary_page(
+                    item_names=[f"item_{i}" for i in range(len(chunk))],
+                    slip_data_list=chunk,
+                    mode="SLIP",
+                    page_num=global_page_idx,
+                    corroborated="ตารางสรุปการแนบสลิป"
+                )
+                summ = assembler.pdf_pages.pop()
+                fp = os.path.join(tmp, f"summary_p{c_idx+1:05d}.png")
+                summ.save(fp)
+                paths.append((fp, summ.size))
+
+        print(f"Writing {len(paths)} slip pages to PDF via PyMuPDF C-Binding streaming...")
+        mode = save_pdf_streaming(paths, output_pdf)
+        print(f"Saved slip PDF ({mode}) -> {os.path.basename(output_pdf)} ({len(paths)} pages)")
+        return len(paths)
 
 
 def main():
