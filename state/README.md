@@ -71,7 +71,18 @@
   - ผสานภาพด้วย 12px Feather Stitching + ตัดหน้าด้วย Quiet Zone Lookahead 1.30x (Pack-to-Bottom ไม่ผ่ากลางตัวหนังสือ)
   - Auto-Audit ตรวจสอบความปลอดภัย 100% ทุกหน้า
   - สแกนสกัดตำแหน่งหน้าสลิปด้วย `Search_Slip` ส่งออกตารางสารบัญ 10 คอลัมน์ (Excel + JSON ฟอนต์ Sarabun จัดกึ่งกลาง)
-  - รวมเล่ม Master PDF ทั้งหมดเข้าด้วยกัน (`Evidence_Chat_Master_Combined_Vol1_to_3.pdf`) และเปิดโฟลเดอร์ผลลัพธ์ให้ทันที
+### 5. ชุดโปรแกรมแบบพกพาพร้อมใช้คลิกเดียว (Portable Standalone Suite)
+* **โฟลเดอร์โปรแกรม:** [`Portable/`](file:///d:/Project/DIGITAL_EVIDENCE/Portable)
+* **ไอคอนคลิกเดียว:** [`Portable/DIGITAL_EVIDENCE.lnk`](file:///d:/Project/DIGITAL_EVIDENCE/Portable/DIGITAL_EVIDENCE.lnk) (หรือ [`DIGITAL_EVIDENCE.bat`](file:///d:/Project/DIGITAL_EVIDENCE/Portable/DIGITAL_EVIDENCE.bat))
+* **โครงสร้างโฟลเดอร์หยอดไฟล์:**
+  - `Portable/INBOX_SLIPS/`: โฟลเดอร์หยอดไฟล์ภาพสลิปเดี่ยว
+  - `Portable/INBOX_CHATS/`: โฟลเดอร์หยอดไฟล์ภาพแคปแชทยาว
+  - `Portable/OUTPUT/`: โฟลเดอร์รับไฟล์รายงาน PDF และตารางสารบัญ Excel/JSON
+* **วิธีใช้งาน:**
+  1. ดับเบิลคลิกที่ไอคอน `DIGITAL_EVIDENCE.lnk` (หรือ `DIGITAL_EVIDENCE.bat`)
+  2. เลือกเมนูโต้ตอบภาษาไทย [1] ประมวลผลสลิป, [2] ประมวลผลแชท, หรือ [3] ประมวลผลทั้งหมด
+  3. ระบบจะทำงานด้วย PyMuPDF C-Binding ความเร็วสูง และเปิดโฟลเดอร์ `OUTPUT` ให้ดูผลลัพธ์ทันที
+  4. หรือสามารถ **ลากไฟล์/โฟลเดอร์ภาพสลิปหรือภาพแชท มาหย่อนทับไอคอน** เพื่อสั่งประมวลผลทันทีได้เช่นกัน
 
 ---
 

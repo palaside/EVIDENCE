@@ -82,6 +82,11 @@ graph TD
 - [x] **Dynamic Corroboration for Chat Mode:** แยกสถานะอัตโนมัติ: หน้าคุยปกติแสดง `CORROBORATED : บทสนทนาต่อเนื่อง` และหน้าที่ตรวจพบสลิปแสดง `CORROBORATED : สลิปหลักฐานหน้าที่ [X] / สารบัญการเงิน ลำดับที่ [Y]`
 - [x] **Chat Mode Landscape Summary Statement (A4 ต่อท้ายเล่มแชท):** เพิ่มใบสรุปต่อท้ายเล่มแชทอัตโนมัติ ตัดกล่องแบนเนอร์ชื่อตารางออกตามสั่ง เริ่มตารางทันทีใต้ Ribbon หัวกระดาษ `MODE : CHAT` + `CORROBORATED : ตารางสรุปการแนบสลิป` พร้อมตาราง 10 คอลัมน์ตรงตามรูปที่ 2 (คอลัมน์แรก `หน้าระบุสลิป` ไฮไลต์สีทอง/อำพัน) แบ่งหน้าละ 20 แถว
 - [x] **Header Mode Consistency Standard:** บังคับค่า `MODE : ` ให้มีเพียง `SLIP` หรือ `CHAT` เท่านั้น (ตัดคำว่า `SUMMARY` และ `(SUMMARY)` ออกทั้งหมด) รักษากฎความเป็นเอกภาพ 100%
+- [x] **Portable Standalone Suite (`Portable/`):** ชุดโปรแกรมแบบพกพา Standalone Folder คัดลอกไปรันที่ไหนก็ได้ มีโฟลเดอร์หยอดไฟล์ `INBOX_SLIPS`, `INBOX_CHATS`, และ `OUTPUT` ชัดเจน
+- [x] **Pure ASCII Windows Batch + Native UTF-8 Launcher (`DIGITAL_EVIDENCE.bat` & `launcher.py`):** สถาปัตยกรรม .bat แบบ Pure ASCII 100% ส่งต่อให้ Python Reconfigure UTF-8 แสดงผลเมนู ANSI ภาษาไทยสวยงาม ปลอดภัยจากปัญหา Windows CMD Multi-byte Encoding Error
+- [x] **Desktop Shortcut with Multi-Resolution Icon (`DIGITAL_EVIDENCE.lnk` & `app_icon.ico`):** สร้างชอร์ตคัต Windows พร้อมไอคอนโลโก้หลักฐานดิจิทัลหลายขนาด (16x16 ถึง 256x256) ดับเบิลคลิกเปิดได้ทันทีเหมือนโปรแกรมทั่วไป
+- [x] **Automatic Output Revelation & Drag & Drop Execution:** มีระบบตรวจจับไฟล์ใน Inbox แบบเรียลไทม์ รองรับการลากไฟล์มาหย่อนทับ และเปิดหน้าต่าง Windows Explorer โฟลเดอร์ `OUTPUT` ให้ทันทีหลังประมวลผลเสร็จสิ้น
+- [x] **Evidence Dropzone PDPA Shield:** เสริม `.gitkeep` และผูกกฎ `.gitignore` คุ้มครองข้อมูลสลิปและแชทจริงใน `Portable/` ไม่ให้หลุดขึ้น Git Repository 100%
 
 ### 🟡 2.2 In-Progress & Pending Features ([ ])
 - [ ] **Cover Page PDF Merger:** ออปชันแทรกหน้าสารบัญสลิป (Page Index) เข้าเป็นหน้าแรก (Page 1) ของตัวเล่ม PDF หลักฐาน

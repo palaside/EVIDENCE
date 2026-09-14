@@ -56,6 +56,8 @@ graph TD
     subgraph INGESTION ["📥 1. Ingestion Layer"]
         InChat["EVIDENCE_CHAT_IN/"]
         InSlip["EVIDENCE_IN/"]
+        PortableSlips["Portable/INBOX_SLIPS/"]
+        PortableChats["Portable/INBOX_CHATS/"]
         ExtFolder["External Repositories (e.g. F:/Project/EDOK/)"]
     end
 

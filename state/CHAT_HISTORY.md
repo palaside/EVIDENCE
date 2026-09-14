@@ -393,14 +393,67 @@
 | - ซิงค์ 7 ไฟล์หลักลง `state/` + Git Commit & Tag v1.3       |
 | - สำรองขึ้น GitHub Remote `palaside/EVIDENCE` สมบูรณ์        |
 +-------------------------------------------------------------+
+
+                                                  +-------------------------------------------------------------+
+                                                  | 👤 User:                                                    |
+                                                  |                                                             |
+                                                  | - ถามเจาะลึก PyMuPDF C-Binding vs Hot Folder Event-Driven    |
+                                                  | - เปรียบเทียบทำ Web App มาตรฐาน vs ไม่มาตรฐาน (v0 ถึง Prod)  |
+                                                  | - เสนอให้ห่อเป็น Portable Standalone Folder + Launcher .bat |
+                                                  |   พร้อมไอคอนใน D:\Project\DIGITAL_EVIDENCE\Portable         |
+                                                  +-------------------------------------------------------------+
++-------------------------------------------------------------+
+| 🤖 AI Agent (Senior Full-Stack Developer):                  |
+|                                                             |
+| 1. อธิบายความเร็วระดับ C-Memory Pointer vs IO File Events   |
+| 2. ตารางเปรียบเทียบ Web App มาตรฐาน vs สแตนอโลน 8 มิติ      |
+| 3. เนรมิต `Portable/` Suite สมบูรณ์แบบ:                      |
+|    - กล่องหยอดไฟล์ INBOX_SLIPS, INBOX_CHATS, OUTPUT         |
+|    - สคริปต์เอนจินแกนกลาง core/ + ไอคอนหลายขนาด app_icon.ico|
+|    - Windows Shortcut DIGITAL_EVIDENCE.lnk สวยงามพร้อมใช้   |
++-------------------------------------------------------------+
+
+                                                  +-------------------------------------------------------------+
+                                                  | 👤 User:                                                    |
+                                                  |                                                             |
+                                                  | ทดสอบกด DIGITAL_EVIDENCE.lnk แล้วเจอหน้าต่างแจ้ง error CMD |
+                                                  | และถามว่าถ้าหยอดไฟล์ในโหมดสลิป/แชท แล้วจะออก OUTPUT ไหม      |
+                                                  +-------------------------------------------------------------+
++-------------------------------------------------------------+
+| 🤖 AI Agent (Senior Full-Stack Developer):                  |
+|                                                             |
+| 1. แก้บั๊ก Windows CMD Encoding (chcp 65001 multibyte crash):|
+|    - แปลง DIGITAL_EVIDENCE.bat เป็น Pure ASCII 100%          |
+|    - ย้าย Terminal UI ไปรันบน Python UTF-8 (launcher.py)     |
+| 2. ยืนยันกระบวนการทำงาน: หยอดไฟล์ใน INBOX_SLIPS/INBOX_CHATS |
+|    กดรันระบบจะสแกน สร้าง PDF + Excel ลง OUTPUT ให้อัตโนมัติ  |
+|    พร้อมเด้งหน้าต่างโฟลเดอร์ผลลัพธ์ทันที                     |
++-------------------------------------------------------------+
+
+                                                  +-------------------------------------------------------------+
+                                                  | 👤 User:                                                    |
+                                                  |                                                             |
+                                                  | เซฟ                                                         |
+                                                  +-------------------------------------------------------------+
++-------------------------------------------------------------+
+| 🤖 AI Agent (Senior Full-Stack Developer):                  |
+|                                                             |
+| บันทึกสถานะ Immortal Project Protocol v1.4:                  |
+| - แช่แข็งชุดโปรแกรม Portable Suite + One-Click Launcher      |
+| - กางเกราะคุ้มกัน PDPA (.gitkeep + .gitignore) ใน Dropzones  |
+| - ซิงค์ 7 ไฟล์สถานะเข้า state/ และ Push Git Remote v1.4 Tag  |
++-------------------------------------------------------------+
 ```
 
 ---
 
 ## 📌 Context Preservation Metadata
 - **Project Name:** DIGITAL_EVIDENCE
-- **Active Skills & Engines:** `OCR_Slip`, `Border_excel`, `Detail_Data`, `Search_Slip`, `List_names`, `Dicut_Chat`, `slip-block-fit`, `SAVE`
+- **Active Skills & Engines:** `OCR_Slip`, `Border_excel`, `Detail_Data`, `Search_Slip`, `List_names`, `Dicut_Chat`, `slip-block-fit`, `SAVE`, `Portable Launcher`
 - **Output Artifacts Delivered:**
+  - `Portable/DIGITAL_EVIDENCE.lnk` (Windows Desktop Shortcut with Custom Icon)
+  - `Portable/DIGITAL_EVIDENCE.bat` (Pure ASCII Zero-Error One-Click Launcher)
+  - `Portable/core/launcher.py` (Native UTF-8 ANSI Terminal UI & Real-time Inbox Scanner)
   - `Folder_Out/Test_Extraction_KTB_TTB_40Slips.xlsx` (13-Column Forensic Evidence Ledger - Sarabun Center-Aligned Grid)
   - `Folder_Out/Test_Extraction_KTB_TTB_40Slips.json` (Structured Forensic Slip Data)
   - `Folder_Out/Evidence_Chat_Master_Combined_Vol1_to_3.pdf` (2,557 Pages Chat Evidence Master)

@@ -22,6 +22,12 @@ Folder_Out/*
 !Folder_Out/.gitkeep
 _archive/
 กอง B สลิปเดี่ยว/
+Portable/INBOX_SLIPS/*
+!Portable/INBOX_SLIPS/.gitkeep
+Portable/INBOX_CHATS/*
+!Portable/INBOX_CHATS/.gitkeep
+Portable/OUTPUT/*
+!Portable/OUTPUT/.gitkeep
 
 # Log & Temporary Files
 *.log

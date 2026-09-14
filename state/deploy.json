@@ -1,6 +1,6 @@
 {
   "project_name": "DIGITAL_EVIDENCE",
-  "version": "1.0.0",
+  "version": "1.4.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/palaside/EVIDENCE.git",
@@ -13,15 +13,26 @@
     "ocr_engine": "Tesseract OCR (tha+eng)",
     "pdf_engine": "PyMuPDF (fitz) C-Binding (Default Standard)",
     "launchers": [
+      "Portable/DIGITAL_EVIDENCE.bat",
       "RUN_SLIP_EXTRACTOR.bat",
       "RUN_CHAT_EVIDENCE_PROCESSOR.bat"
     ],
+    "portable_suite": {
+      "path": "Portable/",
+      "launcher": "Portable/DIGITAL_EVIDENCE.bat",
+      "shortcut": "Portable/DIGITAL_EVIDENCE.lnk",
+      "icon": "Portable/core/assets/app_icon.ico",
+      "inbox_slips": "Portable/INBOX_SLIPS",
+      "inbox_chats": "Portable/INBOX_CHATS",
+      "output": "Portable/OUTPUT"
+    },
     "startup_installer": "install_startup.bat"
   },
   "storage": {
     "inbox": "EVIDENCE_IN",
+    "chat_inbox": "EVIDENCE_CHAT_IN",
     "outbox": "Folder_Out",
     "state": "state"
   },
-  "updated_at": "2026-09-14T16:38:00+07:00"
+  "updated_at": "2026-09-14T20:41:00+07:00"
 }

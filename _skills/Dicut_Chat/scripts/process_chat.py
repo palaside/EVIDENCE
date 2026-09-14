@@ -375,6 +375,7 @@ class PDFAssembler:
             r"C:\Users\EVE\OneDrive\เดสก์ท็อป\EVIDENCE.png",
             r"C:\Users\EVE\OneDrive\เดสก์ท็อป\EVIDENCE.jpg",
             r"C:\Users\EVE\OneDrive\เดสก์ท็อป\unnamed.png",
+            os.path.join(os.path.dirname(__file__), "assets", "EVIDENCE.png"),
             os.path.join(os.path.dirname(__file__), "..", "assets", "EVIDENCE.png"),
             os.path.join(os.path.dirname(__file__), "..", "assets", "EVIDENCE.jpg"),
         ]
