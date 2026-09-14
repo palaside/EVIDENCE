@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Slip Reader MVP</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+
+<body>
+  <div id="app" class="glass-container">
+    <!-- Sidebar History -->
+    <aside id="history-sidebar" class="sidebar glass">
+      <h2>History</h2>
+      <ul id="history-list"></ul>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content glass">
+      <!-- Upload Area -->
+      <section id="upload-section" class="section glass">
+        <h2>Upload Slip</h2>
+        <div id="upload-area" class="upload-dropzone" title="Drag & drop an image or click to browse">
+          <p>Drag & drop image here<br />or</p>
+          <button id="browse-button" class="btn">Browse</button>
+          <input type="file" id="file-input" accept="image/*" style="display:none" />
+        </div>
+        <button id="reset-button" class="btn secondary" title="Reset current slip">Reset</button>
+        <button id="clear-button" class="btn secondary" title="Clear all history">Clear History</button>
+      </section>
+
+      <!-- Image Preview -->
+      <section id="preview-section" class="section glass hidden">
+        <h2>Image Preview</h2>
+        <div class="image-wrapper">
+          <img id="image-preview" src="" alt="Slip preview" />
+        </div>
+      </section>
+
+      <!-- OCR Result Panel -->
+      <section id="ocr-section" class="section glass hidden">
+        <h2>OCR Result</h2>
+        <form id="ocr-form" class="ocr-form">
+          <div class="form-group">
+            <label for="field-date">Date</label>
+            <input type="text" id="field-date" name="date" />
+          </div>
+          <div class="form-group">
+            <label for="field-time">Time</label>
+            <input type="text" id="field-time" name="time" />
+          </div>
+          <div class="form-group">
+            <label for="field-amount">Amount</label>
+            <input type="text" id="field-amount" name="amount" />
+          </div>
+          <div class="form-group">
+            <label for="field-reference">Reference</label>
+            <input type="text" id="field-reference" name="reference" />
+          </div>
+          <div class="form-group">
+            <label for="field-payer">Payer</label>
+            <input type="text" id="field-payer" name="payer" />
+          </div>
+          <div class="form-group">
+            <label for="field-payee">Payee</label>
+            <input type="text" id="field-payee" name="payee" />
+          </div>
+        </form>
+      </section>
+
+      <!-- Validation Panel -->
+      <section id="validation-section" class="section glass hidden">
+        <h2>Validation & Confidence</h2>
+        <div id="validation-list" class="validation-list"></div>
+      </section>
+
+      <!-- Export Buttons -->
+      <section id="export-section" class="section glass hidden">
+        <h2>Export</h2>
+        <button id="export-excel" class="btn" title="Export to Excel (.xlsx)">Export Excel</button>
+        <button id="export-csv" class="btn" title="Export to CSV">Export CSV</button>
+        <button id="export-json" class="btn" title="Export to JSON">Export JSON</button>
+      </section>
+
+      <!-- Status Bar -->
+      <section id="status-bar" class="status-bar glass">
+        <span id="status-message">Ready</span>
+      </section>
+    </main>
+  </div>
+
+  <!-- Toast Container -->
+  <div id="toast-container" class="toast-container"></div>
+
+  <div id="loading-overlay" class="hidden">Loading...</div>
+  <div id="confirm-dialog" class="hidden">
+    <div class="dialog-box">
+      <p id="confirm-message">Are you sure?</p>
+      <button id="confirm-yes" class="btn">Yes</button>
+      <button id="confirm-no" class="btn secondary">No</button>
+    </div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@4.0.2/dist/tesseract.min.js"></script>
+  <script src="app.js"></script>
+</body>
+
+</html>

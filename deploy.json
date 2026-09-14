@@ -1,0 +1,23 @@
+{
+  "project_name": "DIGITAL_EVIDENCE",
+  "version": "1.0.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/palaside/EVIDENCE.git",
+    "branch": "main",
+    "remote": "origin"
+  },
+  "runtime": {
+    "python": ">=3.10",
+    "dependencies_file": "requirements.txt",
+    "ocr_engine": "Tesseract OCR (tha+eng)",
+    "launcher": "RUN_SLIP_EXTRACTOR.bat",
+    "startup_installer": "install_startup.bat"
+  },
+  "storage": {
+    "inbox": "EVIDENCE_IN",
+    "outbox": "Folder_Out",
+    "state": "state"
+  },
+  "updated_at": "2026-09-14T14:05:00+07:00"
+}

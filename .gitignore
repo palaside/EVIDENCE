@@ -1,0 +1,40 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+
+# EVIDENCE Data Directories (Protect PDPA & Evidence Data)
+EVIDENCE_IN/*
+!EVIDENCE_IN/.gitkeep
+EVIDENCE_CHAT_IN/*
+!EVIDENCE_CHAT_IN/.gitkeep
+Folder_Out/*
+!Folder_Out/.gitkeep
+_archive/
+กอง B สลิปเดี่ยว/
+
+# Log & Temporary Files
+*.log
+*.tmp
+tools/*.log
+
+# Operating System Files
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# Heavy samples & dependencies
+node_modules/
+_skills/SlipKit/samples/
+crop_receiver.png
+Howto.jpg

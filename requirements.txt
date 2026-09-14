@@ -1,0 +1,7 @@
+openpyxl==3.1.5
+opencv-python==5.0.0.93
+pyzbar==0.1.9
+pytesseract==0.3.13
+Pillow==11.2.1
+PyMuPDF==1.28.0
+reportlab==5.0.0

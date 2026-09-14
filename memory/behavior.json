@@ -1,0 +1,22 @@
+{
+  "preferences": {
+    "file_grouping_pattern": "จัดกลุ่มภาพตาม Prefix (เช่น V1 จาก V1- (1)) จากการ Rename Ctrl+A ของ Windows และส่งออกชื่อ Evidence_Chat_{prefix}.pdf พร้อมเก็บเข้า processed/Case_{prefix}/Batch_{timestamp}/",
+    "chat_evidence_gold_standard": "โหมดแชทถือว่าผ่านเกณฑ์มาตรฐานระดับ Production แล้ว (อ้างอิง Evidence_Chat_V1.pdf 107 หน้า): ต้องใช้ Dicut_Chat (ตัดแถบดำ 13 แถว + feather 12px + quiet zone lookahead 1.30x + slip-block-fit canvas 807x1115 px ดูดสีพื้นหลังขจัดขอบขาว/ช่องโหว่ขาว + Auto-Audit 100%) และต่อด้วย Search_Slip ส่งออกตารางสารบัญสลิป Excel/JSON อัตโนมัติเสมอ ห้ามรื้อหรือเปลี่ยนโครงสร้างนี้",
+    "strict_honesty_zero_guessing_rule": "กฎเหล็กห้ามละเมิดเด็ดขาด: ห้ามเดา/มโนชื่อธนาคาร ชื่อบุคคล หรือข้อมูลในสลิปโดยเด็ดขาด การอนุมานชื่อเอง (เช่น เดาคำเพี้ยน Alovdsuma เป็น CIMB) ถือว่าผิดกฎความซื่อสัตย์ขั้นสูงสุด ต้องอ้างอิงภาพจริง บัญชีคู่สัญญาจริง และหลักฐานที่สแกนได้จริงเท่านั้น",
+    "table_grid_styling_rules": "การตีตาราง Excel และ PDF ต้องยึดตาม Chat_Evidence+Automation+excel+AGENTS.md อย่างเคร่งครัด: (1) ตัวอักษรและตัวเลขทุกช่องต้องจัดกึ่งกลาง (Center-Aligned ทั้งแนวนอนและแนวตั้ง Alignment(horizontal='center', vertical='center')), (2) ใช้ฟอนต์ Sarabun (Sarabun 11 สำหรับข้อมูล, Sarabun 12 Bold สำหรับหัวตาราง), (3) ตีเส้นขอบบาง 4 ด้านรอบทุกช่อง (Border(left=thin, right=thin, top=thin, bottom=thin)), (4) ขยายช่องให้กว้างพอดี ไม่เบียดกัน, (5) หน้ากระดาษ A4 แนวนอน (Landscape) พร้อมข้อความปฏิเสธความรับผิดชอบ (Disclaimer 3 บรรทัด) กึ่งกลางท้ายกระดาษ",
+    "pii_guard_and_account_validation": "เปิดใช้งาน PII Guard (มาสก์เลขบัตร ปชช., เบอร์โทร, เลขบัญชี, บัตรเครดิต ด้วยตัวเลือก --mask-pii), Text Fingerprint (สกัดจาก pii_dedup.py เพื่อตรวจจับสลิปซ้ำข้าม Encoding), และ Bank Account Pattern Validation (ตรวจจับแพทเทิร์นเลขบัญชี 10-12 หลัก 8 ธนาคารจาก bank_detector.py)",
+    "windows_startup_and_zero_command_automation": "ระบบอัตโนมัติไม่ต้องจำคำสั่งและพร้อมใช้งานเสมอแม้ลง Windows ใหม่: (1) RUN_SLIP_EXTRACTOR.bat รองรับการลากไฟล์หรือโฟลเดอร์สลิปมาหย่อนทับ (Drag & Drop) เพื่อสกัดเป็น Excel ทันที, (2) install_startup.bat ติดตั้งทางลัดลง Startup ของ Windows อัตโนมัติ เพื่อให้ slip_hotfolder_watcher.py เฝ้าตรวจจับโฟลเดอร์ EVIDENCE_IN ตลอด 24 ชม. วางสลิปปุ๊บ แปลงเป็น Excel ส่งเข้า Folder_Out ทันที, (3) uninstall_startup.bat สำหรับถอนการติดตั้ง",
+    "git_remote_repository": "Git Remote Repository หลักของโปรเจกต์คือ https://github.com/palaside/EVIDENCE.git โดยมี .gitignore คุ้มกันข้อมูลส่วนบุคคลและหลักฐานคดี (PDPA Shielded) และ requirements.txt ล็อกเวอร์ชันไลบรารี"
+  },
+  "command_counters": {
+    "list_names_grouping": 2,
+    "search_slip_indexing": 2,
+    "chat_mode_success_runs": 1,
+    "ocr_slip_extraction": 4,
+    "table_grid_formatting": 1,
+    "pii_guard_integrated": 1,
+    "windows_startup_installed": 1,
+    "git_remote_configured": 1
+  },
+  "updated_at": "2026-09-14T14:06:00+07:00"
+}
