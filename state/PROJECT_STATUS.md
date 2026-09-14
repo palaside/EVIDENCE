@@ -76,6 +76,9 @@ graph TD
 - [x] **Forensic Financial Slip Discovery (69 Slips / 328,018.00 THB):** สแกนตรวจพบสลิปธุรกรรม 69 รายการ ยอดรวม 328,018.00 บาท พร้อมส่งออกสารบัญ 10 คอลัมน์ (Excel + JSON Sarabun Center-Aligned Grid)
 - [x] **PyMuPDF C-Binding High-Speed Standard:** สถาปนา PyMuPDF (`fitz`) C-Binding เป็นมาตรฐานหลักสร้าง/แปลง/รวม PDF ของระบบ (ความเร็ว 100 หน้าใน 0.154s เร็วขึ้น 700 เท่า)
 - [x] **One-Click Master Chat Launcher (RUN_CHAT_EVIDENCE_PROCESSOR.bat):** ตัวสั่งงานคลิกเดียวสำหรับประมวลผลแชทจริง 3 ชุดและรวมเล่ม Master PDF อัตโนมัติ
+- [x] **Slip Index Navigation Column ("หน้าระบุสลิป" + Direct PDF Hyperlinks):** ระบุเลขหน้าสลิปอย่างแม่นยำใน Excel คอลัมน์แรก พร้อมคลิกลิงก์กระโดดเปิด PDF หน้านั้นได้ทันที
+- [x] **Header Evidence Ribbon (Sarabun ExtraLight & Thin):** วางโลโก้ชิดซ้าย + MODE (SLIP/CHAT) + CORROBORATED (ภาพแชทหน้าที่... / สารบัญแชท ลำดับที่...) + PAGE ตาม Reference
+- [x] **Footer Evidence Ribbon (Sarabun ExtraLight):** ข้อความกำกับความถูกต้อง 3 บรรทัดจัดกึ่งกลางเต็มความกว้างบล็อก พร้อมแก้ไขคำผิดเป็น "เป็นเพียงเครื่องมือ..."
 
 ### 🟡 2.2 In-Progress & Pending Features ([ ])
 - [ ] **Cover Page PDF Merger:** ออปชันแทรกหน้าสารบัญสลิป (Page Index) เข้าเป็นหน้าแรก (Page 1) ของตัวเล่ม PDF หลักฐาน
