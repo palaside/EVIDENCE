@@ -25,9 +25,11 @@ except ImportError:
     if os.path.exists(_search_slip_dir) and _search_slip_dir not in sys.path:
         sys.path.insert(0, _search_slip_dir)
     try:
-        from search_slip import detect_slip_in_image
+        from search_slip import detect_slip_in_image, extract_slip_details_ocr
     except ImportError:
         detect_slip_in_image = None
+        extract_slip_details_ocr = None
+
 
 
 def natural_sort_key(s):
@@ -972,10 +974,25 @@ def process_chat_pipeline(input_path, output_pdf, slip_data_list=None, chat_mode
 
                     corrob_text = None
                     if detect_slip_in_image is not None:
-                        has_slip, _ = detect_slip_in_image(arr)
-                        if has_slip:
-                            slip_detected_count += 1
-                            corrob_text = "สลิปหลักฐานการโอนเงิน (แนบในบทสนทนา)"
+                        has_slip, box = detect_slip_in_image(arr)
+                        if has_slip and box and extract_slip_details_ocr is not None:
+                            x, y, w, h = box
+                            crop = arr[y:y+h, x:x+w]
+                            details = extract_slip_details_ocr(crop) if crop.size > 0 else {}
+                            amt = details.get("amount", "")
+                            ref_id = details.get("ref_id", "")
+                            raw_t = details.get("raw_text", "").lower()
+                            has_iso = bool(re.match(r"^2025(0[1-9]|1[0-2])([0-3]\d)([0-2]\d)", ref_id or ""))
+                            has_kw = any(kw in raw_t for kw in [
+                                "โอนเงินสำเร็จ", "krungthai", "kbank", "scb", "ttb", "กรุงไทย", "กสิกร",
+                                "ไทยพาณิชย์", "กรุงศรี", "จำนวนเงิน", "ค่าธรรมเนียม", "รหัสอ้างอิง",
+                                "nsving", "วันที่ทำรายการ", "เลขที่รายการ", "สแกนตรวจสอบสลิป"
+                            ])
+                            has_amt = bool(amt and amt != "0.00" and amt != "-")
+                            if (has_amt and (has_kw or has_iso)) or (has_iso and (has_amt or details.get("sender_bank") != "-" or details.get("receiver_bank") != "-")) or (has_amt and ref_id and len(ref_id) >= 15):
+                                slip_detected_count += 1
+                                corrob_text = "สลิปหลักฐานการโอนเงิน (แนบในบทสนทนา)"
+
 
                     assembler.add_single_page_image(arr, align="top", page_num=global_page_idx, mode="CHAT", corroborated=corrob_text)
                     page = assembler.pdf_pages.pop()

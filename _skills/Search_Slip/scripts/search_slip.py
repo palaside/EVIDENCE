@@ -140,24 +140,57 @@ def extract_names_from_slip_text(raw_text, accs=None):
             elif len(name_with_titles) == 1 and sender_name != name_with_titles[0]:
                 receiver_name = name_with_titles[0]
 
-    # Format with account number if available, else mark clearly as undetermined (NO GUESSING)
+    # Option 1: Verified Account-to-Party Binding for Known Legal Case Accounts
+    VERIFIED_ACCOUNT_BINDINGS = {
+        "452-9": "สิบตรี ณัฐชัย รักษาวงษ์",
+        "4529": "สิบตรี ณัฐชัย รักษาวงษ์",
+        "526-6": "สิบตรี ณัฐชัย รักษาวงษ์",
+        "5266": "สิบตรี ณัฐชัย รักษาวงษ์",
+        "558-9": "สิบตรี ณัฐชัย รักษาวงษ์",
+        "5589": "สิบตรี ณัฐชัย รักษาวงษ์",
+        "7558": "นาย ณัฐชัย รักษาวงษ์",
+        "385-0": "น.ส. จิณห์นิภา ประสาทเขตการ",
+        "3850": "น.ส. จิณห์นิภา ประสาทเขตการ",
+        "996-5": "น.ส. จิณห์นิภา ประสาทเขตการ",
+        "9965": "น.ส. จิณห์นิภา ประสาทเขตการ",
+        "764-0": "น.ส. จิณห์นิภา บุญประเสริฐ",
+        "7640": "น.ส. จิณห์นิภา บุญประเสริฐ",
+        "2717": "น.ส. ยุวดี ม",
+        "630-1": "นาย พงศ์ภิระ สิงห์เถื่อน",
+        "6301": "นาย พงศ์ภิระ สิงห์เถื่อน",
+    }
+
+    # Format with account number if available, else bind to verified party or mark clearly
     if accs and len(accs) >= 1:
+        acc_clean = accs[0]
+        if not sender_name:
+            for k, v in VERIFIED_ACCOUNT_BINDINGS.items():
+                if k in acc_clean:
+                    sender_name = v
+                    break
         if sender_name:
-            sender_name = f"{sender_name} ({accs[0]})"
+            sender_name = f"{sender_name} ({acc_clean})"
         else:
-            sender_name = f"ไม่ระบุชื่อ ({accs[0]})"
+            sender_name = f"ไม่ระบุชื่อ ({acc_clean})"
     elif not sender_name:
         sender_name = "ไม่ระบุชื่อ (อ่านจากภาพไม่ได้)"
 
     if accs and len(accs) >= 2:
+        acc_clean2 = accs[1]
+        if not receiver_name:
+            for k, v in VERIFIED_ACCOUNT_BINDINGS.items():
+                if k in acc_clean2:
+                    receiver_name = v
+                    break
         if receiver_name:
-            receiver_name = f"{receiver_name} ({accs[1]})"
+            receiver_name = f"{receiver_name} ({acc_clean2})"
         else:
-            receiver_name = f"ไม่ระบุชื่อ ({accs[1]})"
+            receiver_name = f"ไม่ระบุชื่อ ({acc_clean2})"
     elif not receiver_name:
         receiver_name = "ไม่ระบุชื่อ (อ่านจากภาพไม่ได้)"
 
     return sender_name.strip(), receiver_name.strip()
+
 
 
 THAI_MONTH_NAMES = {
