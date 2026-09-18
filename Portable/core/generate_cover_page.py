@@ -48,8 +48,9 @@ def get_sarabun_fonts():
                 "title": ImageFont.truetype(bold_path, 28),
                 "title_en": ImageFont.truetype(bold_path, 20),
                 "subtitle": ImageFont.truetype(regular_path, 20),
-                "card_hdr": ImageFont.truetype(bold_path, 18),
-                "card_body": ImageFont.truetype(regular_path, 17),
+                "card_hdr": ImageFont.truetype(bold_path, 17),
+                "card_body": ImageFont.truetype(regular_path, 15),
+                "card_body_sm": ImageFont.truetype(regular_path, 10),
                 "card_highlight": ImageFont.truetype(bold_path, 22),
                 "header_lbl": ImageFont.truetype(bold_path, 18),
                 "header_val": ImageFont.truetype(regular_path, 18),
@@ -62,7 +63,7 @@ def get_sarabun_fonts():
 
     default = ImageFont.load_default()
     return {k: default for k in [
-        "title", "title_en", "subtitle", "card_hdr", "card_body",
+        "title", "title_en", "subtitle", "card_hdr", "card_body", "card_body_sm",
         "card_highlight", "header_lbl", "header_val", "tbl_hdr", "tbl_body", "footer"
     ]}
 
@@ -194,17 +195,31 @@ def generate_executive_cover_image(case_info, page_num=1):
     draw.text((margin_x + 20, cur_y + 12), "[ สถาบันการเงินและคู่สัญญาที่เกี่ยวข้องในสำนวน ]", fill="#0F172A", font=fonts["card_hdr"])
     
     bank_lines = [
-        "• สถาบันการเงินผู้โอน: ธนาคารกรุงไทย (KTB), ธนาคารกสิกรไทย (KBANK), ธนาคารไทยพาณิชย์ (SCB)",
-        "• สถาบันการเงินปลายทาง: ธนาคารกรุงศรีอยุธยา (BAY), ธนาคารทีเอ็มบีธนชาต (TTB), ธนาคารกรุงเทพ (BBL)",
+        "• สถาบันการเงินผู้โอน: ธนาคารกรุงไทย (KTB), กสิกรไทย (KBANK), ไทยพาณิชย์ (SCB)",
+        "• สถาบันการเงินปลายทาง: ธนาคารกรุงศรีอยุธยา (BAY), ทีเอ็มบีธนชาต (TTB), กรุงเทพ (BBL)",
         "• ความสมบูรณ์ของเอกสาร: มีสารบัญระบุเลขหน้าสลิป 10 คอลัมน์ เชื่อมโยงตรงทุกแผ่น",
     ]
+    max_line_w = content_w - 45
+    y_offset = cur_y + 42
     for b_idx, line in enumerate(bank_lines):
-        draw.text((margin_x + 25, cur_y + 42 + (b_idx * 25)), line, fill="#334155", font=fonts["card_body"])
+        bbox = draw.textbbox((0, 0), line, font=fonts["card_body"])
+        if (bbox[2] - bbox[0]) > max_line_w and "," in line:
+            parts = line.split(",")
+            mid = len(parts) // 2
+            p1 = ",".join(parts[:mid]) + ","
+            p2 = "   " + ",".join(parts[mid:]).strip()
+            draw.text((margin_x + 25, y_offset), p1, fill="#334155", font=fonts["card_body"])
+            y_offset += 22
+            draw.text((margin_x + 25, y_offset), p2, fill="#334155", font=fonts["card_body"])
+            y_offset += 24
+        else:
+            draw.text((margin_x + 25, y_offset), line, fill="#334155", font=fonts["card_body"])
+            y_offset += 25
 
     cur_y += 150
 
     # 6. Legal Certification & Preservation Box
-    draw.rectangle([margin_x, cur_y, margin_x + content_w, cur_y + 125], fill="#F0FDF4", outline="#86EFAC", width=1)
+    draw.rectangle([margin_x, cur_y, margin_x + content_w, cur_y + 115], fill="#F0FDF4", outline="#86EFAC", width=1)
     draw.text((margin_x + 20, cur_y + 10), "[ การรับรองมาตรฐานพยานหลักฐานอิเล็กทรอนิกส์ในชั้นศาล ]", fill="#166534", font=fonts["card_hdr"])
     legal_statements = [
         "1. เอกสารสำนวนนี้ประมวลผลด้วย PyMuPDF C-Binding Direct Streaming ควบคุมความสมบูรณ์พิกเซล",
@@ -212,7 +227,7 @@ def generate_executive_cover_image(case_info, page_num=1):
         "3. ปฏิบัติตาม พ.ร.บ.ธุรกรรมทางอิเล็กทรอนิกส์ พ.ศ. 2544 มาตรา 26, 28 และมาตรฐาน ISO/IEC 27037",
     ]
     for s_idx, stmt in enumerate(legal_statements):
-        draw.text((margin_x + 25, cur_y + 38 + (s_idx * 25)), stmt, fill="#15803D", font=fonts["card_body"])
+        draw.text((margin_x + 25, cur_y + 40 + (s_idx * 22)), stmt, fill="#15803D", font=fonts["card_body_sm"])
 
     # 7. Bottom Legal Disclaimer
     disclaimer_lines = [
@@ -318,16 +333,20 @@ def merge_cover_to_master_pdf(master_pdf_path, front_pdf_path, final_output_pdf)
     # 2. Insert master chat pages
     new_doc.insert_pdf(doc_master)
 
-    new_doc.save(final_output_pdf)
     total_pages = len(new_doc)
-
-    doc_master.close()
-    doc_front.close()
-    new_doc.close()
-
-    elap = time.time() - t0
-    print(f"✅ ผสานสำเร็จด้วย PyMuPDF C-Binding ในเวลา: {elap:.2f} วินาที!")
-    print(f"📄 ไฟล์เล่มสมบูรณ์พร้อมหน้าปก: {final_output_pdf} (รวมทั้งหมด {total_pages:,} หน้า)")
+    try:
+        new_doc.save(final_output_pdf)
+        elap = time.time() - t0
+        print(f"✅ ผสานสำเร็จด้วย PyMuPDF C-Binding ในเวลา: {elap:.2f} วินาที!")
+        print(f"📄 ไฟล์เล่มสมบูรณ์พร้อมหน้าปก: {final_output_pdf} (รวมทั้งหมด {total_pages:,} หน้า)")
+    except Exception as e:
+        print(f"⚠️ คำเตือน: ไม่สามารถบันทึกทับ {os.path.basename(final_output_pdf)} ได้ทันทีเนื่องจากไฟล์กำลังถูกเปิดในโปรแกรมอ่าน PDF (File Locked): {e}")
+        fallback_pdf = os.path.splitext(final_output_pdf)[0] + "_New_Updated.pdf"
+        try:
+            new_doc.save(fallback_pdf)
+            print(f"🚀 บันทึกลงไฟล์สำรองฉบับอัปเดตล่าสุดสำเร็จแทน -> {fallback_pdf} (รวมทั้งหมด {total_pages:,} หน้า)")
+        except Exception as e2:
+            print(f"Error saving fallback: {e2}")
     return final_output_pdf
 
 

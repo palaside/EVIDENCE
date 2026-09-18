@@ -390,11 +390,113 @@ def detect_receiver_bank(text: str) -> str:
 
     return 'บัญชีปลายทาง'
 
+def extract_names_from_slip_text(raw_text, accs=None):
+    """
+    Extract sender and receiver names from slip OCR text based on spatial keywords.
+    STRICT ZERO-GUESSING: Never hardcode or infer default names!
+    If name cannot be determined from text, returns 'ไม่ระบุชื่อ (อ่านจากภาพไม่ได้)'
+    """
+    lines = [line.strip() for line in raw_text.splitlines() if line.strip()]
+    sender_name = ""
+    receiver_name = ""
+    
+    def is_valid_name_candidate(s):
+        if not s or len(s) < 3 or len(s) > 60:
+            return False
+        s_low = s.lower()
+        if any(sw in s_low for sw in ["โอนเงินสำเร็จ", "จำนวนเงิน", "ค่าธรรมเนียม", "รหัสอ้างอิง", "บันทึกช่วยจำ", "สแกนตรวจสอบสลิป", "สำเร็จ"]):
+            return False
+        if re.match(r'^[Xx\d\s\-.,/:]+$', s):
+            return False
+        for b_word in ["กรุงไทย", "กสิกรไทย", "ไทยพาณิชย์", "กรุงศรีอยุธยา", "ทีเอ็มบีธนชาต", "พร้อมเพย์"]:
+            if s_low == b_word.lower() or s_low == f"{b_word.lower()} bank":
+                return False
+        return True
+
+    def clean_name(s):
+        s = re.sub(r'^(จาก|ไปยัง|ถึง|ผู้รับเงิน|ผู้รับโอน|ผู้โอน|to|from)[\s:.-]*', '', s, flags=re.IGNORECASE).strip()
+        s = re.sub(r'[\s(]+[Xx\d\-]{5,}[\s)]*$', '', s).strip()
+        return s
+
+    sender_idx = -1
+    receiver_idx = -1
+
+    for idx, l in enumerate(lines):
+        l_low = l.lower()
+        if sender_idx == -1 and any(re.search(pat, l_low) for pat in [r'\bfrom\b', r'จาก(?:บัญชี)?', r'ผู้โอน']):
+            sender_idx = idx
+        if receiver_idx == -1 and any(re.search(pat, l_low) for pat in [r'\bto\b', r'ไปยัง', r'ถึง', r'ผู้รับ(?:เงิน)?', r'บัญชีปลายทาง']):
+            receiver_idx = idx
+
+    # Extract sender
+    if sender_idx != -1:
+        same_line_cand = clean_name(lines[sender_idx])
+        if is_valid_name_candidate(same_line_cand):
+            sender_name = same_line_cand
+        else:
+            max_look = receiver_idx if receiver_idx > sender_idx else min(len(lines), sender_idx + 4)
+            for j in range(sender_idx + 1, max_look):
+                cand = clean_name(lines[j])
+                if is_valid_name_candidate(cand):
+                    sender_name = cand
+                    break
+
+    # Extract receiver
+    if receiver_idx != -1:
+        same_line_cand = clean_name(lines[receiver_idx])
+        if is_valid_name_candidate(same_line_cand):
+            receiver_name = same_line_cand
+        else:
+            max_look = min(len(lines), receiver_idx + 4)
+            for j in range(receiver_idx + 1, max_look):
+                cand = clean_name(lines[j])
+                if is_valid_name_candidate(cand):
+                    receiver_name = cand
+                    break
+
+    # Look for known title prefixes if still missing
+    if not sender_name or not receiver_name:
+        name_with_titles = []
+        for l in lines:
+            m_title = re.search(r'\b(นาย|นางสาว|น\.?ส\.?|นาง|ด\.?[ชญ]\.?|คุณ|บจก\.|หจก\.|บริษัท|mr\.|ms\.|mrs\.|mister)\s+([^\n\r\d]{3,40})', l, re.IGNORECASE)
+            if m_title:
+                full_cand = f"{m_title.group(1)} {m_title.group(2).strip()}"
+                if is_valid_name_candidate(full_cand) and full_cand not in name_with_titles:
+                    name_with_titles.append(full_cand)
+        
+        if not sender_name and len(name_with_titles) >= 1:
+            sender_name = name_with_titles[0]
+        if not receiver_name:
+            if len(name_with_titles) >= 2:
+                receiver_name = name_with_titles[1]
+            elif len(name_with_titles) == 1 and sender_name != name_with_titles[0]:
+                receiver_name = name_with_titles[0]
+
+    # Format with account number if available, else mark clearly as undetermined (NO GUESSING)
+    if accs and len(accs) >= 1:
+        if sender_name:
+            sender_name = f"{sender_name} ({accs[0]})"
+        else:
+            sender_name = f"ไม่ระบุชื่อ ({accs[0]})"
+    elif not sender_name:
+        sender_name = "ไม่ระบุชื่อ (อ่านจากภาพไม่ได้)"
+
+    if accs and len(accs) >= 2:
+        if receiver_name:
+            receiver_name = f"{receiver_name} ({accs[1]})"
+        else:
+            receiver_name = f"ไม่ระบุชื่อ ({accs[1]})"
+    elif not receiver_name:
+        receiver_name = "ไม่ระบุชื่อ (อ่านจากภาพไม่ได้)"
+
+    return sender_name.strip(), receiver_name.strip()
+
 def forensic_smart_zoom_crop(img_bgr, tol=240):
     """
     Stage Forensic Smart Zoom & Crop:
     Pre-processes nested slips (slips pasted on white A4, mobile screenshot bars, dark borders)
     before OCR & QR detection to eliminate noise and isolate the authentic slip payload.
+    Guarantees authentic card breathing space (~180px scaled to width) below 'วันที่ทำรายการ' (Date/Time).
     """
     if img_bgr is None or img_bgr.size == 0:
         return img_bgr
@@ -417,35 +519,120 @@ def forensic_smart_zoom_crop(img_bgr, tol=240):
                 concat_pts = np.vstack(valid_cnts)
                 bx, by, bw, bh = cv2.boundingRect(concat_pts)
                 if (bw * bh) < 0.92 * (w * h) and bw > 100 and bh > 100:
-                    img_bgr = img_bgr[by:by+bh, bx:bx+bw]
+                    scale = bw / 1024.0
+                    sub_gray = gray[by:by+bh, bx:bx+bw]
+                    
+                    # Detect text bands in lower 45% of sub_gray
+                    check_start = int(bh * 0.55)
+                    dark_counts = np.sum(sub_gray[check_start:, :] < 120, axis=1)
+                    text_rows = np.where(dark_counts > 20)[0]
+                    
+                    if len(text_rows) > 0:
+                        diffs = np.diff(text_rows)
+                        gap_idx = np.where(diffs > 12)[0]
+                        bands = []
+                        st = text_rows[0]
+                        for g in gap_idx:
+                            bands.append((st + check_start, text_rows[g] + check_start))
+                            st = text_rows[g+1]
+                        bands.append((st + check_start, text_rows[-1] + check_start))
+                        
+                        amt_idx = None
+                        for i in range(len(bands)-1, -1, -1):
+                            b_len = bands[i][1] - bands[i][0]
+                            if b_len >= int(45 * scale):
+                                amt_idx = i
+                                break
+                                
+                        num_after = len(bands) - 1 - amt_idx if amt_idx is not None else 0
+                        if num_after >= 3:
+                            date_band = bands[amt_idx + 2]
+                            memo_band = bands[amt_idx + 3]
+                            has_memo = True
+                        elif num_after == 2:
+                            date_band = bands[amt_idx + 2]
+                            memo_band = None
+                            has_memo = False
+                        else:
+                            date_band = bands[-1]
+                            memo_band = None
+                            has_memo = False
+                            
+                        date_bottom = date_band[1]
+                        req_date = date_bottom + int(180 * scale)
+                        req_memo = (memo_band[1] + int(80 * scale)) if has_memo else req_date
+                        target_bottom_rel = max(req_date, req_memo)
+                        target_bottom = by + target_bottom_rel
+                    else:
+                        target_bottom = by + bh + int(180 * scale)
+                        
+                    # Check if a dark bottom bar exists in this area
+                    row_means = np.mean(gray[by:min(h, target_bottom + 50), bx:bx+bw], axis=1)
+                    dark_rows = np.where(row_means < 85)[0]
+                    if len(dark_rows) > 0:
+                        dark_start = by + dark_rows[0]
+                        if dark_start < target_bottom:
+                            target_bottom = dark_start - 2
+                            
+                    target_bottom = min(h, max(by + bh, target_bottom))
+                    img_bgr = img_bgr[by:target_bottom, bx:bx+bw]
                     gray = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2GRAY)
                     h, w = img_bgr.shape[:2]
 
-        # --- Stage 2: Mobile Screenshot UI & Dark Bar Elimination ---
+        # --- Stage 2A: Mobile Screenshot UI & Horizontal Dark Bar Elimination ---
         row_means = np.mean(gray, axis=1)
-        has_dark_top = np.mean(row_means[:min(15, h)]) < 85
-        has_dark_bottom = np.mean(row_means[-min(15, h):]) < 85
+        has_dark_top = np.mean(row_means[:min(25, h)]) < 85
+        has_dark_bottom = np.mean(row_means[-min(25, h):]) < 85
         
         if has_dark_top or has_dark_bottom:
             top_cut = 0
             if has_dark_top:
-                for r in range(10, min(h // 2, 200)):
-                    if np.mean(row_means[r:r+4]) > 115:
+                for r in range(5, int(h * 0.55)):
+                    if np.mean(row_means[r:r+6]) > 115 and row_means[r] > 95:
                         top_cut = r
                         break
             
             bottom_cut = h
             if has_dark_bottom:
-                for r in range(h - 1, max(top_cut + 100, h // 2), -1):
-                    if np.mean(row_means[r-3:r+1]) > 85:
+                for r in range(h - 1, int(h * 0.45), -1):
+                    if np.mean(row_means[max(0, r-5):r+1]) > 95 and row_means[r] > 85:
                         bottom_cut = r + 1
                         break
             
+            # Micro-trim 2px to ensure clean edges without dark hairline artifacts
             top_cut = min(top_cut + 2, h - 10)
             bottom_cut = max(bottom_cut - 2, top_cut + 10)
             
             if (bottom_cut - top_cut) >= 150:
                 img_bgr = img_bgr[top_cut:bottom_cut, :]
+                gray = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2GRAY)
+                h, w = img_bgr.shape[:2]
+
+        # --- Stage 2B: Vertical Dark Bar Elimination (Left & Right Letterboxing) ---
+        col_means = np.mean(gray, axis=0)
+        has_dark_left = np.mean(col_means[:min(15, w)]) < 85
+        has_dark_right = np.mean(col_means[-min(15, w):]) < 85
+
+        if has_dark_left or has_dark_right:
+            left_cut = 0
+            if has_dark_left:
+                for c in range(1, int(w * 0.25)):
+                    if np.mean(col_means[c:c+4]) > 110 and col_means[c] > 90:
+                        left_cut = c
+                        break
+
+            right_cut = w
+            if has_dark_right:
+                for c in range(w - 1, int(w * 0.75), -1):
+                    if np.mean(col_means[max(0, c-3):c+1]) > 110 and col_means[c] > 90:
+                        right_cut = c + 1
+                        break
+
+            left_cut = min(left_cut + 2, w - 10)
+            right_cut = max(right_cut - 2, left_cut + 10)
+
+            if (right_cut - left_cut) >= 150:
+                img_bgr = img_bgr[:, left_cut:right_cut]
                 
         return img_bgr
     except Exception:
@@ -597,37 +784,10 @@ def extract_slip_data(image_input, default_bank: str = None) -> dict:
                     data["sender_bank"] = bank_name
                     break
 
-    if data["sender_bank"] == "กรุงไทย":
-        data["sender_name"] = "ณัฐชัย ร***"
-        if accs:
-            data["sender_name"] += f" ({accs[0]})"
-    elif "ttb" in data["sender_bank"].lower() or "ทีเอ็มบี" in data["sender_bank"]:
-        data["sender_name"] = "นาย ณัฐชัย ร***"
-        if accs:
-            data["sender_name"] += f" ({accs[0]})"
-    else:
-        if accs:
-            data["sender_name"] = f"ผู้โอน ({accs[0]})"
-
-    # Receiver Name
-    if "nipapornphat" in combined_text.lower() or "นิภาภรณ์" in combined_text:
-        data["receiver_name"] = "NIPAPORNPHAT CO.,LTD."
-    elif "จิณห์นิภา" in combined_text or "seukm" in combined_text.lower() or "uszaianiwasms" in combined_text.lower() or "us:ainivasnis" in combined_text.lower() or "dtukum" in combined_text.lower():
-        data["receiver_name"] = "น.ส. จิณห์นิภา ประสาทเขตการ"
-        if len(accs) >= 2:
-            data["receiver_name"] += f" ({accs[1]})"
-    elif "สุภาพร" in combined_text or "iwswond" in combined_text.lower() or "amws" in combined_text.lower():
-        data["receiver_name"] = "น.ส. สุภาพร โพธิ์ทองดี"
-        if len(accs) >= 2:
-            data["receiver_name"] += f" ({accs[1]})"
-    elif "bonthy" in combined_text.lower():
-        data["receiver_name"] = "MISTER BONTHY EM"
-        if len(accs) >= 2:
-            data["receiver_name"] += f" ({accs[1]})"
-    else:
-        data["receiver_name"] = "น.ส. จิณห์นิภา ประสาทเขตการ"
-        if len(accs) >= 2:
-            data["receiver_name"] += f" ({accs[1]})"
+    # Extract Sender and Receiver Names directly from OCR text (Strict Zero-Guessing)
+    s_name, r_name = extract_names_from_slip_text(combined_text, accs=accs)
+    data["sender_name"] = s_name
+    data["receiver_name"] = r_name
 
     # 7. Receiver Bank Detection via Spatial Zone
     data["receiver_bank"] = detect_receiver_bank(combined_text)

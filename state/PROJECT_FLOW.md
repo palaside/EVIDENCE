@@ -58,10 +58,17 @@
        │          │     └── Tier 3 (Reference): Full Raw 2,792 Slips
        │          └── Duplicate Auditor: DUPLICATE_SLIP_AUDIT_REPORT.xlsx (2,232 mapped)
        │
-       └──► [STAGE 7D: Correlated Evidence Engine (Skill Only / only-corroborated)]
-                  ├── Visual Stamp & Time-Window Matching
-                  ├── Smoking Gun Pairing: [Chat Order] ⟷ [Bank Slip]
-                  └── Executive Court Edition: ~100-200 Pages High-Impact Dossier
+       ├──► [STAGE 7D: Correlated Evidence Engine (Skill Only / only-corroborated)]
+       │          ├── Visual Stamp & Time-Window Matching
+       │          ├── Semantic Intent Keywords: ["ขอยืม", "ขอกู้", "ขอเงิน", "ปล่อยกู้", "ยืมเงิน", "กู้เงิน", "ดอกเบี้ย", "ทวงหนี้", "โอนคืน", "สัญญา"]
+       │          ├── Smoking Gun Pairing: [Chat Order / Loan Agreement] ⟷ [Bank Slip]
+       │          └── Executive Court Edition: ~100-200 Pages High-Impact Dossier
+       │
+       └──► [STAGE 7E: Target Person Matcher (Skill Name / target-name-matcher)]
+                  ├── 100% Honorific Stripping (นาย, นาง, น.ส., ด.ช., ด.ญ., คุณ, พล.ต., หม่อม, etc.)
+                  ├── Strict Ground Truth Matching: Exact First Name + Last Name
+                  ├── In/Out Transaction Ledgering & Counterparty Association
+                  └── Person of Interest Dossier: Excel & Dedicated PDF (558 Pages)
 ```
 
 ---

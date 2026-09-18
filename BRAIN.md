@@ -1,4 +1,9 @@
-# glass-hub/AGENTS.md — กฎคุมเอเจนต์ของ Hub (OpenCode อ่านไฟล์นี้ก่อนเสมอ)
+# BRAIN.md — ร่างเอเจนต์ไฟล์เดียว (แนบไฟล์นี้ + สั่ง "เซ็ตสมองและพฤติกรรมตามไฟล์ที่แนบ")
+
+> เจนโดย `py tools/gen-brain.py` ห้ามแก้ มือ — แก้ต้นทางแล้วเจนใหม่
+
+## 1. กฎสมอง (จาก AGENTS.md)
+ — กฎคุมเอเจนต์ของ Hub (OpenCode อ่านไฟล์นี้ก่อนเสมอ)
 
 > SSOT: `commands.yaml` (registry) + `hosts.json` (โฮสต์ว่างได้) + `opencode.json` (permission/agents/mcp)
 > Constitution หลัก: ใช้ชุดสมอง Universal Brain Set ที่แนบ (root `F:\Project\AGENTS.md`) ทุกข้อมีผลกับ Hub นี้ด้วย
@@ -114,3 +119,64 @@
 - ทุกชุดสแตนอโลนต้องฝัง **ชุดรันเงียบ** ไปด้วยเสมอ: ก๊อป `tools/tick.py` + `tools/run-silent.vbs` +
   `tools/install-startup.bat` + `tools/uninstall-startup.bat` ลง root ของแพ็กเกจ
   (แก้ path ใน VBS ให้ชี้ tick.py ตำแหน่งใหม่) เพื่อให้รันเงียบพร้อม Windows ได้ทันทีหลังติดตั้ง
+
+
+## 2. เครื่องมือ Hub (จาก commands.yaml)
+- route-api
+- route-app
+- wizard
+- excel-export
+- status
+- sdlc
+- hotfolder
+- deploy
+
+## 3. พอร์ต (จาก ports.json)
+- :1453 Hub Chat Server
+- :5173 Route Frontend (Vite)
+- :8000 Route Backend (python_template)
+- :8001 Zen Proxy (AI Free models)
+
+## 4. โมเดล Free (จาก models.json)
+- mimo: MiMo V2.5 Free (แนะนำงานโค้ด)
+- ling: Ling 3.0 Flash Fin Free (แนะนำงานโค้ด)
+- spark-contrib: Muse Spark 1.3 Contributor Free (ตัวที่คุยอยู่)
+- big-pickle: Big Pickle (stealth)
+- nemotron-ultra: Nemotron 3 Ultra Free (ห้ามส่งข้อมูลส่วนบุคคล)
+- nemotron-lightning: Nemotron 3.5 Lightning Free (ห้ามส่งข้อมูลส่วนบุคคล)
+
+## 5. Deploy (จาก deploy.json)
+- supabase: Supabase (DB + Auth) (คีย์: SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY)
+- vercel: Vercel (Hosting) (คีย์: VERCEL_TOKEN)
+- github: GitHub (Code + Actions) (คีย์: GITHUB_TOKEN)
+- cf-workers: Cloudflare Workers (คีย์: CLOUDFLARE_API_TOKEN, CLOUDFLARE_ACCOUNT_ID)
+- cf-d1: Cloudflare D1 (SQL) (คีย์: CLOUDFLARE_API_TOKEN, CLOUDFLARE_ACCOUNT_ID)
+- cf-r2: Cloudflare R2 (Storage) (คีย์: CLOUDFLARE_API_TOKEN, CLOUDFLARE_ACCOUNT_ID)
+
+## 6. สกิลในตัว
+- **librarian**: บรรณารักษ์คลัง Notebook: ค้นไฟล์/วิธี/บันทึกที่เซฟไว้ ตอบพร้อม path อ้างอิง
+- **memory**: จำพฤติกรรมผู้ใช้ + ซื่อสัตย์ + บันทึกผิดพลาด ใช้เมื่อเริ่มงานทุกครั้งและเมื่อเกิดข้อผิดพลาด
+- **save**: จบสนทนารันแบ็กอัพ 4 ไฟล์ลง state/ เสมอ (โคลนจาก save-project-state: 4 Pillars + 6 กฎ)
+- **sdlc**: เดิน Vibe SDLC 8 ขั้นพร้อมสกิลต่อขั้น ใช้เมื่อคำแชทส่อเป็นงานสร้างโปรเจกต์
+- **understand**: เปิดแชทใหม่รันเรียนรู้โปรเจกต์ทันที (แนว Understand-Anything)
+
+## 7. ความจำถาวร (behavior.json)
+- งานสร้างระบบ -> ถาม 'สร้างเป็นสแตนอโลนไหม' ก่อนเสมอ (x1)
+- งานอัตโนมัติ -> hotfolder-agent ตัวเลือกแรก (x1)
+- สื่อสารภาษาไทย กระชับ ตรงประเด็น (x1)
+- ตอบเสนอ 2-3 ทางเลือกพร้อมคำแนะนำครั้งเดียว สั่งแล้วทำจบ ห้ามถามพ่ำเพื่อ (x3)
+- แปะลิงก์สกิล GitHub -> รัน skill-creator ดึงเป็นสกิลส่วนตัวทันที ไม่ต้องถาม (x3)
+
+## 8. กฎห้ามเกิดซ้ำ (mistakes.md)
+# mistakes.md — บันทึกผิดพลาด (อ่านทวนก่อนทำงานคล้ายกัน ห้ามลบ)
+
+> กฎเหล็ก: ทุกแถวต้องมี **กฎห้ามเกิดซ้ำ** ช่องสุดท้าย เอเจนต์ต้องเช็กกฎก่อนลงมือทุกครั้ง
+
+| วัน | สิ่งที่สั่ง | สาเหตุจริง | วิธีแก้ | ⛔ กฎห้ามเกิดซ้ำ |
+|---|---|---|---|---|
+| 2026-09-12 | `alloc-port.py` พิมพ์ไทย | Windows cp1252 encode ไม่ได้ | output ภาษาอังกฤษล้วน (`OK(new)/OK(reused)`) | ห้าม `print` ไทยในสคริปต์ CLI บน Windows — อังกฤษล้วนเท่านั้น |
+| 2026-09-12 | `zen-proxy.py` edit แล้ว compile ตก | edit ทำให้ indent หลุดทั้งบล็อก | แก้ indent ยกบล็อก ตรวจ `py_compile` ทุกครั้งหลัง edit | ทุก edit เสร็จต้อง `py_compile` ผ่านก่อนทำขั้นต่อไป |
+| 2026-09-12 | `commands.yaml` เข้าใจเป็น Tool Registry | อ่านชื่อไฟล์แล้วเดา ไม่ได้เปิดดูก่อน | Inspect Before Act: เปิดไฟล์จริงก่อนอ้างเสมอ | ห้ามอ้างเนื้อหาไฟล์ที่ยังไม่ได้เปิดอ่านด้วย Read |
+| 2026-09-12 | subprocess `text=True` อ่านไทยแตกบน Windows | parent locale cp1252 decode byte ไทยไม่ได้ stdout=None | ใส่ `encoding="utf-8", errors="replace"` ทุก `subprocess.run(text=True)` |
+| 2026-09-14 | `POST /api/chat` โดน RST (WinError 10053) เป็นพักๆ | server ตอบ 501 โดยไม่อ่าน request body ก่อน (HTTP/1.1 keep-alive) | อ่าน body ก่อนตอบทุก branch + ใส่ Content-Length (zen-proxy.py:277+) | ทุก `subprocess.run(text=True)` ต้องมี `encoding="utf-8"` เสมอ |
+| 2026-09-12 | แก้ `dashboard-hub.html` ทับแถบ Drive + หัวข้อ AGENTS หาย | oldString สั้นเกิน เลือกจุดผิด | อ่านรอบจุดแก้ก่อน edit ทุกครั้ง | oldString ต้องยาวพอเป็น unique (รวมบรรทัดข้างเคียง) + อ่านทวนหลัง edit |

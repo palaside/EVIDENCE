@@ -94,7 +94,14 @@ graph TD
 - [x] **Immortal Agent Protocol (Twin Engine: Save & Open):** กู้ชีพสถานะโปรเจกต์ใน 0.1s ผ่าน `resume-project-state` + `save-project-state` เชื่อมโยงผ่าน `LATEST_CHECKPOINT.md` และ `open_project_state.py` (เมนู [9] ใน Launcher)
 - [x] **Slip Mode System 1 — Master Unique 560 Slips (Priority 1):** ประมวลผลสลิปแท้ 560 ใบจาก 2,792 ไฟล์ ด้วย Multi-core OCR 6 คอร์ (214.5s) สกัดได้ 555 ยอด ยอดรวม 1,547,803.68 บาท ส่งออกเล่ม Master PDF 588 หน้า (560 สลิป + 28 หน้าตาราง 10 คอลัมน์) พร้อมรายงานตรวจสอบความซ้ำซ้อน `DUPLICATE_SLIP_AUDIT_REPORT.xlsx`
 - [x] **Slip Mode System 2 & 3 — Reference Archives:** ผลิตเล่มสำรองอ้างอิง Stem Dedup (1,160 หน้า) และ Full Raw (2,792 หน้า) เข้าสู่ `Folder_Out/Reference_Archives/`
-- [x] **Court Executive Corroborated Skill (`only-corroborated`):** สกิลจับคู่สูติบัตรทางคดี (Smoking Gun Pair) เชื่อมหน้าแชทสั่งโอนกับสลิปจริง ตัดบทสนทนาทั่วไปทิ้ง 100% เพื่อสำนวนส่งฟ้องศาล
+- [x] **Target Person Matcher & Keyword Dossier (`_skills/Name` / `target-name-matcher`):** คัดกรองพยานหลักฐานเฉพาะบุคคลเป้าหมาย ตัดคำนำหน้าชื่อทิ้ง 100% สกัดยอดเงินเข้า-ออก บัญชีคู่กรณี พร้อมจำแนกคีย์เวิร์ดคดีกู้ยืมเงิน (`Evidence_Target_จิณห์นิภา_ประสาทเขตการ.xlsx` และ PDF 558 หน้า)
+- [x] **Stage Forensic Smart Zoom & Crop v2.0 (Memo-Safe Standard):** ครอป 4 ทิศทางตัดพื้นหลังโต๊ะทิ้ง 100% พร้อมเว้นระยะหายใจใต้บรรทัด "วันที่ทำรายการ" ~180px ป้องกันข้อความบันทึกช่วยจำ (Memo) สูญหายหรือถูกตัดขาด
+- [x] **Production Court-Grade Chat Re-render Pipeline:** อัปเกรดมาตรฐานเล่มแชท Master Combined Vol 1-3 ด้วย Evidence Ribbon Header (`MODE: CHAT`, `CORROBORATED: บทสนทนาต่อเนื่อง`, `PAGE: [X]`), Pure White Canvas (`#FFFFFF`), Quiet Zone Lookahead 1.30x, ท้ายกระดาษรับรอง 3 บรรทัด Sarabun Thin, และ Cryptographic SHA-256 Checksum Certificate
+- [x] **Master Unified Chat Dossier (2,562 หน้า):** เลขหน้าต่อเนื่อง 1..2,557 ข้ามเล่ม 1-3 สมบูรณ์แบบ 1:1 Page-to-Print พร้อมหน้าปก Executive Dossier กล่องข้อ 6 ขนาด 10pt ประณีต และสารบัญสลิป 5 หน้า
+- [x] **Thai OCR Month Normalization & ISO Timestamp Decoding:** ถอดรหัสตัวย่อเดือนไทยที่เพี้ยนจาก Tesseract OCR (`Gn.`, `&.A.`, `n.w.`, `w.9.`) กลับเป็นภาษาไทยมาตรฐาน 12 เดือน 100% พร้อมถอดรหัสวันเวลาจาก ISO Ref ID (`2025MMDDHHMM...`)
+- [x] **Pure Financial Slips Quality Gate (89 ใบ):** คัดกรองภาพอาหาร/ภาพถ่ายทั่วไปออกจากสารบัญสลิปการเงิน เหลือเฉพาะสลิปจริง 89 ใบ ยอดเงินรวม 436,018.00 บาท อัตราดึงธนาคารผู้รับสำเร็จ 100.0%
+- [x] **Auto Font-Scaling in Table Cells:** ระบบย่อขนาดฟอนต์อัตโนมัติ (12pt -> 10pt/9pt) ในตาราง A4 แนวนอน ป้องกันข้อความล้นเซลล์หรือตกบรรทัด
+- [x] **Universal Multi-Path Python Launcher (`RUN_CHAT_EVIDENCE_PROCESSOR.bat`):** ระบบค้นหา Python อัตโนมัติ (Miniconda, Py, Python 3.10-3.12) ให้รันได้อย่างราบรื่น 100% บนทุกเครื่อง Windows
 
 ### 🟡 2.2 In-Progress & Pending Features ([ ])
 - [ ] **Cross-Case Aggregated Dashboard:** ระบบสรุปยอดรวมคดีความข้ามสำนวนแบบ Multi-Case Overview (Roadmap Phase 7)

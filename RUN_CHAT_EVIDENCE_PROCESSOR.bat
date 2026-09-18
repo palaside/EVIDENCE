@@ -31,8 +31,37 @@ set /p CHOICE="เลือกตัวเลือก (0-2): "
 
 if "%CHOICE%"=="1" (
     echo.
+    echo กำลังตรวจหา Python ในระบบ...
+    set "PY="
+    where python >nul 2>nul
+    if %errorlevel% equ 0 (
+        set "PY=python"
+    ) else (
+        where py >nul 2>nul
+        if %errorlevel% equ 0 (
+            set "PY=py"
+        ) else if exist "%USERPROFILE%\miniconda3\python.exe" (
+            set "PY=%USERPROFILE%\miniconda3\python.exe"
+        ) else if exist "C:\miniconda3\python.exe" (
+            set "PY=C:\miniconda3\python.exe"
+        ) else if exist "%LOCALAPPDATA%\Programs\Python\Python311\python.exe" (
+            set "PY=%LOCALAPPDATA%\Programs\Python\Python311\python.exe"
+        ) else if exist "C:\Python311\python.exe" (
+            set "PY=C:\Python311\python.exe"
+        ) else if exist "C:\Python310\python.exe" (
+            set "PY=C:\Python310\python.exe"
+        )
+    )
+
+    if "%PY%"=="" (
+        echo [ERROR] ไม่พบ Python ในระบบ! กรุณาติดตั้ง Python หรือเปิดใช้งาน Miniconda
+        pause
+        exit /b 1
+    )
+
+    echo ตรวจพบ Python: %PY%
     echo กำลังเริ่มประมวลผล กรุณารอสักครู่...
-    python "%ENGINE%"
+    "%PY%" "%ENGINE%"
     echo.
     echo [เสร็จสมบูรณ์] ตรวจสอบเอกสารทั้งหมดได้ที่: %OUT_DIR%
     start "" "%OUT_DIR%"

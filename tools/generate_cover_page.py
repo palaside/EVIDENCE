@@ -48,8 +48,9 @@ def get_sarabun_fonts():
                 "title": ImageFont.truetype(bold_path, 28),
                 "title_en": ImageFont.truetype(bold_path, 20),
                 "subtitle": ImageFont.truetype(regular_path, 20),
-                "card_hdr": ImageFont.truetype(bold_path, 18),
-                "card_body": ImageFont.truetype(regular_path, 17),
+                "card_hdr": ImageFont.truetype(bold_path, 17),
+                "card_body": ImageFont.truetype(regular_path, 15),
+                "card_body_sm": ImageFont.truetype(regular_path, 10),
                 "card_highlight": ImageFont.truetype(bold_path, 22),
                 "header_lbl": ImageFont.truetype(bold_path, 18),
                 "header_val": ImageFont.truetype(regular_path, 18),
@@ -62,7 +63,7 @@ def get_sarabun_fonts():
 
     default = ImageFont.load_default()
     return {k: default for k in [
-        "title", "title_en", "subtitle", "card_hdr", "card_body",
+        "title", "title_en", "subtitle", "card_hdr", "card_body", "card_body_sm",
         "card_highlight", "header_lbl", "header_val", "tbl_hdr", "tbl_body", "footer"
     ]}
 
@@ -126,8 +127,8 @@ def generate_executive_cover_image(case_info, page_num=1):
     b_cor = draw.textbbox((hdr_text_x, line2_y), "CORROBORATED : ", font=fonts["header_lbl"])
     draw.text((b_cor[2], line2_y), "หน้าปกสรุปสำนวนพยานหลักฐานดิจิทัล", fill="#111827", font=fonts["header_val"])
 
-    # Page number
-    page_str = str(page_num)
+    # Page label for cover (Do NOT number as page 1 to prevent offset drift)
+    page_str = "COVER" if (page_num is None or str(page_num).upper() in ["1", "COVER", "NONE"]) else str(page_num)
     b_pval = draw.textbbox((0, 0), page_str, font=fonts["header_val"])
     b_plbl = draw.textbbox((0, 0), "PAGE : ", font=fonts["header_lbl"])
     total_p_w = (b_plbl[2] - b_plbl[0]) + (b_pval[2] - b_pval[0])
@@ -194,17 +195,32 @@ def generate_executive_cover_image(case_info, page_num=1):
     draw.text((margin_x + 20, cur_y + 12), "[ สถาบันการเงินและคู่สัญญาที่เกี่ยวข้องในสำนวน ]", fill="#0F172A", font=fonts["card_hdr"])
     
     bank_lines = [
-        "• สถาบันการเงินผู้โอน: ธนาคารกรุงไทย (KTB), ธนาคารกสิกรไทย (KBANK), ธนาคารไทยพาณิชย์ (SCB)",
-        "• สถาบันการเงินปลายทาง: ธนาคารกรุงศรีอยุธยา (BAY), ธนาคารทีเอ็มบีธนชาต (TTB), ธนาคารกรุงเทพ (BBL)",
+        "• สถาบันการเงินผู้โอน: ธนาคารกรุงไทย (KTB), กสิกรไทย (KBANK), ไทยพาณิชย์ (SCB)",
+        "• สถาบันการเงินปลายทาง: ธนาคารกรุงศรีอยุธยา (BAY), ทีเอ็มบีธนชาต (TTB), กรุงเทพ (BBL)",
         "• ความสมบูรณ์ของเอกสาร: มีสารบัญระบุเลขหน้าสลิป 10 คอลัมน์ เชื่อมโยงตรงทุกแผ่น",
     ]
+    max_line_w = content_w - 45
+    y_offset = cur_y + 42
     for b_idx, line in enumerate(bank_lines):
-        draw.text((margin_x + 25, cur_y + 42 + (b_idx * 25)), line, fill="#334155", font=fonts["card_body"])
+        # Auto-wrap if any font makes it exceed box width
+        bbox = draw.textbbox((0, 0), line, font=fonts["card_body"])
+        if (bbox[2] - bbox[0]) > max_line_w and "," in line:
+            parts = line.split(",")
+            mid = len(parts) // 2
+            p1 = ",".join(parts[:mid]) + ","
+            p2 = "   " + ",".join(parts[mid:]).strip()
+            draw.text((margin_x + 25, y_offset), p1, fill="#334155", font=fonts["card_body"])
+            y_offset += 22
+            draw.text((margin_x + 25, y_offset), p2, fill="#334155", font=fonts["card_body"])
+            y_offset += 24
+        else:
+            draw.text((margin_x + 25, y_offset), line, fill="#334155", font=fonts["card_body"])
+            y_offset += 25
 
     cur_y += 150
 
     # 6. Legal Certification & Preservation Box
-    draw.rectangle([margin_x, cur_y, margin_x + content_w, cur_y + 125], fill="#F0FDF4", outline="#86EFAC", width=1)
+    draw.rectangle([margin_x, cur_y, margin_x + content_w, cur_y + 115], fill="#F0FDF4", outline="#86EFAC", width=1)
     draw.text((margin_x + 20, cur_y + 10), "[ การรับรองมาตรฐานพยานหลักฐานอิเล็กทรอนิกส์ในชั้นศาล ]", fill="#166534", font=fonts["card_hdr"])
     legal_statements = [
         "1. เอกสารสำนวนนี้ประมวลผลด้วย PyMuPDF C-Binding Direct Streaming ควบคุมความสมบูรณ์พิกเซล",
@@ -212,7 +228,7 @@ def generate_executive_cover_image(case_info, page_num=1):
         "3. ปฏิบัติตาม พ.ร.บ.ธุรกรรมทางอิเล็กทรอนิกส์ พ.ศ. 2544 มาตรา 26, 28 และมาตรฐาน ISO/IEC 27037",
     ]
     for s_idx, stmt in enumerate(legal_statements):
-        draw.text((margin_x + 25, cur_y + 38 + (s_idx * 25)), stmt, fill="#15803D", font=fonts["card_body"])
+        draw.text((margin_x + 25, cur_y + 40 + (s_idx * 22)), stmt, fill="#15803D", font=fonts["card_body_sm"])
 
     # 7. Bottom Legal Disclaimer
     disclaimer_lines = [
@@ -267,23 +283,24 @@ def build_front_dossier_pdf(slip_index_json, output_front_pdf, start_page_num=1)
         "timestamp": datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S")
     }
 
-    # 1. Page 1: Cover Image
-    cover_img = generate_executive_cover_image(case_info, page_num=start_page_num)
+    # 1. Page 1: Cover Image (Labeled explicitly as COVER, not page 1)
+    cover_img = generate_executive_cover_image(case_info, page_num="COVER")
 
-    # 2. Pages 2..N: 10-Column Landscape Summary
+    # 2. Pages 2..N: 10-Column Landscape Summary (Labeled explicitly as สารบัญ-1, สารบัญ-2...)
     assembler = PDFAssembler(output_path=output_front_pdf)
     rows_per_page = 20
     chunks = [slip_data[i:i + rows_per_page] for i in range(0, max(len(slip_data), 1), rows_per_page)]
+    total_index_pages = len(chunks)
     
     summary_images = []
     for c_idx, chunk in enumerate(chunks):
-        p_num = start_page_num + 1 + c_idx
+        p_num = f"สารบัญ-{c_idx + 1}"
         assembler.add_10col_landscape_summary_page(
             item_names=[f"item_{i}" for i in range(len(chunk))],
             slip_data_list=chunk,
             mode="CHAT",
             page_num=p_num,
-            corroborated="ตารางสรุปการแนบสลิป (สารบัญหน้าแรก)"
+            corroborated=f"สารบัญสลิปธุรกรรม (แผ่นที่ {c_idx + 1}/{total_index_pages})"
         )
         summary_images.append(assembler.pdf_pages.pop())
 
@@ -304,30 +321,55 @@ def build_front_dossier_pdf(slip_index_json, output_front_pdf, start_page_num=1)
 def merge_cover_to_master_pdf(master_pdf_path, front_pdf_path, final_output_pdf):
     """
     High-speed merge using PyMuPDF C-Binding:
-    Inserts front_pdf at page 0 of master_pdf.
+    Inserts front_pdf at page 0 of master_pdf and attaches Logical Page Labels
+    so that PDF readers / print dialogs preserve 1:1 chat page numbering!
     """
-    print(f"\n📑 กำลังผสานหน้าปกและสารบัญ ({os.path.basename(front_pdf_path)}) เข้าเป็นหน้าแรกของ {os.path.basename(master_pdf_path)}...")
+    print(f"\n📑 กำลังผสานหน้าปกและสารบัญ ({os.path.basename(front_pdf_path)}) เข้ากับเล่มแชท ({os.path.basename(master_pdf_path)})...")
     t0 = time.time()
 
     doc_master = fitz.open(master_pdf_path)
     doc_front = fitz.open(front_pdf_path)
 
     new_doc = fitz.open()
-    # 1. Insert front dossier (Pages 1 to N)
+    # 1. Insert front dossier (Pages 1 to N_front)
     new_doc.insert_pdf(doc_front)
+    front_len = len(doc_front)
     # 2. Insert master chat pages
     new_doc.insert_pdf(doc_master)
 
-    new_doc.save(final_output_pdf)
+    # 3. Embed PDF Logical Page Labels:
+    # Page 0: "Cover"
+    # Pages 1..front_len-1: "สารบัญ-1", "สารบัญ-2", ...
+    # Pages front_len..end: "1", "2", "3", ... (Exactly matches chat 1:1!)
+    try:
+        labels = [
+            {"startpage": 0, "prefix": "Cover"},
+        ]
+        if front_len > 1:
+            labels.append({"startpage": 1, "prefix": "สารบัญ-", "style": "D", "firstpagenum": 1})
+        labels.append({"startpage": front_len, "style": "D", "firstpagenum": 1})
+        new_doc.set_page_labels(labels)
+    except Exception as e:
+        print(f"Note: Page label setting notice: {e}")
+
     total_pages = len(new_doc)
+    try:
+        new_doc.save(final_output_pdf)
+        elap = time.time() - t0
+        print(f"✅ ผสานสำเร็จด้วย PyMuPDF C-Binding ในเวลา: {elap:.2f} วินาที!")
+        print(f"📄 ไฟล์เล่มสมบูรณ์พร้อมหน้าปก: {final_output_pdf} (รวมทั้งหมด {total_pages:,} หน้า)")
+    except Exception as e:
+        print(f"⚠️ คำเตือน: ไม่สามารถบันทึกทับ {os.path.basename(final_output_pdf)} ได้ทันทีเนื่องจากไฟล์กำลังถูกเปิดในโปรแกรมอ่าน PDF (File Locked): {e}")
+        fallback_pdf = os.path.splitext(final_output_pdf)[0] + "_New_Updated.pdf"
+        try:
+            new_doc.save(fallback_pdf)
+            print(f"🚀 บันทึกลงไฟล์สำรองฉบับอัปเดตล่าสุดสำเร็จแทน -> {fallback_pdf} (รวมทั้งหมด {total_pages:,} หน้า)")
+        except Exception as e2:
+            print(f"Error saving fallback: {e2}")
 
     doc_master.close()
     doc_front.close()
     new_doc.close()
-
-    elap = time.time() - t0
-    print(f"✅ ผสานสำเร็จด้วย PyMuPDF C-Binding ในเวลา: {elap:.2f} วินาที!")
-    print(f"📄 ไฟล์เล่มสมบูรณ์พร้อมหน้าปก: {final_output_pdf} (รวมทั้งหมด {total_pages:,} หน้า)")
     return final_output_pdf
 
 
@@ -342,12 +384,30 @@ def main():
         print(f"Error: {slip_json} not found.")
         sys.exit(1)
 
-    # 1. Build front dossier PDF
-    build_front_dossier_pdf(slip_json, front_pdf, start_page_num=1)
+    # 1. Build front dossier PDF as standalone printable Index Dossier:
+    build_front_dossier_pdf(slip_json, front_pdf)
+    print(f"📄 [PRINT-READY DOSSIER COVER & INDEX]: {front_pdf}")
+    print(f"   (ชุดหน้าปกและสารบัญแยกเฉพาะ {front_pdf} สำหรับพิมพ์ใส่หัวแฟ้ม)")
 
-    # 2. Merge to master PDF
+    # Save preview image of page 0
+    try:
+        c_doc = fitz.open(front_pdf)
+        if len(c_doc) > 0:
+            pix = c_doc[0].get_pixmap(dpi=150)
+            preview_p = os.path.join(out_dir, "test_cover_page_preview.png")
+            pix.save(preview_p)
+            print(f"📸 Saved Cover Page Preview -> {preview_p}")
+        c_doc.close()
+    except Exception as e:
+        print(f"Note: Could not save preview image: {e}")
+
+    # 2. Merge with logical page labels
     if os.path.exists(master_pdf):
         merge_cover_to_master_pdf(master_pdf, front_pdf, final_pdf)
+        print(f"📄 [PRINT-READY CHAT 1:1]: {master_pdf}")
+        print(f"   (เล่มแชท 2,557 หน้าล้วน หน้า 1 ใน PDF = แชทหน้า 1 ตรงเป๊ะ 100% สำหรับสั่งพิมพ์)")
+        print(f"📄 [ALL-IN-ONE MASTER DOSSIER]: {final_pdf}")
+        print(f"   (เล่มรวมสมบูรณ์พร้อม Logical Page Labels: หน้า 64 ในโปรแกรมพิมพ์ = แชทหน้า 64)")
 
 
 if __name__ == "__main__":

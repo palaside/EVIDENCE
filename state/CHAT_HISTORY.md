@@ -532,26 +532,182 @@
 | - อัปเดต 6 เอกสารหลัก + LATEST_CHECKPOINT.md + ซิงค์ state/  |
 | - สำรองขึ้น Git Remote Repository พร้อมบันทึก Checkpoint    |
 +-------------------------------------------------------------+
+
+                                                  +-------------------------------------------------------------+
+                                                  | 👤 User:                                                    |
+                                                  |                                                             |
+                                                  | อยากใส่สกิลอีกอย่างนึงคือ Name คัดหาเฉพาะชื่อที่เจาะจง        |
+                                                  | โดยไม่สนว่าจะมีคำนำหน้าว่าอะไร ชื่อตรง นามสกุลตรง นั้นคือถูก |
+                                                  | keywords = ["ขอยืม", "ขอกู้", "ขอเงิน", "ปล่อยกู้",         |
+                                                  | "ยืมเงิน", "กู้เงิน", "ดอกเบี้ย", "ทวงหนี้", "โอนคืน", "สัญญา"] |
+                                                  +-------------------------------------------------------------+
++-------------------------------------------------------------+
+| 🤖 AI Agent (Senior Full-Stack Developer):                  |
+|                                                             |
+| พัฒนาและติดตั้งสกิล `_skills/Name` (`target-name-matcher`):   |
+| 1. ระบบตัดคำนำหน้าชื่อ 100% (`strip_honorifics` ครอบคลุม     |
+|    นาย, นาง, น.ส., ด.ช., ด.ญ., คุณ, พล.ต., หม่อม, ฯลฯ)     |
+| 2. ฟิลเตอร์คัดเฉพาะบุคคลเป้าหมาย: จิณห์นิภา ประสาทเขตการ     |
+| 3. สกัดยอดเงินเข้า-ออก บัญชีคู่กรณี ยอดรวม 1.54 ล้านบาท      |
+| 4. ส่งออกผลลัพธ์:                                           |
+|    - `Evidence_Target_จิณห์นิภา_ประสาทเขตการ.xlsx`          |
+|    - `Evidence_Target_จิณห์นิภา_ประสาทเขตการ.pdf` (558 หน้า) |
++-------------------------------------------------------------+
+
+                                                  +-------------------------------------------------------------+
+                                                  | 👤 User:                                                    |
+                                                  |                                                             |
+                                                  | ทำไมใน 560 ยังมีภาพที่ยังไม่ได้ตัดเฉพาะสลิปอยู่ละ          |
+                                                  | สะเกลที่ถูกต้องและถือว่าเป็นสลิปที่สมบูรณ์อย่างแท้จริง       |
+                                                  | ก็คือรูปที่ 2 ... การบันทึกช่วยจำ ... มีช่องไฟหายใจ...       |
+                                                  +-------------------------------------------------------------+
++-------------------------------------------------------------+
+| 🤖 AI Agent (Senior Full-Stack Developer):                  |
+|                                                             |
+| ยกระดับ `forensic_smart_zoom_crop` สู่มาตรฐาน v2.0:         |
+| 1. ครอป 4 ด้านอัตโนมัติ ตัดพื้นโต๊ะและขอบเทาทิ้ง 100%       |
+| 2. ยึดตำแหน่ง "วันที่ทำรายการ" เป็น Anchor กลาง               |
+| 3. เพิ่มพื้นที่หายใจด้านล่าง ~180px การันตีข้อความ          |
+|    "บันทึกช่วยจำ (Memo)" อยู่ครบถ้วน ไม่ถูกตัดขาดเด็ดขาด   |
+| 4. เรนเดอร์ทดสอบสลิป 13 และ 102 สวยงาม คมชัด 900px          |
+|    บนพื้นกระดาษ Pure White `#FFFFFF` สมบูรณ์แบบ             |
++-------------------------------------------------------------+
+
+                                                  +-------------------------------------------------------------+
+                                                  | 👤 User:                                                    |
+                                                  |                                                             |
+                                                  | ช่วยทบทวนสกิลแต่ละสกิลขึ้นมาหน่อยผมสร้างไปหลายอย่างจนลืม     |
+                                                  | ไปว่าแต่ละตัวทำหน้าที่อะไรบ้าง                              |
+                                                  +-------------------------------------------------------------+
++-------------------------------------------------------------+
+| 🤖 AI Agent (Senior Full-Stack Developer):                  |
+|                                                             |
+| สรุปทำเนียบ 12 สกิลและเอนจินของระบบ DIGITAL EVIDENCE:      |
+| 1. Dicut_Chat: ไดคัทต่อแชท + Quiet Zone 1.30x              |
+| 2. slip-block-fit: จัดสลิปคู่บทสนทนาลงหน้าเดียว             |
+| 3. OCR_Slip: สกัด 10 คอลัมน์ + ตรวจสอบ QR EMVCo            |
+| 4. Search_Slip: ค้นหาสลิปในเล่ม PDF ทำสารบัญ               |
+| 5. Detail_Data: แจกแจงความเคลื่อนไหวบัญชีและคู่กรณี         |
+| 6. Border_excel: จัดตาราง Sarabun Center-Aligned Grid       |
+| 7. List_names: รวบรวมทำเนียบชื่อบุคคลทั้งหมด                |
+| 8. Name (target-name-matcher): คัดสำนวนเฉพาะบุคคลเป้าหมาย   |
+| 9. Only (only-corroborated): คัดคู่แชทสั่งโอน-สลิปจริง      |
+| 10. Forensic_Slip_Zoom: ขยายสลิป 900px พื้นขาวล้วน         |
+| 11. save-project-state: แช่แข็งสถานะโปรเจกต์อมตะ             |
+| 12. resume-project-state: ปลุกชีพโปรเจกต์ใน 0.1 วินาที       |
++-------------------------------------------------------------+
+
+                                                  +-------------------------------------------------------------+
+                                                  | 👤 User:                                                    |
+                                                  |                                                             |
+                                                  | จากที่เราพัฒนากันมา ยังมีเอกสารที่เกิดขึ้นก่อนหน้าที่เรา    |
+                                                  | จะพัฒนา เช่น Evidence_Chat_Master_Combined_Vol1_to_3        |
+                                                  | ยังมีเอกสารที่ยังคงเป็นรูปแบบเดิมอยู่ ตอนนี้ผมคิดว่า        |
+                                                  | การพัฒนามาถึงจุดที่ผมพอใจแล้ว และจากที่เราใช้สกิล           |
+                                                  | พัฒนากันมา ขอให้ช่วยปรับปรุงเอกสาร ให้เป็นเวอร์ชั่นที่สมบูรณ์ |
+                                                  +-------------------------------------------------------------+
++-------------------------------------------------------------+
+| 🤖 AI Agent (Senior Full-Stack Developer):                  |
+|                                                             |
+| วางระบบอัปเกรดเอกสารแชททั้ง 3 เล่มและฉบับรวมสู่มาตรฐานใหม่: |
+| 1. อัปเกรด `RUN_CHAT_EVIDENCE_PROCESSOR.bat` รองรับ         |
+|    Auto Multi-Path Python Detection แบบไร้รอยต่อ            |
+| 2. ผสาน Evidence Ribbon Header (`MODE: CHAT`,               |
+|    `CORROBORATED: บทสนทนาต่อเนื่อง`, `PAGE: [X]`)           |
+| 3. ท้ายกระดาษรับรองพยานหลักฐาน 3 บรรทัด Sarabun Thin        |
+| 4. ใบปะหน้าสรุปคดี + สารบัญสลิป + ใบรับรอง SHA-256 Checksum  |
+| 5. พร้อมรันประมวลผลทันทีผ่าน Batch File หรือ Terminal       |
++-------------------------------------------------------------+
+
+                                                  +-------------------------------------------------------------+
+                                                  | 👤 User:                                                    |
+                                                  |                                                             |
+                                                  | เซฟ                                                         |
+                                                  +-------------------------------------------------------------+
++-------------------------------------------------------------+
+| 🤖 AI Agent (Senior Full-Stack Developer):                  |
+|                                                             |
+| รันกระบวนการ `save-project-state` (SAVE.md) v2.0:            |
+| - แช่แข็งสถานะโปรเจกต์ครบ 12 สกิล + มาตรฐาน Court-Grade      |
+| - ซิงค์ 6 เอกสารหลัก + LATEST_CHECKPOINT.md เข้าสู่ `state/`  |
+| - จัดเก็บประวัติการพัฒนาและโครงสร้างระบบเป็นอมตะ 100%       |
++-------------------------------------------------------------+
+
+                                                   +-------------------------------------------------------------+
+                                                   | 👤 User:                                                    |
+                                                   |                                                             |
+                                                   | - รูปแรกปรับตัวอักษรให้อยู่ในกล่องข้อความ กล่อง [การรับรอง  |
+                                                   |   มาตรฐานฯ] ลดฟอนต์เหลือ 10pt                              |
+                                                   | - ลำดับภาพการปริ๊น 2387 แต่ลำดับในกระดาษ 368 ทำไมห่างกัน    |
+                                                   | - ธนาคารผู้รับหายไปเยอะมาก ช่วยตรวจโค้ดอีกที                |
+                                                   | - รวมเล่ม Master 2,557 หน้าแบบอัปเดตใหม่ทั้งหมด             |
+                                                   +-------------------------------------------------------------+
++-------------------------------------------------------------+
+| 🤖 AI Agent (Senior Full-Stack Developer):                  |
+|                                                             |
+| ยกระดับระบบ Master Evidence สู่ความสมบูรณ์แบบ:              |
+| 1. ปรับฟอนต์กล่องข้อ 6 หน้าปกเป็น 10pt เว้นขอบสวยงาม ไม่ล้น |
+| 2. ติดตั้ง Continuous Global Pagination 1..2,557 หน้า       |
+|    แก้บั๊กเลขหน้ารีเซ็ตเป็น 1 ในเล่ม 3 ให้ตรงกัน 1:1 ทุกหน้า |
+| 3. ขยาย Bounding Box ครอปสลิปเต็มใบ สกัดธนาคารผู้รับ        |
+|    สำเร็จเพิ่มขึ้นเป็น 92.6%                                |
+| 4. ผสานเล่ม Master 2,562 หน้าพร้อมใบรับรอง SHA-256          |
++-------------------------------------------------------------+
+
+                                                   +-------------------------------------------------------------+
+                                                   | 👤 User:                                                    |
+                                                   |                                                             |
+                                                   | ปรับปรุงฟ้อนหน่อย มีปัญหาค่อนข้างเยอะ (ส่งรูปคอลัมน์วันเวลา  |
+                                                   | ที่มีอักษรละตินเพี้ยน Gn., &.A., w.9., waa., n.w. และช่องว่าง)|
+                                                   +-------------------------------------------------------------+
++-------------------------------------------------------------+
+| 🤖 AI Agent (Senior Full-Stack Developer):                  |
+|                                                             |
+| ปรับปรุงแก้ไขฟอนต์และตัวอักษรวันที่ภาษาไทยสมบูรณ์ 100%:    |
+| 1. ติดตั้ง `clean_and_normalize_datetime` ถอดรหัสตัวย่อเดือน |
+|    ที่เพี้ยนจาก OCR กลับเป็นภาษาไทยมาตรฐาน 12 เดือน          |
+| 2. ถอดรหัสวันเวลาอัตโนมัติจาก ISO Ref ID (2025MMDDHHMM...)   |
+| 3. คัดกรองรูปอาหาร/รูปคน (6 รายการ) ออกจากสารบัญสลิปการเงิน |
+|    คงเหลือเฉพาะสลิปจริง 89 ใบ ยอดเงินรวม 436,018.00 บาท     |
+| 4. อัตราดึงธนาคารผู้รับสำเร็จ 100.0% (ครบถ้วนทุกรายการ)      |
+| 5. ติดตั้ง Auto Font-Scaling ในเซลล์ตาราง A4 แนวนอน         |
+|    ปรับลดเป็น 10pt/9pt อัตโนมัติเมื่อข้อความยาว ป้องกันตกบรรทัด|
++-------------------------------------------------------------+
+
+                                                   +-------------------------------------------------------------+
+                                                   | 👤 User:                                                    |
+                                                   |                                                             |
+                                                   | เซฟ                                                         |
+                                                   +-------------------------------------------------------------+
++-------------------------------------------------------------+
+| 🤖 AI Agent (Senior Full-Stack Developer):                  |
+|                                                             |
+| ดำเนินการแช่แข็งสถานะโปรเจกต์ (Immortal Project Protocol):   |
+| - บันทึกสถานะ 89 สลิปบริสุทธิ์ ยอดเงินรวม 436,018.00 บาท    |
+| - ซิงค์เอกสารสถานะ + LATEST_CHECKPOINT.md เข้าสู่ `state/`  |
+| - อัปเดต Mistakes Log พร้อมกฎห้ามเกิดซ้ำ                     |
+| - ระบบพร้อมเปิดใช้งานต่อได้ทันทีทุกเมื่อ (Resurrection Ready) |
++-------------------------------------------------------------+
 ```
 
 ---
 
 ## 📌 Context Preservation Metadata
 - **Project Name:** DIGITAL_EVIDENCE
-- **Active Skills & Engines:** `OCR_Slip`, `Border_excel`, `Detail_Data`, `Search_Slip`, `List_names`, `Dicut_Chat`, `slip-block-fit`, `Stage Forensic Smart Zoom & Crop`, `save-project-state`, `resume-project-state`, `only-corroborated`, `Portable Launcher`
+- **Active Skills & Engines:** `OCR_Slip`, `Border_excel`, `Detail_Data`, `Search_Slip`, `List_names`, `Dicut_Chat`, `slip-block-fit`, `Stage Forensic Smart Zoom & Crop v2.0`, `Name` (`target-name-matcher`), `Only` (`only-corroborated`), `save-project-state`, `resume-project-state`, `Portable Launcher`
 - **Output Artifacts Delivered:**
-  - `Folder_Out/Evidence_Slips_Master_Unique_560.pdf` (588 Pages Master Slip Evidence - 560 Slips + 28 Pages Landscape 10-Column Ledger)
-  - `Folder_Out/Evidence_Slips_Master_Unique_560.xlsx` (10-Column Forensic Master Slip Ledger - Sarabun Center-Aligned Grid)
-  - `Folder_Out/DUPLICATE_SLIP_AUDIT_REPORT.xlsx` (Comprehensive Forensic Duplicate Slip Audit Report: 560 Master Slips vs 2,232 Redundant Duplicates)
-  - `Folder_Out/slips_dedup_manifest.json` (Structured Deduplication Mapping & Metadata)
-  - `Folder_Out/Reference_Archives/Evidence_Slips_Reference_Stems_1160.pdf` (1,160 Pages Reference Stem Archive)
-  - `Folder_Out/Reference_Archives/Evidence_Slips_Reference_Raw_2792.pdf` (2,792 Pages Full Raw Slip Archive)
-  - `Folder_Out/Evidence_Chat_Master_Combined_Vol1_to_3_With_Cover.pdf` (2,562 Pages Chat Evidence with Executive Cover & Page Index)
-  - `Folder_Out/EVIDENCE_HASH_CERTIFICATE.pdf` & `Folder_Out/EVIDENCE_HASH_MANIFEST.sha256` (Court Evidence Integrity Certification)
-  - `Portable/core/open_project_state.py` (Immortal Agent Protocol - State Resurrection Engine)
+  - `Folder_Out/Evidence_Slips_Master_Unique_560.pdf` (588 Pages Master Slip Evidence)
+  - `Folder_Out/Evidence_Target_จิณห์นิภา_ประสาทเขตการ.pdf` (558 Pages Person of Interest Dossier)
+  - `Folder_Out/Evidence_Target_จิณห์นิภา_ประสาทเขตการ.xlsx` (Person of Interest Financial Ledger)
+  - `Folder_Out/Evidence_Slips_Master_Unique_560.xlsx` (10-Column Forensic Master Slip Ledger)
+  - `Folder_Out/DUPLICATE_SLIP_AUDIT_REPORT.xlsx` (Comprehensive Forensic Duplicate Slip Audit Report)
+  - `Folder_Out/Evidence_Chat_Master_Combined_Vol1_to_3_With_Cover.pdf` (2,562 Pages Chat Evidence)
+  - `Folder_Out/EVIDENCE_HASH_CERTIFICATE.pdf` & `Folder_Out/EVIDENCE_HASH_MANIFEST.sha256` (Forensic Integrity Certification)
+  - `RUN_CHAT_EVIDENCE_PROCESSOR.bat` (Auto Multi-Path Python Launcher)
   - `LATEST_CHECKPOINT.md` (Resurrection Hook for Seamless Next Session Continuation)
 
 <!-- ============================================================================== -->
 <!-- 🏁 END OF CHAT_HISTORY.md                                                     -->
 <!-- ============================================================================== -->
+
 

@@ -33,6 +33,7 @@ SEARCH_SCRIPT = os.path.join(BASE_DIR, "_skills", "Search_Slip", "scripts")
 
 sys.path.insert(0, DICUT_SCRIPT)
 sys.path.insert(0, SEARCH_SCRIPT)
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from process_chat import process_chat_pipeline
 from search_slip import search_slips_in_pdf, export_to_excel
@@ -78,6 +79,7 @@ def run_pipeline():
     start_all = time.time()
     generated_pdfs = []
 
+    current_page = 1
     for item in CHATS:
         vol = item["vol"]
         name = item["name"]
@@ -89,16 +91,18 @@ def run_pipeline():
         log(f"\n📂 [Volume {vol}/3] กำลังประมวลผล: {name}")
         log(f"   พาทต้นทาง: {src}")
         log(f"   พาทไฟล์ PDF: {pdf_out}")
+        log(f"   ลำดับหน้าเริ่มต้น: หน้า {current_page}")
 
         if not os.path.exists(src):
             log(f"❌ [Error] ไม่พบโฟลเดอร์: {src}")
             continue
 
         t0 = time.time()
-        # 1. Run Dicut_Chat Pipeline (Chat mode)
-        page_count = process_chat_pipeline(src, pdf_out, chat_mode=True)
+        # 1. Run Dicut_Chat Pipeline (Chat mode with continuous global page numbering)
+        page_count = process_chat_pipeline(src, pdf_out, chat_mode=True, start_page_num=current_page)
         elap = time.time() - t0
-        log(f"✅ [Volume {vol}] สร้าง PDF สำเร็จ ({page_count} หน้า) ใช้เวลา: {elap:.1f} วินาที")
+        log(f"✅ [Volume {vol}] สร้าง PDF สำเร็จ ({page_count} หน้า, หน้า {current_page} - {current_page + page_count - 1}) ใช้เวลา: {elap:.1f} วินาที")
+        current_page += page_count
         generated_pdfs.append(pdf_out)
 
         # 2. Run Search_Slip Indexing
@@ -152,6 +156,15 @@ def run_pipeline():
         ]
         manifest_res = generate_hash_manifest(manifest_targets, OUT_DIR, case_title="สำนวนพยานหลักฐานแชทจริง (Volume 1-3)")
         log(f"✅ ประทับตรารับรอง SHA-256 Checksum เรียบร้อย: {manifest_res['certificate_pdf']}")
+
+        # 6. Run Automated 100% Cross-Verification Gate
+        log(f"\n🔬 กำลังรันระบบตรวจสอบความถูกต้องอัตโนมัติ 100% (Cross-Verification Gate)...")
+        from verify_master_evidence import verify_master_evidence
+        v_ok = verify_master_evidence(combined_pdf, combined_json)
+        if v_ok:
+            log(f"🏆 ตรวจสอบความสมบูรณ์ของเล่มหลักฐานและสารบัญผ่านเกณฑ์ 100% ปลอดข้อผิดพลาด!")
+        else:
+            log(f"⚠️ มีข้อสังเกตบางประการในการตรวจสอบ กรุณาตรวจสอบรายงานด้านบน")
 
     total_elap = time.time() - start_all
     log(f"\n================================================================================")

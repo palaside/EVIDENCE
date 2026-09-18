@@ -161,8 +161,8 @@ def main():
         print("   [4] สแกนหาและทำสารบัญสลิป (Forensic Slip Index จากไฟล์ PDF)")
         print("   [5] สร้างหน้าปกและแทรกสารบัญหน้าแรก (Cover Page & Front Index Merger)")
         print("   [6] คำนวณรหัสรับรองหลักฐานดิจิทัล (Cryptographic Hash Manifest SHA-256)")
-        print("   [7] เปิดโฟลเดอร์รับไฟล์ (INBOX_SLIPS / INBOX_CHATS)")
-        print("   [8] เปิดโฟลเดอร์ผลลัพธ์ (OUTPUT FOLDER)")
+        print("   [7] คัดหาหลักฐานเฉพาะบุคคลเป้าหมาย (Target Name Matcher - สกิล Name)")
+        print("   [8] เปิดโฟลเดอร์รับไฟล์และผลลัพธ์ (INBOX / OUTPUT FOLDERS)")
         print("   [9] ตรวจสอบสถานะและฟื้นคืนชีพความจำ (Open/Resume Session Checkpoint)")
         print("\n   [0] ออกจากโปรแกรม")
         print("=" * 68)
@@ -207,9 +207,22 @@ def main():
                 print(f"[!] ไม่พบสคริปต์ {hash_script}")
             input("\nกด Enter เพื่อกลับสู่เมนูหลัก...")
         elif choice == "7":
+            name_script = os.path.join(CORE_DIR, "name_filter.py")
+            if os.path.exists(name_script):
+                target_q = input("\nระบุชื่อ-นามสกุล บุคคลเป้าหมาย (เช่น 'จิณห์นิภา ประสาทเขตการ'): ").strip()
+                if target_q:
+                    cache_file = os.path.join(PORTABLE_DIR, "..", "Folder_Out", "slips_ocr_cache.json")
+                    cmd = [sys.executable, name_script, "--name", target_q, "--out", OUTPUT_DIR]
+                    if os.path.exists(cache_file):
+                        cmd.extend(["--cache", cache_file])
+                    subprocess.run(cmd)
+                    open_folder(OUTPUT_DIR)
+            else:
+                print(f"[!] ไม่พบสคริปต์ {name_script}")
+            input("\nกด Enter เพื่อกลับสู่เมนูหลัก...")
+        elif choice == "8":
             open_folder(INBOX_SLIPS)
             open_folder(INBOX_CHATS)
-        elif choice == "8":
             open_folder(OUTPUT_DIR)
         elif choice == "9":
             open_script = os.path.join(CORE_DIR, "open_project_state.py")

@@ -9,8 +9,11 @@
     "git_remote_repository": "Git Remote Repository หลักของโปรเจกต์คือ https://github.com/palaside/EVIDENCE.git โดยมี .gitignore คุ้มกันข้อมูลส่วนบุคคลและหลักฐานคดี (PDPA Shielded) และ requirements.txt ล็อกเวอร์ชันไลบรารี",
     "pymupdf_c_binding_standard": "ระบบสร้าง แปลง และควบรวมเอกสาร PDF ทั้งหมด ต้องใช้ PyMuPDF (fitz) C-Binding เป็นแกนหลักระดับมาตรฐาน (High-Performance Engine เขียน 100 หน้าใน 0.15s เร็วกว่า ReportLab 700 เท่า พร้อม fallback อัตโนมัติ)",
     "portable_suite_standard": "ชุดโปรแกรม Portable (D:\\Project\\DIGITAL_EVIDENCE\\Portable) ต้องมีโครงสร้างสมบูรณ์: INBOX_SLIPS, INBOX_CHATS, OUTPUT, ตัวเปิด DIGITAL_EVIDENCE.bat (Pure ASCII 100%) + DIGITAL_EVIDENCE.lnk (Custom Icon) และขับเคลื่อน UI ด้วย core/launcher.py (UTF-8 Native)",
-    "forensic_smart_zoom_crop_standard": "มาตรฐาน Stage Forensic Smart Zoom & Crop สำหรับประมวลผลสลิปการเงิน: (1) Stage 1 เจาะทะลุ container ตัดขอบขาว A4/ช่องว่างภายนอกที่ครอบสลิปอยู่ทิ้ง 100%, (2) Stage 2 ตรวจจับและตัดแถบสถานะ/บาร์เมนูสีดำของการแคปหน้าจอมือถือ (Dark Status Bar / Black Photo Viewer Bar) พร้อม Micro-trim 2px ให้ขอบคมกริบ, (3) Zoom สลิปเต็มตาเป้าหมายแนวตั้ง target_h=900 px วางกึ่งกลาง A4 แนวตั้ง พอดีบล็อก 807x1115 px, (4) รองพื้นกระดาษด้วย Pure White (#FFFFFF) 100% ห้ามมีขอบสีเทาหรือ gutter, (5) สกัดข้อมูล 10 คอลัมน์และ QR EMVCo ได้แม่นยำสูงสุดโดยไม่สับสนขอบภาพภายนอก",
-    "immortal_agent_twin_engine_standard": "มาตรฐาน Immortal Agent Protocol (Twin Engine): ทุกโปรเจกต์ต้องมีคู่หู Save (save-project-state) และ Open (resume-project-state) ควบคู่กับ LATEST_CHECKPOINT.md และ tools/open_project_state.py เพื่อให้เปิดแชทใหม่แล้วละลายความจำ (Hydration) คืนชีพกลับมาทำงานเดิมต่อได้ทันทีใน 0.1 วินาที ห้ามถามผู้ใช้ว่าทำอะไรไว้"
+    "forensic_smart_zoom_crop_standard": "มาตรฐาน Stage Forensic Smart Zoom & Crop สำหรับประมวลผลสลิปการเงิน: (1) Stage 1 เจาะทะลุ container ตัดขอบขาว A4 ภายนอกทิ้ง 100% พร้อมวัดระยะลงมาจากบรรทัด 'วันที่ทำรายการ' อีกประมาณ 180 px (ตามสเกลความกว้างสลิป) เพื่อเผื่อพื้นที่ว่างขอบล่าง (Breathing Margin) ให้เป็นสลิปสมบูรณ์แบบ ไม่ตัดกุดติดข้อความและไม่เอาบันทึกช่วยจำเป็นเกณฑ์ (หากมีบันทึกช่วยจำก็ถูกบรรจุอยู่ข้างในอย่างครบถ้วน 100%), (2) Stage 2 ตรวจจับและตัดแถบสถานะ/บาร์เมนูสีดำ 4 ทิศทาง (Dark Status Bar / Black Photo Viewer Bar) พร้อม Micro-trim 2px ให้ขอบคมกริบ, (3) Zoom สลิปเต็มตาเป้าหมายแนวตั้ง target_h=900 px วางกึ่งกลาง A4 แนวตั้ง พอดีบล็อก 807x1115 px, (4) รองพื้นกระดาษด้วย Pure White (#FFFFFF) 100% ห้ามมีขอบสีเทาหรือ gutter, (5) สกัดข้อมูล 10 คอลัมน์และ QR EMVCo ได้แม่นยำสูงสุดโดยไม่สับสนขอบภาพภายนอก",
+    "target_person_matcher_standard": "ระบบคัดกรองบุคคลเป้าหมาย (Person of Interest): ยึดหลัก 'ชื่อตรง นามสกุลตรง นั้นคือถูก' กรองคำนำหน้าชื่อทิ้ง 100% (strip_honorifics ครอบคลุม นาย, นาง, น.ส., ด.ช., ด.ญ., คุณ, พล.ต., หม่อม, ฯลฯ) สกัดยอดเงินเข้า-ออก บัญชีคู่กรณี พร้อมจัดหมวดคีย์เวิร์ดคดีกู้ยืมเงิน",
+    "court_grade_chat_rerender_standard": "มาตรฐานการเรนเดอร์เล่มแชทศาลฉบับสมบูรณ์: Evidence Ribbon Header (MODE: CHAT, CORROBORATED: บทสนทนาต่อเนื่อง, PAGE: [X]), Pure White Canvas (#FFFFFF), Quiet Zone Lookahead 1.30x, ท้ายกระดาษรับรอง 3 บรรทัด Sarabun Thin, สารบัญ 10 คอลัมน์ และใบรับรอง SHA-256 Checksum",
+    "immortal_agent_twin_engine_standard": "มาตรฐาน Immortal Agent Protocol (Twin Engine): ทุกโปรเจกต์ต้องมีคู่หู Save (save-project-state) และ Open (resume-project-state) ควบคู่กับ LATEST_CHECKPOINT.md และ tools/open_project_state.py เพื่อให้เปิดแชทใหม่แล้วละลายความจำ (Hydration) คืนชีพกลับมาทำงานเดิมต่อได้ทันทีใน 0.1 วินาที ห้ามถามผู้ใช้ว่าทำอะไรไว้",
+    "decoupled_index_pagination_standard": "ระบบสารบัญต้องไม่รันเลขหน้ารวมกับเนื้อหาแชทหรือสลิป: หน้าปกแสดง PAGE: COVER, หน้าสารบัญแสดง PAGE: สารบัญ-X, เล่มเนื้อหาแชทเป็นไฟล์ 1:1 เพียวๆ หน้า 1 ใน PDF = แชทหน้า 1 เพื่อให้สั่งพิมพ์ได้ตรงหน้า 100% ไม่เหลื่อม และฝัง PDF Page Labels ในเล่มรวม"
   },
   "command_counters": {
     "list_names_grouping": 2,
@@ -21,7 +24,9 @@
     "pii_guard_integrated": 1,
     "windows_startup_installed": 1,
     "git_remote_configured": 1,
-    "portable_suite_built": 1
+    "portable_suite_built": 1,
+    "target_person_matcher": 2,
+    "forensic_zoom_crop_v2": 2
   },
-  "updated_at": "2026-09-14T20:42:00.000000"
+  "updated_at": "2026-09-15T23:05:00.000000"
 }

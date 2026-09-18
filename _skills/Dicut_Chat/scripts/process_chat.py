@@ -39,17 +39,18 @@ def forensic_smart_zoom_crop(img_bgr, tol=240):
     Stage Forensic Smart Zoom & Crop:
     Official standard for digital evidence processing of standalone slips and nested captures.
     
-    1. Stage 1 (Container Extraction):
-       - Clears extreme 3px border noise (e.g. Windows/phone screenshot window frame lines).
-       - Detects if evidence is embedded within an outer blank A4 canvas, paper scan, or excessive padding.
-       - Tightly crops to the outer bounding box of the active evidence block.
+    1. Stage 1 (Container Extraction & Forensic Bottom Margin):
+       - Strips outer blank A4 canvas, paper scan, or excessive padding.
+       - Identifies core slip boundary and detects the mandatory 'วันที่ทำรายการ' (Date/Time) baseline.
+       - Guarantees authentic card breathing space (~180px scaled to width) below 'วันที่ทำรายการ'
+         regardless of whether 'บันทึกช่วยจำ' (Memo) is present, preventing artificial truncation.
+       - If 'บันทึกช่วยจำ' exists, fully encompasses it with safe bottom breathing space.
        
-    2. Stage 2 (Mobile UI & Black Bar Elimination):
-       - Analyzes row brightness distribution across the cropped block.
-       - Detects dark/black mobile status bars, navigation bars, or photo viewer overlays (< 85 brightness).
-       - Automatically identifies the true start and end bounds of the financial slip with 2px micro-trim.
+    2. Stage 2 (Mobile UI & Dark Bar Elimination):
+       - Dynamic 4-sided scanning (top/bottom/left/right) up to 55% image height.
+       - Eliminates mobile status bars, photo viewer toolbars, and letterbox bars with 2px micro-trim.
        
-    Preserves 100% of the authentic slip content, QR codes, handwritten annotations, and visual stamps.
+    Preserves 100% of authentic slip content, QR codes, handwritten annotations, and visual card stamps.
     """
     if img_bgr is None or img_bgr.size == 0:
         return img_bgr
@@ -72,27 +73,83 @@ def forensic_smart_zoom_crop(img_bgr, tol=240):
                 concat_pts = np.vstack(valid_cnts)
                 bx, by, bw, bh = cv2.boundingRect(concat_pts)
                 if (bw * bh) < 0.92 * (w * h) and bw > 100 and bh > 100:
-                    img_bgr = img_bgr[by:by+bh, bx:bx+bw]
+                    scale = bw / 1024.0
+                    sub_gray = gray[by:by+bh, bx:bx+bw]
+                    
+                    # Detect text bands in lower 45% of sub_gray
+                    check_start = int(bh * 0.55)
+                    dark_counts = np.sum(sub_gray[check_start:, :] < 120, axis=1)
+                    text_rows = np.where(dark_counts > 20)[0]
+                    
+                    if len(text_rows) > 0:
+                        diffs = np.diff(text_rows)
+                        gap_idx = np.where(diffs > 12)[0]
+                        bands = []
+                        st = text_rows[0]
+                        for g in gap_idx:
+                            bands.append((st + check_start, text_rows[g] + check_start))
+                            st = text_rows[g+1]
+                        bands.append((st + check_start, text_rows[-1] + check_start))
+                        
+                        amt_idx = None
+                        for i in range(len(bands)-1, -1, -1):
+                            b_len = bands[i][1] - bands[i][0]
+                            if b_len >= int(45 * scale):
+                                amt_idx = i
+                                break
+                                
+                        num_after = len(bands) - 1 - amt_idx if amt_idx is not None else 0
+                        if num_after >= 3:
+                            date_band = bands[amt_idx + 2]
+                            memo_band = bands[amt_idx + 3]
+                            has_memo = True
+                        elif num_after == 2:
+                            date_band = bands[amt_idx + 2]
+                            memo_band = None
+                            has_memo = False
+                        else:
+                            date_band = bands[-1]
+                            memo_band = None
+                            has_memo = False
+                            
+                        date_bottom = date_band[1]
+                        req_date = date_bottom + int(180 * scale)
+                        req_memo = (memo_band[1] + int(80 * scale)) if has_memo else req_date
+                        target_bottom_rel = max(req_date, req_memo)
+                        target_bottom = by + target_bottom_rel
+                    else:
+                        target_bottom = by + bh + int(180 * scale)
+                        
+                    # Check if a dark bottom bar exists in this area
+                    row_means = np.mean(gray[by:min(h, target_bottom + 50), bx:bx+bw], axis=1)
+                    dark_rows = np.where(row_means < 85)[0]
+                    if len(dark_rows) > 0:
+                        dark_start = by + dark_rows[0]
+                        if dark_start < target_bottom:
+                            target_bottom = dark_start - 2
+                            
+                    target_bottom = min(h, max(by + bh, target_bottom))
+                    img_bgr = img_bgr[by:target_bottom, bx:bx+bw]
                     gray = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2GRAY)
                     h, w = img_bgr.shape[:2]
 
-        # --- Stage 2: Mobile Screenshot UI & Dark Bar Elimination ---
+        # --- Stage 2A: Mobile Screenshot UI & Horizontal Dark Bar Elimination ---
         row_means = np.mean(gray, axis=1)
-        has_dark_top = np.mean(row_means[:min(15, h)]) < 85
-        has_dark_bottom = np.mean(row_means[-min(15, h):]) < 85
+        has_dark_top = np.mean(row_means[:min(25, h)]) < 85
+        has_dark_bottom = np.mean(row_means[-min(25, h):]) < 85
         
         if has_dark_top or has_dark_bottom:
             top_cut = 0
             if has_dark_top:
-                for r in range(10, min(h // 2, 200)):
-                    if np.mean(row_means[r:r+4]) > 115:
+                for r in range(5, int(h * 0.55)):
+                    if np.mean(row_means[r:r+6]) > 115 and row_means[r] > 95:
                         top_cut = r
                         break
             
             bottom_cut = h
             if has_dark_bottom:
-                for r in range(h - 1, max(top_cut + 100, h // 2), -1):
-                    if np.mean(row_means[r-3:r+1]) > 85:
+                for r in range(h - 1, int(h * 0.45), -1):
+                    if np.mean(row_means[max(0, r-5):r+1]) > 95 and row_means[r] > 85:
                         bottom_cut = r + 1
                         break
             
@@ -102,6 +159,34 @@ def forensic_smart_zoom_crop(img_bgr, tol=240):
             
             if (bottom_cut - top_cut) >= 150:
                 img_bgr = img_bgr[top_cut:bottom_cut, :]
+                gray = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2GRAY)
+                h, w = img_bgr.shape[:2]
+
+        # --- Stage 2B: Vertical Dark Bar Elimination (Left & Right Letterboxing) ---
+        col_means = np.mean(gray, axis=0)
+        has_dark_left = np.mean(col_means[:min(15, w)]) < 85
+        has_dark_right = np.mean(col_means[-min(15, w):]) < 85
+
+        if has_dark_left or has_dark_right:
+            left_cut = 0
+            if has_dark_left:
+                for c in range(1, int(w * 0.25)):
+                    if np.mean(col_means[c:c+4]) > 110 and col_means[c] > 90:
+                        left_cut = c
+                        break
+
+            right_cut = w
+            if has_dark_right:
+                for c in range(w - 1, int(w * 0.75), -1):
+                    if np.mean(col_means[max(0, c-3):c+1]) > 110 and col_means[c] > 90:
+                        right_cut = c + 1
+                        break
+
+            left_cut = min(left_cut + 2, w - 10)
+            right_cut = max(right_cut - 2, left_cut + 10)
+
+            if (right_cut - left_cut) >= 150:
+                img_bgr = img_bgr[:, left_cut:right_cut]
                 
         return img_bgr
     except Exception:
@@ -616,8 +701,11 @@ class PDFAssembler:
         b_corrob = draw.textbbox((text_x, line2_y), "CORROBORATED : ", font=self.fonts["header_lbl"])
         draw.text((b_corrob[2], line2_y), corrob_str, fill="#111827", font=self.fonts["header_val"])
 
-        # Page number on right (ตัวเลขหน้าปกติ)
-        page_str = str(page_num) if page_num is not None else str(len(self.pdf_pages)+1)
+        # Page label on right (Decoupled from chat/slip content page numbers)
+        if page_num is not None:
+            page_str = str(page_num)
+        else:
+            page_str = f"สารบัญ-{len(self.pdf_pages)+1}"
         b_pval = draw.textbbox((0, 0), page_str, font=self.fonts["header_val"])
         b_plbl = draw.textbbox((0, 0), "PAGE : ", font=self.fonts["header_lbl"])
         total_page_w = (b_plbl[2] - b_plbl[0]) + (b_pval[2] - b_pval[0])
@@ -720,10 +808,21 @@ class PDFAssembler:
                 cell_bg = "#FEF9C3" if (mode_str == "CHAT" and i == 0 and v and v != "-") else bg_col
                 draw.rectangle([cur_x, row_y, cur_x + col_w[i], row_y + row_h], fill=cell_bg, outline="#E2E8F0" if mode_str == "CHAT" else "#D1D5DB", width=1)
                 if v:
+                    clean_v = re.sub(r"\s+", " ", str(v)).strip()
                     try:
                         font_used = self.fonts["table_header"] if (mode_str == "CHAT" and i == 0) else self.fonts["body"]
-                        t_box = draw.textbbox((0, 0), str(v), font=font_used)
+                        t_box = draw.textbbox((0, 0), clean_v, font=font_used)
                         tw = t_box[2] - t_box[0]
+                        max_w = col_w[i] - 6
+                        if tw > max_w:
+                            font_used = self.fonts["small"]
+                            t_box = draw.textbbox((0, 0), clean_v, font=font_used)
+                            tw = t_box[2] - t_box[0]
+                            if tw > max_w:
+                                font_used = self.fonts["xs"]
+                                t_box = draw.textbbox((0, 0), clean_v, font=font_used)
+                                tw = t_box[2] - t_box[0]
+
                         th = t_box[3] - t_box[1]
                         tx = cur_x + max(2, (col_w[i] - tw) // 2)
                         ty = row_y + max(1, (row_h - th) // 2) - 2
@@ -732,7 +831,7 @@ class PDFAssembler:
                         tx = cur_x + 5
                         ty = row_y + 6
                     text_color = "#B45309" if (mode_str == "CHAT" and i == 0) else "#111827"
-                    draw.text((tx, ty), str(v), fill=text_color, font=font_used)
+                    draw.text((tx, ty), clean_v, fill=text_color, font=font_used)
                 cur_x += col_w[i]
             row_y += row_h
 
@@ -805,7 +904,7 @@ class PDFAssembler:
             pass
 
 
-def process_chat_pipeline(input_path, output_pdf, slip_data_list=None, chat_mode=False):
+def process_chat_pipeline(input_path, output_pdf, slip_data_list=None, chat_mode=False, start_page_num=1):
     raw_images = []
     if os.path.isdir(input_path):
         for ext in ('*.png', '*.jpg', '*.jpeg', '*.PNG', '*.JPG', '*.JPEG'):
@@ -839,7 +938,7 @@ def process_chat_pipeline(input_path, output_pdf, slip_data_list=None, chat_mode
 
         with tempfile.TemporaryDirectory() as tmp:
             paths = []
-            global_page_idx = 0
+            global_page_idx = max(0, start_page_num - 1)
             slip_detected_count = 0
 
             for b_idx in range(total_batches):
@@ -876,7 +975,7 @@ def process_chat_pipeline(input_path, output_pdf, slip_data_list=None, chat_mode
                         has_slip, _ = detect_slip_in_image(arr)
                         if has_slip:
                             slip_detected_count += 1
-                            corrob_text = f"สลิปหลักฐานหน้าที่ {slip_detected_count} / สารบัญการเงิน ลำดับที่ {slip_detected_count}"
+                            corrob_text = "สลิปหลักฐานการโอนเงิน (แนบในบทสนทนา)"
 
                     assembler.add_single_page_image(arr, align="top", page_num=global_page_idx, mode="CHAT", corroborated=corrob_text)
                     page = assembler.pdf_pages.pop()
@@ -912,7 +1011,7 @@ def process_chat_pipeline(input_path, output_pdf, slip_data_list=None, chat_mode
 
     with tempfile.TemporaryDirectory() as tmp:
         paths = []
-        global_page_idx = 0
+        global_page_idx = max(0, start_page_num - 1)
 
         # 1. Add Each Slip on its own Dedicated Portrait Page (Center X, Center Y)
         for idx, img_p in enumerate(images_to_process):

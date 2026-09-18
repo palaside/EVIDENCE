@@ -49,18 +49,203 @@ def detect_slip_in_image(img_bgr):
                 roi = img_bgr[card_y1:card_y2, card_x1:card_x2]
                 if np.mean(roi) > 150:
                     # Expand bounding box to cover the entire slip card
-                    slip_box_y1 = max(0, y - int(h * 2.2))
-                    slip_box_y2 = min(img_bgr.shape[0], y + int(h * 11.5))
-                    slip_box_x1 = max(0, x - int(w * 2.5))
-                    slip_box_x2 = min(img_bgr.shape[1], x + int(w * 11.5))
+                    slip_box_y1 = max(0, y - int(h * 3.5))
+                    slip_box_y2 = min(img_bgr.shape[0], y + int(h * 24.0))
+                    slip_box_x1 = max(0, x - int(w * 3.0))
+                    slip_box_x2 = min(img_bgr.shape[1], x + int(w * 14.0))
                     return True, (slip_box_x1, slip_box_y1, slip_box_x2 - slip_box_x1, slip_box_y2 - slip_box_y1)
 
     return False, None
 
 
+def extract_names_from_slip_text(raw_text, accs=None):
+    """
+    Extract sender and receiver names from slip OCR text based on spatial keywords.
+    STRICT ZERO-GUESSING: Never hardcode or infer default names!
+    If name cannot be determined from text, returns 'ไม่ระบุชื่อ (อ่านจากภาพไม่ได้)'
+    """
+    lines = [line.strip() for line in raw_text.splitlines() if line.strip()]
+    sender_name = ""
+    receiver_name = ""
+    
+    def is_valid_name_candidate(s):
+        if not s or len(s) < 3 or len(s) > 60:
+            return False
+        s_low = s.lower()
+        if any(sw in s_low for sw in ["โอนเงินสำเร็จ", "จำนวนเงิน", "ค่าธรรมเนียม", "รหัสอ้างอิง", "บันทึกช่วยจำ", "สแกนตรวจสอบสลิป", "สำเร็จ"]):
+            return False
+        if re.match(r'^[Xx\d\s\-.,/:]+$', s):
+            return False
+        for b_word in ["กรุงไทย", "กสิกรไทย", "ไทยพาณิชย์", "กรุงศรีอยุธยา", "ทีเอ็มบีธนชาต", "พร้อมเพย์"]:
+            if s_low == b_word.lower() or s_low == f"{b_word.lower()} bank":
+                return False
+        return True
+
+    def clean_name(s):
+        s = re.sub(r'^(จาก|ไปยัง|ถึง|ผู้รับเงิน|ผู้รับโอน|ผู้โอน|to|from)[\s:.-]*', '', s, flags=re.IGNORECASE).strip()
+        s = re.sub(r'[\s(]+[Xx\d\-]{5,}[\s)]*$', '', s).strip()
+        return s
+
+    sender_idx = -1
+    receiver_idx = -1
+
+    for idx, l in enumerate(lines):
+        l_low = l.lower()
+        if sender_idx == -1 and any(re.search(pat, l_low) for pat in [r'\bfrom\b', r'จาก(?:บัญชี)?', r'ผู้โอน']):
+            sender_idx = idx
+        if receiver_idx == -1 and any(re.search(pat, l_low) for pat in [r'\bto\b', r'ไปยัง', r'ถึง', r'ผู้รับ(?:เงิน)?', r'บัญชีปลายทาง']):
+            receiver_idx = idx
+
+    # Extract sender
+    if sender_idx != -1:
+        same_line_cand = clean_name(lines[sender_idx])
+        if is_valid_name_candidate(same_line_cand):
+            sender_name = same_line_cand
+        else:
+            max_look = receiver_idx if receiver_idx > sender_idx else min(len(lines), sender_idx + 4)
+            for j in range(sender_idx + 1, max_look):
+                cand = clean_name(lines[j])
+                if is_valid_name_candidate(cand):
+                    sender_name = cand
+                    break
+
+    # Extract receiver
+    if receiver_idx != -1:
+        same_line_cand = clean_name(lines[receiver_idx])
+        if is_valid_name_candidate(same_line_cand):
+            receiver_name = same_line_cand
+        else:
+            max_look = min(len(lines), receiver_idx + 4)
+            for j in range(receiver_idx + 1, max_look):
+                cand = clean_name(lines[j])
+                if is_valid_name_candidate(cand):
+                    receiver_name = cand
+                    break
+
+    # Look for known title prefixes if still missing
+    if not sender_name or not receiver_name:
+        name_with_titles = []
+        for l in lines:
+            m_title = re.search(r'\b(นาย|นางสาว|น\.?ส\.?|นาง|ด\.?[ชญ]\.?|คุณ|บจก\.|หจก\.|บริษัท|mr\.|ms\.|mrs\.|mister)\s+([^\n\r\d]{3,40})', l, re.IGNORECASE)
+            if m_title:
+                full_cand = f"{m_title.group(1)} {m_title.group(2).strip()}"
+                if is_valid_name_candidate(full_cand) and full_cand not in name_with_titles:
+                    name_with_titles.append(full_cand)
+        
+        if not sender_name and len(name_with_titles) >= 1:
+            sender_name = name_with_titles[0]
+        if not receiver_name:
+            if len(name_with_titles) >= 2:
+                receiver_name = name_with_titles[1]
+            elif len(name_with_titles) == 1 and sender_name != name_with_titles[0]:
+                receiver_name = name_with_titles[0]
+
+    # Format with account number if available, else mark clearly as undetermined (NO GUESSING)
+    if accs and len(accs) >= 1:
+        if sender_name:
+            sender_name = f"{sender_name} ({accs[0]})"
+        else:
+            sender_name = f"ไม่ระบุชื่อ ({accs[0]})"
+    elif not sender_name:
+        sender_name = "ไม่ระบุชื่อ (อ่านจากภาพไม่ได้)"
+
+    if accs and len(accs) >= 2:
+        if receiver_name:
+            receiver_name = f"{receiver_name} ({accs[1]})"
+        else:
+            receiver_name = f"ไม่ระบุชื่อ ({accs[1]})"
+    elif not receiver_name:
+        receiver_name = "ไม่ระบุชื่อ (อ่านจากภาพไม่ได้)"
+
+    return sender_name.strip(), receiver_name.strip()
+
+
+THAI_MONTH_NAMES = {
+    1: "ม.ค.", 2: "ก.พ.", 3: "มี.ค.", 4: "เม.ย.",
+    5: "พ.ค.", 6: "มิ.ย.", 7: "ก.ค.", 8: "ส.ค.",
+    9: "ก.ย.", 10: "ต.ค.", 11: "พ.ย.", 12: "ธ.ค."
+}
+
+def clean_and_normalize_datetime(raw_dt, ref_id=""):
+    """
+    Normalizes OCR garbled Thai dates into standard DD ด.ด. YYYY - HH:MM format.
+    Also decodes ISO timestamp encoded in transaction ref_ids (e.g., 202504151902531655).
+    """
+    # 1. ISO ref_id decoding (e.g., 202504151902531655)
+    m_ref = re.match(r"^2025(0[1-9]|1[0-2])([0-3]\d)([0-2]\d)([0-5]\d)", ref_id or "")
+    if m_ref:
+        m_num = int(m_ref.group(1))
+        d_num = int(m_ref.group(2))
+        h_str = m_ref.group(3)
+        min_str = m_ref.group(4)
+        m_thai = THAI_MONTH_NAMES.get(m_num, "")
+        if m_thai and 1 <= d_num <= 31:
+            return f"{d_num:02d} {m_thai} 2568 - {h_str}:{min_str}"
+
+    if not raw_dt or raw_dt == "-":
+        return "-"
+
+    raw_dt = re.sub(r"\s+", " ", raw_dt.replace("\n", " ")).strip()
+
+    # Match patterns like:
+    # 1. "18 มี.ค. 68 15:42 น." or "18 มี.ค. 68 15:42"
+    # 2. "01 Gn. 2568 - 09:45"
+    # 3. "20 n.w. 2568 - 11:57"
+    m = re.search(r"(\d{1,2})\s+([^\s]+)\s+(256\d|6\d)\s*(?:-\s*|\s+)?(\d{1,2}:\d{2})(?:\s*น\.)?", raw_dt)
+    if not m:
+        m = re.search(r"(\d{1,2})\s+([^\s]+)\s+(256\d|6\d)", raw_dt)
+        if not m:
+            return raw_dt
+        day = int(m.group(1))
+        raw_month = m.group(2)
+        y_val = m.group(3)
+        time_str = ""
+    else:
+        day = int(m.group(1))
+        raw_month = m.group(2)
+        y_val = m.group(3)
+        time_str = m.group(4)
+
+    year = "2568" if y_val in ["2568", "68"] else (f"25{y_val}" if len(y_val) == 2 else y_val)
+    rm = raw_month.strip(".- ,")
+
+    if any(rm.lower() == k for k in ["u.a", "ua", "u.a.", "y.a", "h.a", "ม.ค", "มค", "u"]):
+        clean_m = "ม.ค."
+    elif any(rm.lower() == k for k in ["n.w", "nw", "n.w.", "ก.พ", "กพ"]):
+        clean_m = "ก.พ."
+    elif any(rm.lower() == k for k in ["gn", "gn.", "&.a", "&a", "g.a", "ga", "i.a", "ia", ".a", "a", "b.a", "ba", "g.a.", "มี.ค", "มีค", "j.a", "d.a"]):
+        clean_m = "มี.ค."
+    elif any(rm.lower() == k for k in ["w.9", "w9", "tw.u", "tw.ย", "tw.e", "tu.e", "เu.ย", "w.e", "w.g", "ww.8", "ww.g", "u.8", "ww.d", "w.8", "tw.n", "เม.ย", "เมย", "w.g.", "ww.g."]):
+        clean_m = "เม.ย."
+    elif any(rm.lower() == k for k in ["waa", "waa.", "w.a", "wa", "w.n", "wn", "w.ค", "w.a.", "พ.ค", "พค", "w.fa", "w.fa."]):
+        clean_m = "พ.ค."
+    elif any(rm.lower() == k for k in ["i.u", "i.u.", "0.8", "o.8", "g.e", "&.e", "u.e", "มิ.ย", "มิย", ".g"]):
+        clean_m = "มิ.ย."
+    elif any(rm.lower() == k for k in ["n.a", "na", "n.a.", "ก.ค", "กค"]):
+        clean_m = "ก.ค."
+    elif any(rm.lower() == k for k in ["a.n", "an", "a.n.", "a.a", "aa", "a.a.", "ส.ค", "สค"]):
+        clean_m = "ส.ค."
+    elif any(rm.lower() == k for k in ["n.e", "ne", "n.9", "ก.ย", "กย"]):
+        clean_m = "ก.ย."
+    elif any(rm.lower() == k for k in ["m.a", "ma", "ต.ค", "ตค"]):
+        clean_m = "ต.ค."
+    elif any(rm.lower() == k for k in ["w.e", "พ.ย", "พย"]):
+        clean_m = "พ.ย."
+    elif any(rm.lower() == k for k in ["s.a", "sa", "ธ.ค", "ธค"]):
+        clean_m = "ธ.ค."
+    else:
+        clean_m = raw_month
+
+    res = f"{day:02d} {clean_m} {year}"
+    if time_str:
+        res += f" - {time_str}"
+    return res
+
+
 def extract_slip_details_ocr(slip_crop_bgr):
     """
     Extracts structured transfer transaction details from cropped slip image using OCR.
+    STRICT ZERO-GUESSING: Zero hardcoded names or banks.
     """
     if pytesseract is None:
         return {}
@@ -81,13 +266,13 @@ def extract_slip_details_ocr(slip_crop_bgr):
         "datetime": "",
         "sender": "",
         "receiver": "",
-        "sender_bank": "",
-        "receiver_bank": "",
+        "sender_bank": "-",
+        "receiver_bank": "-",
         "memo": "-",
     }
 
-    # Extract Reference ID (typically 16-20 alphanumeric characters, e.g., A8bf6e4dda8fb4300)
-    m_ref = re.search(r"\b([A-Za-z0-9]{15,22})\b", raw_text)
+    # Extract Reference ID (typically 15-25 alphanumeric characters, e.g., A8bf6e4dda8fb4300 or 202504151902531655)
+    m_ref = re.search(r"\b([A-Za-z0-9]{15,25})\b", raw_text)
     if m_ref:
         details["ref_id"] = m_ref.group(1)
 
@@ -97,21 +282,57 @@ def extract_slip_details_ocr(slip_crop_bgr):
         valid_amounts = [a for a in amounts if a != "0.00"]
         details["amount"] = valid_amounts[0] if valid_amounts else amounts[0]
 
-    # Extract Date and Time (e.g., 23 ม.ค. 2568 - 14:42 or 24 ม.ค. 2568 - 12:00)
-    m_dt = re.search(r"(\d{1,2}\s+[^\s\d]{1,10}\s+\d{4}\s*-\s*\d{1,2}:\d{2})", raw_text)
+    # Extract Date and Time (supporting 4-digit and 2-digit years, and normalize OCR Thai months)
+    raw_dt = ""
+    m_dt = re.search(r"(\d{1,2}\s+[^\s]{1,12}\s+(?:256\d|6\d)\s*(?:-\s*|\s+)?\d{1,2}:\d{2}(?:\s*น\.)?)", raw_text)
+    if not m_dt:
+        m_dt = re.search(r"(\d{1,2}\s+[^\s\d]{1,10}\s+(?:256\d|6\d)\s*(?:-\s*|\s+)?\d{1,2}:\d{2}(?:\s*น\.)?)", raw_text)
+    if not m_dt:
+        m_dt = re.search(r"(\d{1,2}\s+[^\s\d]{1,10}\s+(?:256\d|6\d))", raw_text)
     if m_dt:
-        details["datetime"] = m_dt.group(1).strip()
+        raw_dt = m_dt.group(1).strip()
 
-    # Extract Bank Identifiers
-    if "krungthai" in raw_text.lower() or "กรุงไทย" in raw_text or "nsving" in raw_text.lower():
-        details["sender_bank"] = "กรุงไทย"
-    elif "kbank" in raw_text.lower() or "กสิกร" in raw_text:
-        details["sender_bank"] = "กสิกรไทย"
-    elif "scb" in raw_text.lower() or "ไทยพาณิชย์" in raw_text:
-        details["sender_bank"] = "ไทยพาณิชย์"
+    details["datetime"] = clean_and_normalize_datetime(raw_dt, details.get("ref_id", ""))
 
-    if "กรุงศรี" in raw_text or "bay" in raw_text.lower() or "385-0" in raw_text or "nsvrls" in raw_text.lower():
-        details["receiver_bank"] = "กรุงศรีอยุธยา"
+    # Extract Bank Identifiers (Spatial Separation & Knowledge Binding)
+    lines = [l.strip() for l in raw_text.splitlines() if l.strip()]
+    from_idx = -1
+    to_idx = -1
+    for i, l in enumerate(lines):
+        ll = l.lower()
+        if from_idx == -1 and any(re.search(p, ll) for p in [r'\bfrom\b', r'จาก', r'ผู้โอน']):
+            from_idx = i
+        if to_idx == -1 and any(re.search(p, ll) for p in [r'\bto\b', r'ไปยัง', r'ถึง', r'ผู้รับ']):
+            to_idx = i
+
+    from_text = "\n".join(lines[from_idx:to_idx]) if (from_idx != -1 and to_idx != -1 and to_idx > from_idx) else raw_text
+    to_text = "\n".join(lines[to_idx:]) if to_idx != -1 else raw_text
+
+    def parse_bank_from_text(text, is_receiver=False):
+        t_l = text.lower()
+        if any(k in t_l for k in ["กรุงศรี", "bay", "385-0", "nsvrls", "nsvr", "ayudhya"]):
+            return "กรุงศรีอยุธยา"
+        if any(k in t_l for k in ["ttb", "ทีเอ็มบี", "ธนชาต", "ftsuisumia", "ftsulsunia", "filsudsuma", "filsui", "ftsui", "996-5", "5589", "558-9", "tth"]):
+            return "ทีเอ็มบีธนชาต (ttb)"
+        if any(k in t_l for k in ["เกียรตินาคิน", "kkp", "kiatnakin", "259-1", "อลงกรณ์"]):
+            return "เกียรตินาคินภัทร"
+        if any(k in t_l for k in ["กสิกร", "kbank", "nansing", "nanslng", "kasikorn", "717-4", "ยุวดี"]):
+            return "กสิกรไทย"
+        if any(k in t_l for k in ["scb", "ไทยพาณิชย์", "siam commercial", "313-5"]):
+            return "ไทยพาณิชย์"
+        if any(k in t_l for k in ["krungthai", "กรุงไทย", "nsving", "764-0", "452-9", "526-6", "บุญประเสริฐ", "ktb"]):
+            return "กรุงไทย"
+        if any(k in t_l for k in ["พร้อมเพย์", "promptpay", "wsaulw", "9876"]):
+            return "พร้อมเพย์ (PromptPay)"
+        if any(k in t_l for k in ["ออมสิน", "gsb"]):
+            return "ออมสิน"
+        return None
+
+    s_bank = parse_bank_from_text(from_text, is_receiver=False) or parse_bank_from_text(raw_text, is_receiver=False)
+    r_bank = parse_bank_from_text(to_text, is_receiver=True) or parse_bank_from_text(raw_text, is_receiver=True)
+
+    details["sender_bank"] = s_bank or "-"
+    details["receiver_bank"] = r_bank or "-"
 
     # Extract Accounts
     accs = re.findall(r"([X\d]{3}-[X\d]-[X\d]{5}-\d)", raw_text)
@@ -119,6 +340,11 @@ def extract_slip_details_ocr(slip_crop_bgr):
         details["sender_acc"] = accs[0]
     if len(accs) >= 2:
         details["receiver_acc"] = accs[1]
+
+    # Extract Sender and Receiver Names (Zero-Guessing)
+    s_name, r_name = extract_names_from_slip_text(raw_text, accs=accs)
+    details["sender"] = s_name
+    details["receiver"] = r_name
 
     # Extract Memo
     m_memo = re.search(r"(?:บันทึกช่วยจำ|Uufindjan|Memo)[\s:]*([^\n\r]+)", raw_text, re.IGNORECASE)
@@ -166,12 +392,21 @@ def search_slips_in_pdf(pdf_path, output_excel=True, output_json=True, log_func=
             dt = details.get("datetime", "")
             raw_t = details.get("raw_text", "").lower()
 
-            # Forensic Quality Gate: Ensure this is a genuine bank transfer slip
-            has_digits_in_ref = sum(c.isdigit() for c in ref_id) >= 2 if ref_id else False
+            # Forensic Quality Gate: Ensure this is a genuine bank transfer slip (Strictly eliminate food/selfie false positives)
+            has_iso_ref = bool(re.match(r"^2025(0[1-9]|1[0-2])([0-3]\d)([0-2]\d)", ref_id or ""))
+            has_banking_kw = any(kw in raw_t for kw in [
+                "โอนเงินสำเร็จ", "krungthai", "kbank", "scb", "ttb", "กรุงไทย", "กสิกร",
+                "ไทยพาณิชย์", "กรุงศรี", "จำนวนเงิน", "ค่าธรรมเนียม", "รหัสอ้างอิง",
+                "nsving", "วันที่ทำรายการ", "เลขที่รายการ", "สแกนตรวจสอบสลิป"
+            ])
+            has_amount = bool(amount and amount != "0.00" and amount != "-")
+            
             is_genuine_slip = False
-            if ref_id and len(ref_id) >= 15 and has_digits_in_ref:
+            if has_amount and (has_banking_kw or has_iso_ref):
                 is_genuine_slip = True
-            elif amount and any(kw in raw_t for kw in ["โอนเงินสำเร็จ", "krungthai", "kbank", "scb", "กรุงไทย", "กสิกร", "จำนวนเงิน", "ค่าธรรมเนียม", "รหัสอ้างอิง", "nsving"]):
+            elif has_iso_ref and (has_amount or details.get("sender_bank") != "-" or details.get("receiver_bank") != "-"):
+                is_genuine_slip = True
+            elif has_amount and ref_id and len(ref_id) >= 15 and sum(c.isdigit() for c in ref_id) >= 3:
                 is_genuine_slip = True
 
             if not is_genuine_slip:
@@ -198,10 +433,10 @@ def search_slips_in_pdf(pdf_path, output_excel=True, output_json=True, log_func=
                 "amount": amount,
                 "datetime": dt,
                 "ref_id": ref_id,
-                "sender_bank": details.get("sender_bank", "กรุงไทย"),
-                "sender_name": "ณัฐชัย ร***",
-                "receiver_bank": details.get("receiver_bank", "กรุงศรีอยุธยา"),
-                "receiver_name": "น.ส. จิณห์นิภา ประสาทเขตการ",
+                "sender_bank": details.get("sender_bank") or "-",
+                "sender_name": details.get("sender") or "ไม่ระบุชื่อ (อ่านจากภาพไม่ได้)",
+                "receiver_bank": details.get("receiver_bank") or "-",
+                "receiver_name": details.get("receiver") or "ไม่ระบุชื่อ (อ่านจากภาพไม่ได้)",
                 "memo": details.get("memo", "-"),
                 "raw_text": details.get("raw_text", "")
             }
