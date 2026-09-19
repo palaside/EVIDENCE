@@ -114,20 +114,20 @@ for item in data:
         item["amount"] = "5,000.00"
         item["receiver_bank"] = "ไทยพาณิชย์"
         item["sender_bank"] = "กรุงไทย"
-        item["sender_name"] = "น.ส. จิณห์นิภา บุญประเสริฐ (XXX-X-XX764-0)"
-        item["receiver_name"] = "นาย พงศ์ภิระ สิงห์เถื่อน (XXX-X-XX630-1)"
+        item["sender_name"] = "น.ส. จิณห์นิภา บุญประเสริฐ"
+        item["receiver_name"] = "นาย พงศ์ภิระ สิงห์เถื่อน"
         item["ref_id"] = "A37446e6122a34ffa"
 
     # Fix item 15 (page 408)
     if pg == "408":
-        item["sender_name"] = "ณัฐชัย รักษาวงษ์ (XXX-X-XX452-9)"
-        item["receiver_name"] = "น.ส. จิณห์นิภา ประสาทเขตการ (XXX-X-XX385-0)"
+        item["sender_name"] = "ณัฐชัย รักษาวงษ์"
+        item["receiver_name"] = "น.ส. จิณห์นิภา ประสาทเขตการ"
         item["receiver_bank"] = "กรุงศรีอยุธยา"
 
     # Fix item 33 (page 1074)
     if pg == "1074":
-        item["sender_name"] = "น.ส. ยุวดี ม (xxx-x-x2717-x)"
-        item["receiver_name"] = "นาย ณัฐชัย รักษาวงษ์ (xxx-x-x7558-x)"
+        item["sender_name"] = "น.ส. ยุวดี ม"
+        item["receiver_name"] = "นาย ณัฐชัย รักษาวงษ์"
         item["sender_bank"] = "กสิกรไทย"
         item["receiver_bank"] = "ทีเอ็มบีธนชาต (ttb)"
         item["ref_id"] = "015077154243AOR01083"
@@ -136,8 +136,8 @@ for item in data:
     if pg == "1068":
         item["sender_bank"] = "กรุงไทย"
         item["receiver_bank"] = "กรุงไทย"
-        item["sender_name"] = "สิบตรีณัฐชัย รักษาวงษ์ (XXX-X-XX526-6)"
-        item["receiver_name"] = "น.ส. จิณห์นิภา บุญประเสริฐ (XXX-X-XX764-0)"
+        item["sender_name"] = "สิบตรี ณัฐชัย รักษาวงษ์"
+        item["receiver_name"] = "น.ส. จิณห์นิภา บุญประเสริฐ"
         item["ref_id"] = "N006728239785025333486297"
 
     item["index"] = idx_counter

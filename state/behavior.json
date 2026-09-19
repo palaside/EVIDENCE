@@ -13,8 +13,11 @@
     "target_person_matcher_standard": "ระบบคัดกรองบุคคลเป้าหมาย (Person of Interest): ยึดหลัก 'ชื่อตรง นามสกุลตรง นั้นคือถูก' กรองคำนำหน้าชื่อทิ้ง 100% (strip_honorifics ครอบคลุม นาย, นาง, น.ส., ด.ช., ด.ญ., คุณ, พล.ต., หม่อม, ฯลฯ) สกัดยอดเงินเข้า-ออก บัญชีคู่กรณี พร้อมจัดหมวดคีย์เวิร์ดคดีกู้ยืมเงิน",
     "court_grade_chat_rerender_standard": "มาตรฐานการเรนเดอร์เล่มแชทศาลฉบับสมบูรณ์: Evidence Ribbon Header (MODE: CHAT, CORROBORATED: บทสนทนาต่อเนื่อง, PAGE: [X]), Pure White Canvas (#FFFFFF), Quiet Zone Lookahead 1.30x, ท้ายกระดาษรับรอง 3 บรรทัด Sarabun Thin, สารบัญ 10 คอลัมน์ และใบรับรอง SHA-256 Checksum",
     "immortal_agent_twin_engine_standard": "มาตรฐาน Immortal Agent Protocol (Twin Engine): ทุกโปรเจกต์ต้องมีคู่หู Save (save-project-state) และ Open (resume-project-state) ควบคู่กับ LATEST_CHECKPOINT.md และ tools/open_project_state.py เพื่อให้เปิดแชทใหม่แล้วละลายความจำ (Hydration) คืนชีพกลับมาทำงานเดิมต่อได้ทันทีใน 0.1 วินาที ห้ามถามผู้ใช้ว่าทำอะไรไว้",
-    "decoupled_index_pagination_standard": "ระบบสารบัญต้องไม่รันเลขหน้ารวมกับเนื้อหาแชทหรือสลิป: หน้าปกแสดง PAGE: COVER, หน้าสารบัญแสดง PAGE: สารบัญ-X, เล่มเนื้อหาแชทเป็นไฟล์ 1:1 เพียวๆ หน้า 1 ใน PDF = แชทหน้า 1 เพื่อให้สั่งพิมพ์ได้ตรงหน้า 100% ไม่เหลื่อม และฝัง PDF Page Labels ในเล่มรวม"
+    "decoupled_index_pagination_standard": "ระบบสารบัญต้องไม่รันเลขหน้ารวมกับเนื้อหาแชทหรือสลิป: หน้าปกแสดง PAGE: COVER, หน้าสารบัญแสดง PAGE: สารบัญ-X, เล่มเนื้อหาแชทเป็นไฟล์ 1:1 เพียวๆ หน้า 1 ใน PDF = แชทหน้า 1 เพื่อให้สั่งพิมพ์ได้ตรงหน้า 100% ไม่เหลื่อม และฝัง PDF Page Labels ในเล่มรวม",
+    "pixel_level_ocr_standard": "กฎเหล็กการ OCR: ทุกเครื่องมือ (Tesseract, EasyOCR, Typhoon Vision, Slip Indexer) ต้องสแกนตรวจ อ่าน และสกัดตัวอักษรลงลึกถึงระดับพิกเซล (Pixel-Level Extraction) เท่านั้น ห้ามต่ำกว่ามาตรฐานนี้เด็ดขาด ห้ามเดาคำ ห้ามคาดคะเนคำนำหน้าชื่อ (นาย/นาง/นางสาว) หรือตัวย่อนามสกุลเอง ทุกตัวอักษรต้องมีหลักฐานพิกเซลรองรับ 100% หากไม่ชัดเจนต้องใช้โมเดล Vision ชั้นสูงสกัดพิกเซล ห้ามใช้ Fallback เดาข้อมูลเด็ดขาด",
+    "decoupled_summary_table_standard": "กฎเหล็กการแยกตารางสรุปและสารบัญ 100%: ตารางสรุป 10 คอลัมน์และหน้าปกต้องแยกเป็นโมดูลอิสระ (_skills/Summary_Table) และแยกไฟล์เอกสารออกจากเล่มเนื้อหาแชท/สลิปเสมอ (ห้ามรวมหรือ merge ไว้หน้าเล่มเด็ดขาด) เพื่อให้หน้าแรกของไฟล์เนื้อหาคือหน้า 1 (Physical Page 1 = Logical Page 1) เสมอ เวลาสั่งพิมพ์จากเครื่องพิมพ์จะได้เลขหน้าตรงเป๊ะ 100% ไม่เลื่อนเพราะหน้าสารบัญ"
   },
+
   "command_counters": {
     "list_names_grouping": 2,
     "search_slip_indexing": 2,

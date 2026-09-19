@@ -15,11 +15,12 @@ import glob
 import re
 import json
 import tempfile
+import hashlib
 
 FEATHER_PX = 12  # ตามสเปก: Alpha Gradient 12 แถวพิกเซลที่รอยต่อ
 
 try:
-    from search_slip import detect_slip_in_image
+    from search_slip import detect_slip_in_image, extract_slip_details_ocr
 except ImportError:
     _search_slip_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "Search_Slip", "scripts")
     if os.path.exists(_search_slip_dir) and _search_slip_dir not in sys.path:
@@ -239,29 +240,32 @@ def feather_stitch(pil_images, feather_px=FEATHER_PX):
     """เย็บภาพแนวตั้ง: ตัดแถบดำขอบภาพก่อน แล้ว overlap feather_px แถวด้วย Alpha Gradient
     คืน PIL Image แถบยาวชิ้นเดียว"""
     imgs = [strip_dark_edge_bands(im.convert("RGB")) for im in pil_images]
-    if len(imgs) == 1:
-        return imgs[0]
-    w = min(im.width for im in imgs)
+    valid_imgs = [im for im in imgs if im is not None and im.height > 0 and im.width > 0]
+    if not valid_imgs:
+        return None
+    if len(valid_imgs) == 1:
+        return valid_imgs[0]
+
+    w = min(im.width for im in valid_imgs)
     norm = []
-    for im in imgs:
+    for im in valid_imgs:
         if im.width != w:
             h = max(1, int(im.height * w / im.width))
             im = im.resize((w, h), Image.Resampling.LANCZOS)
         norm.append(im)
-    total_h = sum(im.height for im in norm) - feather_px * (len(norm) - 1)
-    canvas = np.zeros((total_h, w, 3), np.float32)
-    y = 0
-    for idx, im in enumerate(norm):
-        arr = np.asarray(im).astype(np.float32)
-        h = arr.shape[0]
-        if idx == 0:
-            canvas[y:y + h] = arr
+
+    result_arr = np.asarray(norm[0]).astype(np.float32)
+    for next_im in norm[1:]:
+        next_arr = np.asarray(next_im).astype(np.float32)
+        f_px = min(feather_px, result_arr.shape[0], next_arr.shape[0])
+        if f_px <= 0:
+            result_arr = np.vstack([result_arr, next_arr])
         else:
-            t = np.linspace(0, 1, feather_px, dtype=np.float32)[:, None, None]
-            canvas[y:y + feather_px] = canvas[y:y + feather_px] * (1 - t) + arr[:feather_px] * t
-            canvas[y + feather_px:y + h] = arr[feather_px:]
-        y += h - feather_px
-    return Image.fromarray(np.clip(canvas, 0, 255).astype(np.uint8))
+            t = np.linspace(0, 1, f_px, dtype=np.float32)[:, None, None]
+            blended = result_arr[-f_px:] * (1.0 - t) + next_arr[:f_px] * t
+            result_arr = np.vstack([result_arr[:-f_px], blended, next_arr[f_px:]])
+
+    return Image.fromarray(np.clip(result_arr, 0, 255).astype(np.uint8))
 
 
 def quiet_cuts(strip_rgb, max_h=1115, min_ratio=0.65, max_lookahead_ratio=1.30):
@@ -663,10 +667,11 @@ class PDFAssembler:
         """
         landscape_w = 1406
         landscape_h = 993
-        margin_l = 102
-        margin_r = 102
+        # ระยะขอบ 1.25 ซม. (1.25 cm = 59 px ที่สเกล 1406x993 A4 Landscape) ทั้งขอบซ้ายและขวา
+        margin_l = 59
+        margin_r = 59
         margin_t = 80
-        content_w = landscape_w - margin_l - margin_r  # 1202 px
+        content_w = landscape_w - margin_l - margin_r  # 1288 px
 
         a4_canvas = Image.new('RGB', (landscape_w, landscape_h), 'white')
         draw = ImageDraw.Draw(a4_canvas)
@@ -720,9 +725,10 @@ class PDFAssembler:
         # Table Layout & Headers
         if mode_str == "CHAT":
             # เอาแถบแบนเนอร์ชื่อตาราง (รูปที่ 1) ออกตามคำสั่ง ตารางเริ่มทันที
+            # ขยายกรอบแนบขอบกระดาษ (margin 1.25 cm = 59px) โดยขยายช่องชื่อผู้โอน (+43px เป็น 188px) และชื่อผู้รับ (+43px เป็น 208px)
             tbl_top = 105
             headers = ["หน้าระบุสลิป", "วันที่ - เวลา", "ธนาคารผู้โอน", "ชื่อผู้โอน", "จำนวนเงิน (บาท)", "ชื่อผู้รับโอน", "ธนาคารผู้รับ", "บันทึก", "รหัสอ้างอิง", "สถานะหลักฐาน"]
-            col_w = [112, 130, 105, 145, 110, 165, 115, 90, 125, 105]  # sum = 1202
+            col_w = [112, 130, 105, 188, 110, 208, 115, 90, 125, 105]  # sum = 1288
         else:
             # โหมดสลิป: แสดง Title Box
             title_y = 110
@@ -738,7 +744,7 @@ class PDFAssembler:
 
             tbl_top = title_y + 50
             headers = ["ลำดับ", "วันที่", "เวลา", "ธนาคารผู้โอน", "ชื่อผู้โอน", "จำนวนเงิน", "ชื่อผู้รับ", "ธนาคารผู้รับ", "บันทึกช่วยจำ", "หมายเหตุ"]
-            col_w = [52, 105, 75, 125, 180, 110, 180, 125, 125, 125]  # sum = 1202
+            col_w = [52, 105, 75, 125, 223, 110, 223, 125, 125, 125]  # sum = 1288
 
         cur_x = margin_l
         for i, h in enumerate(headers):
@@ -918,9 +924,29 @@ def process_chat_pipeline(input_path, output_pdf, slip_data_list=None, chat_mode
         print(f"No images found in {input_path}")
         return 0
 
-    # Deduplicate files by base name (e.g. A4_IMG_ (1).PNG and .JPEG -> 1 per unique number)
+    # 1. จัดเรียงตามลำดับชื่อไฟล์อย่างเป็นธรรมชาติ (Natural Sort)
+    sorted_raw = sorted(list(set(raw_images)), key=lambda x: natural_sort_key(os.path.splitext(os.path.basename(x))[0]))
+
+    # 2. คัดกรองภาพซ้ำด้วย SHA-256 Content Hash (ตัดทิ้งอัตโนมัติหากเนื้อหาไฟล์ซ้ำ 100%)
+    seen_hashes = {}
+    unique_candidates = []
+    for p in sorted_raw:
+        try:
+            with open(p, 'rb') as f:
+                content_hash = hashlib.sha256(f.read()).hexdigest()
+            if content_hash in seen_hashes:
+                orig_file = seen_hashes[content_hash]
+                print(f"  [Dedup: SHA-256] ข้ามภาพซ้ำ 100%: {os.path.basename(p)} (ตรงกับ {os.path.basename(orig_file)})")
+                continue
+            seen_hashes[content_hash] = p
+            unique_candidates.append(p)
+        except Exception as e:
+            print(f"  [Dedup: Warning] ไม่สามารถอ่านแฮชของ {p}: {e}")
+            unique_candidates.append(p)
+
+    # 3. Deduplicate files by base name (e.g. A4_IMG_ (1).PNG and .JPEG -> 1 per unique number)
     unique_map = {}
-    for p in raw_images:
+    for p in unique_candidates:
         base = os.path.splitext(os.path.basename(p))[0]
         if base not in unique_map:
             unique_map[base] = p
@@ -932,47 +958,59 @@ def process_chat_pipeline(input_path, output_pdf, slip_data_list=None, chat_mode
 
     assembler = PDFAssembler(output_path=output_pdf)
 
-    if chat_mode and len(images_to_process) > 1:
-        # โหมดแชทยาว: แบ่งเป็นแบทช์ปลอดภัย (สูงสุด 35 ภาพ/แบทช์) ป้องกัน OOM บนภาพขนาดยาวระดับ 6,000+ px
-        batch_size = 35
-        total_batches = (len(images_to_process) + batch_size - 1) // batch_size
-        print(f"Chat mode: processing {len(images_to_process)} images in {total_batches} batch(es) (max {batch_size}/batch)...")
+    if chat_mode and len(images_to_process) > 0:
+        print(f"Chat mode: Starting Streaming Canvas Pipeline (ต่อสายพานยาวต่อเนื่องแล้วหั่น) across {len(images_to_process)} images...")
 
         with tempfile.TemporaryDirectory() as tmp:
             paths = []
             global_page_idx = max(0, start_page_num - 1)
             slip_detected_count = 0
 
-            for b_idx in range(total_batches):
-                b_start = b_idx * batch_size
-                b_end = min(len(images_to_process), b_start + batch_size)
-                batch_files = images_to_process[b_start:b_end]
-                print(f"  [Batch {b_idx + 1}/{total_batches}] Stitching images {b_start + 1} to {b_end} with {FEATHER_PX}px feather...")
+            stream_buffer = None
+            last_page_hash = None
+            last_slip_ref = None
 
-                pil_imgs = []
-                for img_p in batch_files:
-                    img = imread_unicode(img_p)
-                    if img is None:
-                        print(f"    Warning: Could not read {img_p}")
-                        continue
-                    trimmed = trim_outer_padding(img)
-                    pil_imgs.append(Image.fromarray(trimmed[:, :, ::-1]))
+            def slice_ready_pages(buf, is_final=False):
+                nonlocal global_page_idx, slip_detected_count, last_page_hash, last_slip_ref
+                if buf is None or buf.height == 0:
+                    return None
 
-                if not pil_imgs:
-                    continue
+                while True:
+                    if not is_final and buf.height < int(assembler.block_height * 1.35):
+                        break
 
-                strip = feather_stitch(pil_imgs)
-                sw = assembler.block_width / strip.width
-                strip = strip.resize((assembler.block_width, max(1, int(strip.height * sw))),
-                                     Image.Resampling.LANCZOS)
-                cuts = quiet_cuts(strip, assembler.block_height)
+                    if is_final and buf.height <= assembler.block_height:
+                        cuts = [(0, buf.height, False)]
+                    else:
+                        cuts = quiet_cuts(buf, assembler.block_height)
+                        if not cuts:
+                            break
 
-                for i, (y1, y2, needs_scale) in enumerate(cuts):
-                    global_page_idx += 1
-                    page_slice = strip.crop((0, y1, strip.width, y2))
+                    y1, y2, needs_scale = cuts[0]
+                    if y2 <= 0:
+                        break
+
+                    page_slice = buf.crop((0, y1, buf.width, y2))
                     arr = cv2.cvtColor(np.asarray(page_slice), cv2.COLOR_RGB2BGR)
 
+                    # --- กฎการตรวจจับภาพซ้ำหลังการหั่น (Post-Slice Deduplication Rule) ---
+                    cur_slice_hash = hashlib.sha256(arr.tobytes()).hexdigest()
+                    if cur_slice_hash == last_page_hash:
+                        print(f"  [Post-Slice Dedup] ⚠️ ตรวจพบภาพหน้าซ้ำ 100% กับหน้าก่อนหน้า! ข้ามหน้านี้อัตโนมัติ")
+                        if y2 >= buf.height:
+                            buf = None
+                            break
+                        else:
+                            buf = buf.crop((0, y2, buf.width, buf.height))
+                            if buf.height == 0:
+                                buf = None
+                                break
+                        if is_final and (buf is None or buf.height == 0):
+                            break
+                        continue
+
                     corrob_text = None
+                    cur_slip_ref = None
                     if detect_slip_in_image is not None:
                         has_slip, box = detect_slip_in_image(arr)
                         if has_slip and box and extract_slip_details_ocr is not None:
@@ -990,9 +1028,27 @@ def process_chat_pipeline(input_path, output_pdf, slip_data_list=None, chat_mode
                             ])
                             has_amt = bool(amt and amt != "0.00" and amt != "-")
                             if (has_amt and (has_kw or has_iso)) or (has_iso and (has_amt or details.get("sender_bank") != "-" or details.get("receiver_bank") != "-")) or (has_amt and ref_id and len(ref_id) >= 15):
+                                cur_slip_ref = ref_id or f"{amt}_{details.get('sender_bank')}_{details.get('receiver_bank')}"
+                                if cur_slip_ref and cur_slip_ref == last_slip_ref:
+                                    print(f"  [Post-Slice Dedup] ⚠️ ตรวจพบสลิปซ้ำ ({cur_slip_ref}) กับหน้าก่อนหน้า! ข้ามหน้านี้อัตโนมัติ")
+                                    if y2 >= buf.height:
+                                        buf = None
+                                        break
+                                    else:
+                                        buf = buf.crop((0, y2, buf.width, buf.height))
+                                        if buf.height == 0:
+                                            buf = None
+                                            break
+                                    if is_final and (buf is None or buf.height == 0):
+                                        break
+                                    continue
                                 slip_detected_count += 1
                                 corrob_text = "สลิปหลักฐานการโอนเงิน (แนบในบทสนทนา)"
 
+                    global_page_idx += 1
+                    last_page_hash = cur_slice_hash
+                    if cur_slip_ref:
+                        last_slip_ref = cur_slip_ref
 
                     assembler.add_single_page_image(arr, align="top", page_num=global_page_idx, mode="CHAT", corroborated=corrob_text)
                     page = assembler.pdf_pages.pop()
@@ -1000,24 +1056,41 @@ def process_chat_pipeline(input_path, output_pdf, slip_data_list=None, chat_mode
                     page.save(fp)
                     paths.append((fp, page.size))
 
-                del strip, pil_imgs
+                    if y2 >= buf.height:
+                        buf = None
+                        break
+                    else:
+                        buf = buf.crop((0, y2, buf.width, buf.height))
+                        if buf.height == 0:
+                            buf = None
+                            break
 
-            if slip_data_list:
-                rows_per_page = 20
-                chunks = [slip_data_list[i:i + rows_per_page] for i in range(0, max(len(slip_data_list), 1), rows_per_page)]
-                for c_idx, chunk in enumerate(chunks):
-                    global_page_idx += 1
-                    assembler.add_10col_landscape_summary_page(
-                        item_names=[f"item_{i}" for i in range(len(chunk))],
-                        slip_data_list=chunk,
-                        mode="CHAT",
-                        page_num=global_page_idx,
-                        corroborated="ตารางสรุปการแนบสลิป"
-                    )
-                    summ = assembler.pdf_pages.pop()
-                    fp = os.path.join(tmp, f"summary_p{c_idx+1}.png")
-                    summ.save(fp)
-                    paths.append((fp, summ.size))
+                    if is_final and (buf is None or buf.height == 0):
+                        break
+
+                return buf
+
+            for idx, img_p in enumerate(images_to_process):
+                img = imread_unicode(img_p)
+                if img is None:
+                    continue
+                trimmed = trim_outer_padding(img)
+                pil_im = strip_dark_edge_bands(Image.fromarray(trimmed[:, :, ::-1]))
+                if pil_im.width != assembler.block_width:
+                    nh = max(1, int(pil_im.height * assembler.block_width / pil_im.width))
+                    pil_im = pil_im.resize((assembler.block_width, nh), Image.Resampling.LANCZOS)
+
+                if stream_buffer is None:
+                    stream_buffer = pil_im
+                else:
+                    stream_buffer = feather_stitch([stream_buffer, pil_im], feather_px=FEATHER_PX)
+
+                stream_buffer = slice_ready_pages(stream_buffer, is_final=False)
+                if stream_buffer is not None and stream_buffer.height == 0:
+                    stream_buffer = None
+
+            if stream_buffer is not None and stream_buffer.height > 0:
+                slice_ready_pages(stream_buffer, is_final=True)
 
             print(f"Writing {len(paths)} pages to PDF via PyMuPDF C-Binding streaming...")
             mode = save_pdf_streaming(paths, output_pdf)
@@ -1054,28 +1127,13 @@ def process_chat_pipeline(input_path, output_pdf, slip_data_list=None, chat_mode
             page.save(fp)
             paths.append((fp, page.size))
 
-        # 2. Add the 10-Column Summary Statement Table in LANDSCAPE
-        if slip_data_list:
-            rows_per_page = 20
-            chunks = [slip_data_list[i:i + rows_per_page] for i in range(0, max(len(slip_data_list), 1), rows_per_page)]
-            for c_idx, chunk in enumerate(chunks):
-                global_page_idx += 1
-                assembler.add_10col_landscape_summary_page(
-                    item_names=[f"item_{i}" for i in range(len(chunk))],
-                    slip_data_list=chunk,
-                    mode="SLIP",
-                    page_num=global_page_idx,
-                    corroborated="ตารางสรุปการแนบสลิป"
-                )
-                summ = assembler.pdf_pages.pop()
-                fp = os.path.join(tmp, f"summary_p{c_idx+1:05d}.png")
-                summ.save(fp)
-                paths.append((fp, summ.size))
-
+        # Note: Summary Table is now decoupled into _skills/Summary_Table module.
+        # Pure slip book preserves 1:1 page numbering without landscape tables inside.
         print(f"Writing {len(paths)} slip pages to PDF via PyMuPDF C-Binding streaming...")
         mode = save_pdf_streaming(paths, output_pdf)
         print(f"Saved slip PDF ({mode}) -> {os.path.basename(output_pdf)} ({len(paths)} pages)")
         return len(paths)
+
 
 
 def main():

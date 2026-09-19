@@ -82,14 +82,14 @@ def typhoon_stage1_ocr(img_bytes: bytes, api_key: str, max_retries: int = 2) -> 
     """
     b64_image = base64.b64encode(img_bytes).decode("utf-8")
     payload = {
-        "model": "typhoon-ocr-v1.5",
+        "model": "typhoon-ocr",
         "messages": [
             {
                 "role": "user",
                 "content": [
                     {
                         "type": "text",
-                        "text": "กรุณาอ่านและถอดข้อความทั้งหมดจากภาพสลิปโอนเงินธนาคารไทยนี้อย่างละเอียด ทั้งยอดเงิน ชื่อผู้โอน ชื่อผู้รับ ธนาคาร วันเวลา รหัสอ้างอิง และบันทึกช่วยจำ"
+                        "text": "Extract all text from the image."
                     },
                     {
                         "type": "image_url",
@@ -136,9 +136,9 @@ STAGE2_PROMPT = """คุณคือผู้เชี่ยวชาญด้�
 3. Date: วันที่ในรูปแบบ DD/MM/YYYY (พ.ศ. 256X หรือ ค.ศ.) เช่น "30/05/2568"
 4. Time: เวลาในรูปแบบ HH:MM (เช่น "14:21")
 5. Sender Bank: ชื่อธนาคารผู้โอน (เช่น "กรุงไทย", "ทีเอ็มบีธนชาต (ttb)", "กสิกรไทย")
-6. Sender Name: ชื่อผู้โอนและเลขบัญชี (ถ้ามี)
+6. Sender Name: ชื่อผู้โอน โดยตัดเลขบัญชีและวงเล็บออก เหลือเฉพาะชื่อ-นามสกุลเท่านั้น (เช่น "สิบตรี ณัฐชัย รักษาวงษ์", "นายณัฐชัย")
 7. Receiver Bank: ชื่อธนาคารผู้รับ
-8. Receiver Name: ชื่อผู้รับและเลขบัญชี (ถ้ามี)
+8. Receiver Name: ชื่อผู้รับ โดยตัดเลขบัญชีและวงเล็บออก เหลือเฉพาะชื่อ-นามสกุลเท่านั้น (เช่น "น.ส. จิณห์นิภา ประสาทเขตการ")
 9. Remarks: รหัสอ้างอิงธุรกรรม / Ref ID
 10. Memo: ข้อความบันทึกช่วยจำ (ถ้ามี)
 
@@ -195,7 +195,12 @@ def typhoon_stage2_judge(raw_ocr_text: str, api_key: str, max_retries: int = 2) 
                         content = content[3:]
                     if content.endswith("```"):
                         content = content[:-3]
-                    return json.loads(content.strip())
+                    res = json.loads(content.strip())
+                    for k in ["sender_name", "receiver_name"]:
+                        if k in res and res[k] and res[k] != "-":
+                            res[k] = re.sub(r"\s*[\(\[][Xx\d\s\-*.]+[\)\]]", "", str(res[k]))
+                            res[k] = re.sub(r"\s+", " ", res[k]).strip() or "-"
+                    return res
         except urllib.error.HTTPError as e:
             if e.code == 429:
                 time.sleep(3 * (attempt + 1))
@@ -208,7 +213,7 @@ def typhoon_stage2_judge(raw_ocr_text: str, api_key: str, max_retries: int = 2) 
     return {}
 
 
-def extract_slip_with_typhoon(image_input) -> dict:
+def extract_slip_with_typhoon(image_input, use_cache: bool = True) -> dict:
     """
     Full 2-Stage Typhoon Pipeline with persistent cache.
     Input can be a file path, raw bytes, or a numpy array (cv2).
@@ -233,9 +238,9 @@ def extract_slip_with_typhoon(image_input) -> dict:
         img_bytes = encoded.tobytes()
 
     img_hash = compute_image_hash(img_bytes)
-    cache = load_cache()
+    cache = load_cache() if use_cache else {}
 
-    if img_hash in cache:
+    if use_cache and img_hash in cache and cache[img_hash].get("amount") != "-":
         return cache[img_hash]
 
     # Stage 1: Native Thai Multimodal OCR

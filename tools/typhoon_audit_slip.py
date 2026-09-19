@@ -14,9 +14,9 @@ import argparse
 import fitz
 
 PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
-sys.path.insert(0, os.path.join(PROJECT_ROOT, "_skills", "OCR_Slip", "scripts"))
+sys.path.insert(0, os.path.join(PROJECT_ROOT, "_skills", "Typhoon_OCR", "scripts"))
 
-from typhoon_slip_engine import extract_slip_with_typhoon, load_typhoon_api_key
+from typhoon_ocr import process_slip, load_api_key
 
 try:
     if sys.stdout and hasattr(sys.stdout, 'reconfigure'):
@@ -30,7 +30,7 @@ OUT_DIR = os.path.join(PROJECT_ROOT, "Folder_Out")
 AUDIT_LOG = os.path.join(OUT_DIR, "TYPHOON_AUDIT_REPORT.json")
 
 
-def audit_slip_image(image_path: str):
+def audit_slip_image(image_path: str, use_cache: bool = False):
     print("=" * 75)
     print(f" 🌪️ OPENTYPHOON FORENSIC AUDIT: {os.path.basename(image_path)}")
     print("=" * 75)
@@ -39,13 +39,13 @@ def audit_slip_image(image_path: str):
         print(f"❌ Error: Image not found at {image_path}")
         return None
 
-    api_key = load_typhoon_api_key()
+    api_key = load_api_key()
     if not api_key:
         print("❌ Error: TYPHOON_API_KEY is not set in .env or environment.")
         return None
 
-    print("⏳ Running Stage 1 (typhoon-ocr-v1.5) & Stage 2 (typhoon-v2.5-30b-a3b)...")
-    res = extract_slip_with_typhoon(image_path)
+    print("⏳ Running Stage 1 (typhoon-ocr) & Stage 2 (typhoon-v2.5-30b-a3b)...")
+    res = process_slip(image_path, structured=True, use_cache=use_cache)
     if not res:
         print("❌ Failed to extract data from Typhoon API.")
         return None

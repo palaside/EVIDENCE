@@ -36,8 +36,17 @@ COVER_SCRIPT = os.path.join(BASE_DIR, "tools", "generate_cover_page.py")
 sys.path.insert(0, os.path.join(BASE_DIR, "_skills", "Dicut_Chat", "scripts"))
 from process_chat import get_sarabun_fonts, PDFAssembler
 
+def clean_account_numbers_from_name(val):
+    if not val:
+        return "-"
+    # Strip parenthesized or bracketed account numbers like (XXX-X-XX452-9), (xxx-x-x2717-x), (XXX-XXX-4123)
+    cleaned = re.sub(r"\s*[\(\[][Xx\d\s\-*.]+[\)\]]", "", str(val))
+    cleaned = re.sub(r"\s+", " ", cleaned).strip()
+    return cleaned or "-"
+
+
 # -------------------------------------------------------------------------
-# STEP 1: Option 1 Account Binding
+# STEP 1: Option 1 Account Binding (Names Only - Clean Standard)
 # -------------------------------------------------------------------------
 def apply_account_binding(item):
     sn = item.get("sender_name", "")
@@ -54,92 +63,170 @@ def apply_account_binding(item):
 
     # Check sender
     if any(k in sn or k in raw_t for k in ["452-9", "4529"]):
-        item["sender_name"] = "สิบตรี ณัฐชัย รักษาวงษ์ (XXX-X-XX452-9)"
+        item["sender_name"] = "สิบตรี ณัฐชัย รักษาวงษ์"
         item["sender_bank"] = "กรุงไทย"
     elif any(k in sn or k in raw_t for k in ["526-6", "5266"]):
-        item["sender_name"] = "สิบตรี ณัฐชัย รักษาวงษ์ (XXX-X-XX526-6)"
+        item["sender_name"] = "สิบตรี ณัฐชัย รักษาวงษ์"
         item["sender_bank"] = "กรุงไทย"
     elif any(k in sn or k in raw_t for k in ["558-9", "5589"]):
-        item["sender_name"] = "สิบตรี ณัฐชัย รักษาวงษ์ (XXX-X-XX558-9)"
+        item["sender_name"] = "สิบตรี ณัฐชัย รักษาวงษ์"
         item["sender_bank"] = "ทีเอ็มบีธนชาต (ttb)"
     elif any(k in sn for k in ["996-5", "9965"]):
-        item["sender_name"] = "น.ส. จิณห์นิภา ประสาทเขตการ (XXX-X-XX996-5)"
+        item["sender_name"] = "น.ส. จิณห์นิภา ประสาทเขตการ"
         item["sender_bank"] = "ทีเอ็มบีธนชาต (ttb)"
     elif any(k in sn for k in ["385-0", "3850"]):
-        item["sender_name"] = "น.ส. จิณห์นิภา ประสาทเขตการ (XXX-X-XX385-0)"
+        item["sender_name"] = "น.ส. จิณห์นิภา ประสาทเขตการ"
         item["sender_bank"] = "กรุงศรีอยุธยา"
     elif any(k in sn for k in ["764-0", "7640"]):
-        item["sender_name"] = "น.ส. จิณห์นิภา บุญประเสริฐ (XXX-X-XX764-0)"
+        item["sender_name"] = "น.ส. จิณห์นิภา บุญประเสริฐ"
         item["sender_bank"] = "กรุงไทย"
     elif "2717" in sn:
-        item["sender_name"] = "น.ส. ยุวดี ม (xxx-x-x2717-x)"
+        item["sender_name"] = "น.ส. ยุวดี ม"
         item["sender_bank"] = "กสิกรไทย"
 
     # Specific fixes for slips where sender account text had variations
     if pg in ["1876", "2231", "2239", "2336"]:
-        item["sender_name"] = "สิบตรี ณัฐชัย รักษาวงษ์ (XXX-X-XX526-6)"
+        item["sender_name"] = "สิบตรี ณัฐชัย รักษาวงษ์"
         item["sender_bank"] = "กรุงไทย"
     elif pg in ["2245", "2246", "2255", "2262", "2288"]:
-        item["sender_name"] = "สิบตรี ณัฐชัย รักษาวงษ์ (XXX-X-XX452-9)"
+        item["sender_name"] = "สิบตรี ณัฐชัย รักษาวงษ์"
         item["sender_bank"] = "กรุงไทย"
 
-    # Check receiver
+    # Check receiver general account bindings
     if any(k in rn for k in ["385-0", "3850"]):
-        item["receiver_name"] = "น.ส. จิณห์นิภา ประสาทเขตการ (XXX-X-XX385-0)"
+        item["receiver_name"] = "น.ส. จิณห์นิภา ประสาทเขตการ"
         item["receiver_bank"] = "กรุงศรีอยุธยา"
     elif any(k in rn for k in ["996-5", "9965"]):
-        item["receiver_name"] = "น.ส. จิณห์นิภา ประสาทเขตการ (XXX-X-XX996-5)"
+        item["receiver_name"] = "น.ส. จิณห์นิภา ประสาทเขตการ"
         item["receiver_bank"] = "ทีเอ็มบีธนชาต (ttb)"
     elif any(k in rn for k in ["764-0", "7640"]):
-        item["receiver_name"] = "น.ส. จิณห์นิภา บุญประเสริฐ (XXX-X-XX764-0)"
+        item["receiver_name"] = "น.ส. จิณห์นิภา บุญประเสริฐ"
         item["receiver_bank"] = "กรุงไทย"
     elif "526-6" in rn:
-        item["receiver_name"] = "สิบตรี ณัฐชัย รักษาวงษ์ (XXX-X-XX526-6)"
+        item["receiver_name"] = "สิบตรี ณัฐชัย รักษาวงษ์"
         item["receiver_bank"] = "กรุงไทย"
     elif "452-9" in rn:
-        item["receiver_name"] = "สิบตรี ณัฐชัย รักษาวงษ์ (XXX-X-XX452-9)"
+        item["receiver_name"] = "สิบตรี ณัฐชัย รักษาวงษ์"
         item["receiver_bank"] = "กรุงไทย"
     elif "558-9" in rn:
-        item["receiver_name"] = "สิบตรี ณัฐชัย รักษาวงษ์ (XXX-X-XX558-9)"
+        item["receiver_name"] = "สิบตรี ณัฐชัย รักษาวงษ์"
         item["receiver_bank"] = "ทีเอ็มบีธนชาต (ttb)"
     elif "7558" in rn:
-        item["receiver_name"] = "นาย ณัฐชัย รักษาวงษ์ (xxx-x-x7558-x)"
+        item["receiver_name"] = "นาย ณัฐชัย รักษาวงษ์"
         item["receiver_bank"] = "ทีเอ็มบีธนชาต (ttb)"
     elif "630-1" in rn:
-        item["receiver_name"] = "นาย พงศ์ภิระ สิงห์เถื่อน (XXX-X-XX630-1)"
+        item["receiver_name"] = "นาย พงศ์ภิระ สิงห์เถื่อน"
         item["receiver_bank"] = "ไทยพาณิชย์"
     elif "040-0" in rn:
-        item["receiver_name"] = "น.ส. ชนิดา ส (XXX-X-XX040-0)"
-        item["receiver_bank"] = "ทีเอ็มบีธนชาต (ttb)"
+        item["receiver_name"] = "นางสาว กนกวรรณ พุทธศรี"
+        item["receiver_bank"] = "ไทยพาณิชย์"
     elif "455-1" in rn:
-        item["receiver_name"] = "นาย ธนบดี ด (XXX-X-XX455-1)"
-        item["receiver_bank"] = "ทีเอ็มบีธนชาต (ttb)"
+        item["receiver_name"] = "น.ส. ปรียชาติ ฉิมพลี"
+        item["receiver_bank"] = "กสิกรไทย"
     elif "313-5" in rn:
-        item["receiver_name"] = "นาย นครินทร์ ส (XXX-X-XX313-5)"
-        item["receiver_bank"] = "ทีเอ็มบีธนชาต (ttb)"
+        item["receiver_name"] = "นางสาว จิณห์นิภา ประสาทเขตการ"
+        item["receiver_bank"] = "ไทยพาณิชย์"
     elif "717-4" in rn:
-        item["receiver_name"] = "น.ส. กัญญาภัทร จ (XXX-X-XX717-4)"
+        item["receiver_name"] = "น.ส. ยุวดี มีเสมอ"
         item["receiver_bank"] = "กสิกรไทย"
     elif "197-9" in rn:
-        item["receiver_name"] = "น.ส. สุภาวดี ส (XXX-X-XX197-9)"
-        item["receiver_bank"] = "กรุงเทพ"
+        item["receiver_name"] = "นาย อนุชิต โพธิ์สาจันทร์"
+        item["receiver_bank"] = "กสิกรไทย"
+    elif "259-1" in rn:
+        item["receiver_name"] = "นางสาว อลงกรณ์ แจ่มเมือง"
+        item["receiver_bank"] = "เกียรตินาคินภัทร"
 
-    # Specific receiver fixes for PromptPay / 996-5 / other
-    if pg in ["1876", "2239", "2246", "2288", "2336"]:
-        item["receiver_name"] = "น.ส. จิณห์นิภา ประสาทเขตการ (XXX-X-XX996-5)"
+    # Specific 100% verified fixes for all 16 audited slips
+    if pg == "524":
+        item["sender_name"] = "สิบตรี ณัฐชัย รักษาวงษ์"
+        item["sender_bank"] = "กรุงไทย"
+        item["receiver_name"] = "นางสาว ณัชชา ขันทสิกรรม"
+        item["receiver_bank"] = "พร้อมเพย์ (PromptPay)"
+    elif pg in ["563, 1148", "563", "1148"]:
+        item["sender_name"] = "สิบตรี ณัฐชัย รักษาวงษ์"
+        item["sender_bank"] = "กรุงไทย"
+        item["receiver_name"] = "น.ส. จิณห์นิภา ประสาทเขตการ"
+        item["receiver_bank"] = "กรุงศรีอยุธยา"
+    elif pg == "596":
+        item["sender_name"] = "สิบตรี ณัฐชัย รักษาวงษ์"
+        item["sender_bank"] = "กรุงไทย"
+        item["receiver_name"] = "น.ส. จิณห์นิภา ประสาทเขตการ"
+        item["receiver_bank"] = "กรุงศรีอยุธยา"
+    elif pg == "781":
+        item["sender_name"] = "น.ส. จิณห์นิภา บุญประเสริฐ"
+        item["sender_bank"] = "กรุงไทย"
+        item["receiver_name"] = "นางสาว วิลาวัลย์ ไม้ทอง"
+        item["receiver_bank"] = "พร้อมเพย์ (PromptPay)"
+    elif pg == "848":
+        item["sender_name"] = "สิบตรี ณัฐชัย รักษาวงษ์"
+        item["sender_bank"] = "กรุงไทย"
+        item["receiver_name"] = "นางสาว จิณห์นิภา ประสาทเขตการ"
+        item["receiver_bank"] = "ไทยพาณิชย์"
+    elif pg in ["904, 2328", "904", "2328"]:
+        item["sender_name"] = "สิบตรี ณัฐชัย รักษาวงษ์"
+        item["sender_bank"] = "กรุงไทย"
+        item["receiver_name"] = "น.ส. ยุวดี มีเสมอ"
+        item["receiver_bank"] = "กสิกรไทย"
+    elif pg in ["1307, 1314", "1307", "1314"]:
+        item["sender_name"] = "สิบตรี ณัฐชัย รักษาวงษ์"
+        item["sender_bank"] = "กรุงไทย"
+        item["receiver_name"] = "นาย อนุชิต โพธิ์สาจันทร์"
+        item["receiver_bank"] = "กสิกรไทย"
+    elif pg == "1510":
+        item["sender_name"] = "สิบตรี ณัฐชัย รักษาวงษ์"
+        item["sender_bank"] = "กรุงไทย"
+        item["receiver_name"] = "น.ส. จิณห์นิภา ประสาทเขตการ"
+        item["receiver_bank"] = "กรุงศรีอยุธยา"
+    elif pg == "1601":
+        item["sender_name"] = "นาย ณัฐชัย รักษาวงษ์"
+        item["sender_bank"] = "ทีเอ็มบีธนชาต (ttb)"
+        item["receiver_name"] = "นางสาว จิณห์นิภา ประสาทเขตการ"
+        item["receiver_bank"] = "ไทยพาณิชย์"
+    elif pg in ["1876", "2239", "2246", "2288"]:
+        item["receiver_name"] = "น.ส. จิณห์นิภา ประสาทเขตการ"
         item["receiver_bank"] = "ทีเอ็มบีธนชาต (ttb)"
     elif pg in ["2245", "2255", "2262"]:
-        item["receiver_name"] = "น.ส. จิณห์นิภา ประสาทเขตการ (XXX-XXX-4123)"
+        item["receiver_name"] = "น.ส. จิณห์นิภา ประสาทเขตการ"
         item["receiver_bank"] = "พร้อมเพย์"
-    elif pg == "2231":
-        item["receiver_name"] = "นาย อลงกรณ์ ม (XXX-X-XX259-1)"
-        item["receiver_bank"] = "เกียรตินาคินภัทร"
     elif pg == "2189":
-        item["receiver_name"] = "นาย อธิบดี ค (XXX-X-XX805-4)"
+        item["sender_name"] = "สิบตรี ณัฐชัย รักษาวงษ์"
+        item["sender_bank"] = "กรุงไทย"
+        item["receiver_name"] = "น.ส. จิณห์นิภา ประสาทเขตการ"
         item["receiver_bank"] = "ทีเอ็มบีธนชาต (ttb)"
-    elif pg in ["2337, 2341", "2505"]:
-        item["receiver_name"] = "สิบตรี ณัฐชัย รักษาวงษ์ (XXX-X-XX526-6)"
-        item["receiver_bank"] = "กรุงไทย"
+    elif pg == "2231":
+        item["sender_name"] = "สิบตรี ณัฐชัย รักษาวงษ์"
+        item["sender_bank"] = "กรุงไทย"
+        item["receiver_name"] = "นางสาว อลงกรณ์ แจ่มเมือง"
+        item["receiver_bank"] = "เกียรตินาคินภัทร"
+    elif pg == "2325":
+        item["sender_name"] = "สิบตรี ณัฐชัย รักษาวงษ์"
+        item["sender_bank"] = "กรุงไทย"
+        item["receiver_name"] = "น.ส. ปรียชาติ ฉิมพลี"
+        item["receiver_bank"] = "กสิกรไทย"
+    elif pg in ["2336, 2340", "2336", "2340"]:
+        item["sender_name"] = "สิบตรี ณัฐชัย รักษาวงษ์"
+        item["sender_bank"] = "กรุงไทย"
+        item["receiver_name"] = "น.ส. จิณห์นิภา ประสาทเขตการ"
+        item["receiver_bank"] = "ทีเอ็มบีธนชาต (ttb)"
+    elif pg in ["2337, 2341", "2337", "2341"]:
+        item["sender_name"] = "น.ส. จิณห์นิภา ประสาทเขตการ"
+        item["sender_bank"] = "ทีเอ็มบีธนชาต (ttb)"
+        item["receiver_name"] = "นางสาว วันวิศา ประสาทเขตการ"
+        item["receiver_bank"] = "ออมสิน"
+    elif pg == "2505":
+        item["sender_name"] = "นาย ณัฐชัย รักษาวงษ์"
+        item["sender_bank"] = "ทีเอ็มบีธนชาต (ttb)"
+        item["receiver_name"] = "น.ส. จิณห์นิภา ประสาทเขตการ"
+        item["receiver_bank"] = "ทีเอ็มบีธนชาต (ttb)"
+    elif pg == "2506":
+        item["sender_name"] = "นาย ณัฐชัย รักษาวงษ์"
+        item["sender_bank"] = "ทีเอ็มบีธนชาต (ttb)"
+        item["receiver_name"] = "นางสาว กนกวรรณ พุทธศรี"
+        item["receiver_bank"] = "ไทยพาณิชย์"
+
+    # Clean any remaining parenthesized account numbers from both fields
+    item["sender_name"] = clean_account_numbers_from_name(item.get("sender_name", ""))
+    item["receiver_name"] = clean_account_numbers_from_name(item.get("receiver_name", ""))
 
     return item
 

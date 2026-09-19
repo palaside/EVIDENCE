@@ -15,6 +15,7 @@ Features:
 
 import os
 import sys
+import re
 import json
 import base64
 import hashlib
@@ -83,7 +84,7 @@ def compute_hash(data_bytes: bytes) -> str:
 
 
 def ocr_image_raw(img_bytes: bytes, api_key: str = None, max_retries: int = 2) -> str:
-    """Sends image to typhoon-ocr-v1.5 and returns detected text."""
+    """Sends image to typhoon-ocr and returns detected text."""
     if not api_key:
         api_key = load_api_key()
     if not api_key:
@@ -91,14 +92,14 @@ def ocr_image_raw(img_bytes: bytes, api_key: str = None, max_retries: int = 2) -
 
     b64_image = base64.b64encode(img_bytes).decode("utf-8")
     payload = {
-        "model": "typhoon-ocr-v1.5",
+        "model": "typhoon-ocr",
         "messages": [
             {
                 "role": "user",
                 "content": [
                     {
                         "type": "text",
-                        "text": "กรุณาอ่านและถอดข้อความทั้งหมดจากภาพนี้อย่างละเอียดและแม่นยำที่สุด"
+                        "text": "Extract all text from the image."
                     },
                     {
                         "type": "image_url",
@@ -145,9 +146,9 @@ JUDGE_SYSTEM_PROMPT = """คุณคือผู้เชี่ยวชาญ�
 3. Date: วันที่ในรูปแบบ DD/MM/YYYY (พ.ศ. 256X หรือ ค.ศ.) เช่น "30/05/2568"
 4. Time: เวลาในรูปแบบ HH:MM (เช่น "14:21")
 5. Sender Bank: ชื่อธนาคารผู้โอน (เช่น "กรุงไทย", "ทีเอ็มบีธนชาต (ttb)", "กสิกรไทย")
-6. Sender Name: ชื่อผู้โอนและเลขบัญชี (ถ้ามี)
+6. Sender Name: ชื่อผู้โอน โดยตัดเลขบัญชีและวงเล็บออก เหลือเฉพาะชื่อ-นามสกุลเท่านั้น (เช่น "สิบตรี ณัฐชัย รักษาวงษ์", "นายณัฐชัย")
 7. Receiver Bank: ชื่อธนาคารผู้รับ
-8. Receiver Name: ชื่อผู้รับและเลขบัญชี (ถ้ามี)
+8. Receiver Name: ชื่อผู้รับ โดยตัดเลขบัญชีและวงเล็บออก เหลือเฉพาะชื่อ-นามสกุลเท่านั้น (เช่น "น.ส. จิณห์นิภา ประสาทเขตการ")
 9. Remarks: รหัสอ้างอิงธุรกรรม / Ref ID
 10. Memo: ข้อความบันทึกช่วยจำ (ถ้ามี)
 
@@ -179,7 +180,7 @@ def judge_structured_slip(raw_text: str, api_key: str = None) -> dict:
             {"role": "user", "content": f"ข้อความ OCR ดิบ:\n{raw_text}"}
         ],
         "temperature": 0.0,
-        "max_tokens": 800
+        "max_tokens": 600
     }
     payload_json = json.dumps(payload).encode("utf-8")
     url = f"{BASE_URL}/chat/completions"
@@ -199,9 +200,12 @@ def judge_structured_slip(raw_text: str, api_key: str = None) -> dict:
                     content = content[7:]
                 if content.startswith("```"):
                     content = content[3:]
-                if content.endswith("```"):
-                    content = content[:-3]
-                return json.loads(content.strip())
+                res = json.loads(content.strip())
+                for k in ["sender_name", "receiver_name"]:
+                    if k in res and res[k] and res[k] != "-":
+                        res[k] = re.sub(r"\s*[\(\[][Xx\d\s\-*.]+[\)\]]", "", str(res[k]))
+                        res[k] = re.sub(r"\s+", " ", res[k]).strip() or "-"
+                return res
     except Exception as e:
         sys.stderr.write(f"[Typhoon Judge] Error: {e}\n")
     return {}
@@ -212,13 +216,6 @@ def process_slip(image_input, structured: bool = True, use_cache: bool = True) -
     Main entry point for Typhoon OCR skill.
     Supports file path or image bytes.
     """
-    try:
-        from typhoon_slip_engine import extract_slip_with_typhoon
-        if structured:
-            return extract_slip_with_typhoon(image_input)
-    except ImportError:
-        pass
-
     api_key = load_api_key()
     if not api_key:
         raise ValueError("TYPHOON_API_KEY is not configured in .env or environment.")
@@ -235,41 +232,12 @@ def process_slip(image_input, structured: bool = True, use_cache: bool = True) -
     img_hash = compute_hash(img_bytes)
     cache = load_cache() if use_cache else {}
 
-    if use_cache and img_hash in cache:
+    if use_cache and img_hash in cache and cache[img_hash].get("amount") != "-":
         return cache[img_hash]
 
-    b64_image = base64.b64encode(img_bytes).decode("utf-8")
-    payload = {
-        "model": "typhoon-ocr-v1.5",
-        "messages": [
-            {
-                "role": "user",
-                "content": [
-                    {
-                        "type": "text",
-                        "text": "กรุณาอ่านและถอดข้อความทั้งหมดจากภาพสลิปโอนเงินธนาคารไทยนี้อย่างละเอียด ทั้งยอดเงิน ชื่อผู้โอน ชื่อผู้รับ ธนาคาร วันเวลา รหัสอ้างอิง และบันทึกช่วยจำ"
-                    },
-                    {
-                        "type": "image_url",
-                        "image_url": {"url": f"data:image/jpeg;base64,{b64_image}"}
-                    }
-                ]
-            }
-        ],
-        "max_tokens": 1200
-    }
-    req = urllib.request.Request(f"{BASE_URL}/chat/completions", data=json.dumps(payload).encode(), headers={
-        "Authorization": f"Bearer {api_key}",
-        "Content-Type": "application/json"
-    }, method="POST")
-
-    try:
-        with urllib.request.urlopen(req, timeout=35) as resp:
-            data = json.loads(resp.read().decode())
-            raw_text = data.get("choices", [{}])[0].get("message", {}).get("content", "").strip()
-    except Exception as e:
-        sys.stderr.write(f"[Typhoon OCR] Request error: {e}\n")
-        return {}
+    raw_text = ocr_image_raw(img_bytes, api_key)
+    if not raw_text:
+        return {"amount": "-", "date": "-", "time": "-", "sender_bank": "-", "sender_name": "-", "receiver_bank": "-", "receiver_name": "-", "remarks": "-", "memo": "-", "_raw_text": ""}
 
     if structured:
         result = judge_structured_slip(raw_text, api_key)
@@ -280,7 +248,7 @@ def process_slip(image_input, structured: bool = True, use_cache: bool = True) -
     else:
         result = {"raw_text": raw_text}
 
-    result["_model"] = "typhoon-ocr-v1.5"
+    result["_model"] = "typhoon-ocr"
     result["_hash"] = img_hash
 
     if use_cache:

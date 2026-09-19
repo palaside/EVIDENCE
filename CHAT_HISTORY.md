@@ -917,22 +917,77 @@
 | - บันทึก Checkpoint OpenTyphoon และ Typhoon_OCR Skill       |
 | - ตรวจสอบความปลอดภัย Secrets และ PDPA Shield สมบูรณ์        |
 +-------------------------------------------------------------+
+
+                                                   +-------------------------------------------------------------+
+                                                   | 👤 User:                                                    |
+                                                   |                                                             |
+                                                   | เปลี่ยนระบบการวางหน้าธุระสลิป เนื่องจากต้องมานั่งนับเอง     |
+                                                   | ให้แยกตารางสรุปแยกไปอีกโมดูลแยกออกไป                        |
+                                                   | ที่ให้แยก เพราะมีสารบัญสลิปมารวม เวลาจะปริ๊นมันก็ไม่ตรงหน้า |
+                                                   | เช่น สารบัญมี 5 พอเข้าหน้าแชทมันเริ่มที่ 6 มันไม่ใช่เริ่ม 1 |
+                                                   +-------------------------------------------------------------+
++-------------------------------------------------------------+
+| 🤖 AI Agent (Senior Full-Stack Developer):                  |
+|                                                             |
+| สถาปัตยกรรม Decoupled Standalone Dossier สำเร็จ:             |
+| - สร้าง `Evidence_Chat_Master_Front_Cover_and_Index.pdf`   |
+|   (6 หน้า = ปก 1 หน้า + สารบัญ 10 คอลัมน์ Landscape 5 หน้า)   |
+| - เล่มแชท `Evidence_Chat_Master_Combined_Vol1_to_3.pdf`     |
+|   เริ่มต้นที่ Physical Page 1 ตรงกับเลขหน้าพิมพ์ 1:1 ทันที  |
+| - สั่งพิมพ์หน้า 1 ออกแชทหน้า 1 ตรงเป๊ะ ไม่ต้องบวกเลขหน้า     |
++-------------------------------------------------------------+
+
+                                                   +-------------------------------------------------------------+
+                                                   | 👤 User:                                                    |
+                                                   |                                                             |
+                                                   | 1. นำภาพทุกภาพโดยการรันลำดับตามชื่อไฟล์มาต่อเรียงกันให้ครบ  |
+                                                   | 2. เมื่อต่อจนยาวสุดลูกหูลูกตา แล้วค่อยมาหั่น                |
+                                                   | 3. เมื่อหั่นแล้วจะไม่มีการเกิดภาวะภาพซ้ำเกิดขึ้น             |
+                                                   | เพิ่มกฎ: เมื่อหั่นแล้วให้มีการตรวจการซ้ำของภาพ              |
+                                                   +-------------------------------------------------------------+
++-------------------------------------------------------------+
+| 🤖 AI Agent (Senior Full-Stack Developer):                  |
+|                                                             |
+| ยกเครื่องสู่ Streaming Canvas Pipeline + Post-Slice Dedup:   |
+| 1. ต่อสายพานยาวต่อเนื่องเป็นเนื้อเดียวแล้วสไลซ์ตาม Quiet    |
+|    Zone ไร้รอยต่อแบทช์ 35 ภาพเดิม 100%                      |
+| 2. กรองไฟล์ภาพซ้ำต้นทาง (SHA-256) ทิ้ง 40 ไฟล์               |
+| 3. ติดตั้ง Rule 14 (Post-Slice Dedup) สแกนตรวจ SHA-256 และ  |
+|    Slip Ref ทันทีที่หั่น หากซ้ำหน้าก่อนหน้าให้ตัดทิ้ง        |
+| 4. ประมวลผลใหม่ครบทั้ง 3 เล่ม ได้ Master Chat PDF 2,387 หน้า |
+|    (ตัดหน้าซ้ำ/หน้าขยะออกได้ถึง 173 หน้าจากเดิม 2,560 หน้า)  |
+| 5. Re-index สลิป 94 รายการ มูลค่า 467,218.00 บาท            |
+| 6. ตรวจสอบไบนารีระดับ Image Xref: ยืนยัน 0 Duplicates 100%  |
++-------------------------------------------------------------+
+
+                                                   +-------------------------------------------------------------+
+                                                   | 👤 User:                                                    |
+                                                   |                                                             |
+                                                   | เซฟ                                                         |
+                                                   +-------------------------------------------------------------+
++-------------------------------------------------------------+
+| 🤖 AI Agent (Senior Full-Stack Developer):                  |
+|                                                             |
+| ดำเนินการแช่แข็งสถานะโปรเจกต์ (Immortal Project Protocol):   |
+| 1. อัปเดต `LATEST_CHECKPOINT.md` สรุปสถานะ 2,387 หน้า        |
+| 2. ซิงค์ 4 เอกสารหลัก + `state/` Redundant Mirror สมบูรณ์     |
+| 3. อัปเกรด `deploy.json` เป็น v1.7.0                         |
+| 4. รัน Git Commit บันทึกประวัติศาสตร์การยกเครื่องใหญ่ถาวร    |
++-------------------------------------------------------------+
 ```
 
 ---
 
 ## 📌 Context Preservation Metadata
 - **Project Name:** DIGITAL_EVIDENCE
-- **Active Skills & Engines:** `OCR_Slip`, `Border_excel`, `Detail_Data`, `Search_Slip`, `List_names`, `Dicut_Chat`, `slip-block-fit`, `Stage Forensic Smart Zoom & Crop v2.0`, `Name` (`target-name-matcher`), `Only` (`only-corroborated`), `ask-senior`, `quality-senior-agent`, `Typhoon_OCR`, `save-project-state`, `resume-project-state`, `WinRAR SFX Builder`, `Portable Launcher`
+- **Active Skills & Engines:** `Streaming Canvas Pipeline`, `Post-Slice Deduplication (Rule 14)`, `Decoupled Dossier Engine`, `OCR_Slip`, `Border_excel`, `Detail_Data`, `Search_Slip`, `List_names`, `Dicut_Chat`, `slip-block-fit`, `Stage Forensic Smart Zoom & Crop v2.0`, `Name` (`target-name-matcher`), `Only` (`only-corroborated`), `ask-senior`, `quality-senior-agent`, `Typhoon_OCR`, `save-project-state`, `resume-project-state`, `WinRAR SFX Builder`, `Portable Launcher`
 - **Output Artifacts Delivered:**
-  - `Folder_Out/Evidence_Chat_Master_Combined_Vol1_to_3_With_Cover.pdf` (2,562 Pages Master Chat Evidence)
-  - `Folder_Out/Evidence_Chat_Master_Front_Cover_and_Index.pdf` (6 Pages Dossier & Index)
-  - `Folder_Out/Evidence_Chat_Master_Combined_Vol1_to_3_Slip_Index.xlsx` (89 Slips Ledger)
+  - `Folder_Out/Evidence_Chat_Master_Combined_Vol1_to_3.pdf` (**2,387 Pages Master Chat Evidence — 1:1 Page-to-Print Match**)
+  - `Folder_Out/Evidence_Chat_Master_Front_Cover_and_Index.pdf` (**6 Pages Standalone Dossier & 10-Column Index**)
+  - `Folder_Out/Evidence_Chat_Master_Combined_Vol1_to_3_Slip_Index.xlsx` & `.json` (**94 Slips Ledger — 467,218.00 THB**)
   - `Folder_Out/EVIDENCE_HASH_CERTIFICATE.pdf` & `.sha256` (Court-Grade Certification)
-  - `Folder_Out/Pattle_Case_Evidence_Test.exe` (Encrypted Self-Extracting WinRAR Container)
-  - `Folder_Out/QUALITY_INSPECTION_REPORT.md` (Autonomous Quality Gate Report)
-  - `Folder_Out/TYPHOON_AUDIT_REPORT.json` (OpenTyphoon Forensic Slip Audit Report)
-  - `Folder_Out/typhoon_cache.json` (Persistent Zero-Token SHA-256 Cache)
+  - `Folder_Out/Evidence_Slips_Master_Unique_560.pdf` (588 Pages Unique Slips Dossier)
+  - `Folder_Out/DUPLICATE_SLIP_AUDIT_REPORT.xlsx` (2,232 Duplicate Slips Mapped)
   - `CREATE_SFX_EVIDENCE.bat`, `RUN_QUALITY_AGENT.bat`, `RUN_CHAT_EVIDENCE_PROCESSOR.bat`, `RUN_SLIP_EXTRACTOR.bat`
   - `LATEST_CHECKPOINT.md` (Resurrection Hook for Seamless Next Session Continuation)
 

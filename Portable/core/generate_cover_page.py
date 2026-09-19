@@ -364,9 +364,15 @@ def main():
     # 1. Build front dossier PDF
     build_front_dossier_pdf(slip_json, front_pdf, start_page_num=1)
 
-    # 2. Merge to master PDF
-    if os.path.exists(master_pdf):
-        merge_cover_to_master_pdf(master_pdf, front_pdf, final_pdf)
+    # 2. Standalone Decoupled Dossier Standard (No shifting of chat page numbers)
+    print("\n" + "=" * 70)
+    print(" 🎉 DECOUPLED EVIDENCE DOSSIER READY FOR PRINTING!")
+    print(f"  📄 [1] เล่มเนื้อหาแชทหลักฐาน (เริ่มหน้า 1 เพียวๆ): {master_pdf}")
+    print(f"         (หน้า 1 ใน PDF = แชทหน้า 1 สั่งพิมพ์ตรงเป๊ะ 100% ไม่มีหน้าสารบัญมาแทรกเลื่อน)")
+    print(f"  📑 [2] เล่มหน้าปกและสารบัญสรุปการเงินเฉพาะ: {front_pdf}")
+    print(f"         (สารบัญ 10 คอลัมน์ระบุหน้าระบุสลิปตรงกับเล่ม [1] 100%)")
+    print(f"  📊 [3] ตารางสรุปการเงิน Excel: {os.path.join(out_dir, 'Evidence_Chat_Master_Combined_Vol1_to_3_Slip_Index.xlsx')}")
+    print("=" * 70)
 
 
 if __name__ == "__main__":

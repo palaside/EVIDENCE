@@ -265,29 +265,28 @@ def main():
             if (idx + 1) % 50 == 0 or (idx + 1) == len(master_slips):
                 print(f"    Rendered [{idx + 1}/{len(master_slips)}] slips ({(time.time()-t0_render):.1f}s)...")
 
-        # 4. Append 10-Column Landscape Summary Pages
-        print("[*] Generating 10-Column Landscape Summary Statement Table...")
-        rows_per_page = 20
-        chunks = [ocr_list[i:i + rows_per_page] for i in range(0, max(len(ocr_list), 1), rows_per_page)]
-        for c_idx, chunk in enumerate(chunks):
-            global_page_idx += 1
-            assembler.add_10col_landscape_summary_page(
-                item_names=[os.path.basename(p) for p in master_slips[c_idx*rows_per_page : (c_idx+1)*rows_per_page]],
-                slip_data_list=chunk,
-                mode="SLIP",
-                page_num=global_page_idx,
-                corroborated=f"สารบัญสลิปการเงิน (หน้า {c_idx + 1}/{len(chunks)})"
-            )
-            summ = assembler.pdf_pages.pop()
-            fp = os.path.join(tmp, f"summary_p{c_idx+1:05d}.png")
-            summ.save(fp)
-            paths.append((fp, summ.size))
-
-        # 5. Compile PDF Streaming
-        print(f"[*] Writing {len(paths)} pages to {os.path.basename(out_pdf_path)} via PyMuPDF C-Binding...")
+        # Note: Summary Table is now decoupled into _skills/Summary_Table module.
+        # Master Slips PDF preserves strictly 1:1 slip page numbering (Page 1 = Slip 1 .. Page N = Slip N).
+        print(f"[*] Writing {len(paths)} pure slip pages to {os.path.basename(out_pdf_path)} via PyMuPDF C-Binding...")
         t0_save = time.time()
         mode = save_pdf_streaming(paths, out_pdf_path)
         print(f"[OK] Saved {out_pdf_path} ({len(paths)} pages) in {time.time()-t0_save:.2f}s via {mode}!")
+
+    # Generate Separate Dedicated Summary & Index Dossier PDF via Summary_Table
+    out_summary_pdf = os.path.splitext(out_pdf_path)[0] + "_Summary_Index.pdf"
+    print(f"[*] Generating dedicated standalone Summary & Index Dossier -> {os.path.basename(out_summary_pdf)}...")
+    try:
+        from _skills.Summary_Table.scripts.summary_table import build_summary_dossier
+        build_summary_dossier(
+            input_json=ocr_list,
+            output_pdf=out_summary_pdf,
+            output_excel=out_excel_slips,
+            include_cover=True
+        )
+        print(f"  📑 Standalone Summary PDF: {out_summary_pdf}")
+    except Exception as e:
+        print(f"  Note on standalone summary generation: {e}")
+
 
     print("\n" + "=" * 70)
     print(" 🎉 SYSTEM 1 COMPLETED SUCCESSFULLY!")

@@ -5,19 +5,13 @@
 
 ## 📍 1. Current Project State & Milestones (สถานะงานปัจจุบัน)
 
-- [x] **CHAT MODE (สมบูรณ์ 100% - Master Unified 2,557 Pages + Front Dossier):**
-  - รวมแชทจริง 3 ชุด (2,557 หน้า) + หน้าปก Executive Dossier (1 หน้า กล่องข้อ 6 ปรับ 10pt) + สารบัญสลิป 10 คอลัมน์ (5 หน้า) = **2,562 หน้า** (`Folder_Out/Evidence_Chat_Master_Combined_Vol1_to_3_With_Cover.pdf`)
-  - หน้าแชทล้วน 1:1 Page-to-Print: `Folder_Out/Evidence_Chat_Master_Combined_Vol1_to_3.pdf` (2,557 หน้า ลำดับ 1..2557 ต่อเนื่องไม่มีรีเซ็ต)
-  - หน้าปกและสารบัญแยกพิมพ์: `Folder_Out/Evidence_Chat_Master_Front_Cover_and_Index.pdf` (6 หน้า)
-  - อัปเกรดมาตรฐานสู่ Court-Grade Evidence: Evidence Ribbon Header (`MODE : CHAT`, `CORROBORATED : บทสนทนาต่อเนื่อง`, `PAGE : [X]`), Pure White Canvas (`#FFFFFF`), Quiet Zone Lookahead 1.30x, ท้ายกระดาษรับรอง 3 บรรทัด ฟอนต์ TH Sarabun New Thin
-  - ดัชนีสลิปบริสุทธิ์: สกัดสลิปธุรกรรมการเงินจริงครบ **89 รายการ** (กรองภาพอาหาร/รูปถ่ายบุคคลทั่วไปออก 100%) ยอดเงินรวม **436,018.00 บาท**
-  - ผูกโยงชื่อคู่ความตามเลขบัญชีจริง (Option 1 - Verified Account Binding): ผู้โอน `สิบตรี ณัฐชัย รักษาวงษ์` (KTB 452-9, 526-6 และ ttb 558-9) และผู้รับ `น.ส. จิณห์นิภา ประสาทเขตการ` (BAY 385-0, ttb 996-5, PromptPay 4123) ถูกต้องตรงตามสัญญาคดี 100% ปราศจากค่า "ไม่ระบุชื่อ"
-  - แก้ไขแถบพยานหลักฐานริบบอนส่วนหัว (Header Ribbon): ลบล้างแถบเท็จ `สลิปหลักฐานการโอนเงิน` จากรูปถ่ายทั่วไป (เช่น รูปอาหารในหน้าที่ 3) และแก้ไขครบทั้ง 144 หน้า ให้เป็น `CORROBORATED : บทสนทนาต่อเนื่อง` มาตรฐานเดียวกัน 100%
-  - ตัวอักษรและฟอนต์วันที่: ปรับแก้เป็นภาษาไทยมาตรฐาน 100% ทุกรายการ (`DD ด.ด. 2568 - HH:MM`) ปราศจากตัวอักษรละตินเพี้ยน (`Gn.`, `&.A.`, `n.w.`, `w.9.`) และไม่มีช่องว่าง (`-`)
-  - อัตราดึงธนาคารผู้รับสำเร็จ: **100.0%** (ระบุครบทั้ง 89 สลิป: ttb 42, กรุงศรี 29, กรุงไทย 11, กสิกรไทย 3, ไทยพาณิชย์ 2, เกียรตินาคินภัทร 1, พร้อมเพย์ 1)
-  - ตารางสรุป 10 คอลัมน์ Sarabun จัดกึ่งกลางพร้อม Auto Font-Scaling: `Folder_Out/Evidence_Chat_Master_Combined_Vol1_to_3_Slip_Index.xlsx` และ `.json`
-  - ตรวจสอบความถูกต้องอัตโนมัติ 100%: `tools/verify_master_evidence.py` ผลลัพธ์ **PASS 100% (0 Hard Errors)**
-  - ใบรับรองมาตรฐานพยานหลักฐานดิจิทัล: `Folder_Out/EVIDENCE_HASH_CERTIFICATE.pdf` (SHA-256 Checksum กำกับทุกไฟล์ฉบับปรับปรุงใหม่)
+- [x] **CHAT MODE (สมบูรณ์ 100% - Streaming Canvas Overhaul 2,387 Pages + Decoupled Dossier):**
+  - **อัปเกรดระบบ Streaming Canvas Pipeline:** เปลี่ยนสถาปัตยกรรมต่อสายพานภาพแชทยาวต่อเนื่องและหั่นตาม Quiet Zone แทนการแบ่งแบทช์เดิม ขจัดรอยต่อแบทช์ รอยตัดผ่าข้อความ และลดจำนวนหน้าจาก 2,560 หน้า เหลือ **2,387 หน้า A4 บริสุทธิ์ (ลดลง 173 หน้า)**
+  - **ติดตั้งกฎตรวจจับภาพซ้ำหลังหั่น (Post-Slice Deduplication Rule):** สแกนตรวจสอบ SHA-256 Content Hash และ Slip Reference ID ของหน้าที่หั่นออกมาทันที หากซ้ำ 100% กับหน้าก่อนหน้าให้ตัดทิ้งอัตโนมัติ การันตี Zero Duplicate Pages 100%
+  - **เล่มแชทหลักฐาน (Master Chat PDF):** `Folder_Out/Evidence_Chat_Master_Combined_Vol1_to_3.pdf` (**2,387 หน้า**) รันเลขหน้า 1 ถึง 2,387 ตรงกับ Physical Page 1:1
+  - **ชุดหน้าปกและสารบัญแยกเดี่ยว (Decoupled Dossier):** `Folder_Out/Evidence_Chat_Master_Front_Cover_and_Index.pdf` (**6 หน้า** = ปก Executive 1 หน้า + สารบัญ 10 คอลัมน์ Landscape 5 หน้า) หน้าระบุสลิปตรงกับเลขหน้าพิมพ์จริง 100%
+  - **ดัชนีสลิปและมูลค่าคดี:** สแกนพบสลิปธุรกรรมจริง **94 รายการ** มูลค่ารวม **467,218.00 บาท** พร้อมส่งออก `Evidence_Chat_Master_Combined_Vol1_to_3_Slip_Index.xlsx` และ `.json`
+  - **มาตรฐานความถูกต้องระดับพิกเซล (Option 1 Verified Binding):** ผูกโยงชื่อคู่ความและธนาคารที่ผ่านการตรวจพิสูจน์แล้ว (สิบตรี ณัฐชัย รักษาวงษ์ / น.ส. จิณห์นิภา ประสาทเขตการ) 100% ปราศจากเลขบัญชีหลุดในช่องชื่อ
 
 - [x] **SLIP MODE SYSTEM 1 — MASTER UNIQUE 560 SLIPS (สมบูรณ์ 100% - Priority 1):**
   - สกัดสลิปจริงที่ไม่ซ้ำกัน 560 ใบ จากคลัง 2,792 ไฟล์ (`F:\Project\EDOK\Duplicates\Done`)
@@ -82,6 +76,13 @@
   - สคริปต์สั่งการ: `_skills/Typhoon_OCR/scripts/typhoon_ocr.py` (รองรับไฟล์ภาพ, PDF แยกหน้า, `--raw`, `--out`, และ Zero-Token Cache)
   - ทดสอบรัน CLI: ผลลัพธ์สมบูรณ์ 100% ตอบสนองทันทีจากหน่วยความจำ 0.04 วินาที
 
+- [x] **SKILL DECOUPLED: Summary_Table & Standalone Dossier Standard (สมบูรณ์ 100%):**
+  - แยกโมดูลตารางสรุป 10 คอลัมน์ (A4 Landscape) และหน้าปก ออกจาก `process_chat.py` อย่างเด็ดขาด 100% เป็นโมดูลอิสระ `_skills/Summary_Table` (สคริปต์ `summary_table.py`)
+  - แก้ไขปัญหา "หน้าเลื่อน / ต้องมานั่งนับเอง": เล่มเนื้อหาหลักฐานแชท `Folder_Out/Evidence_Chat_Master_Combined_Vol1_to_3.pdf` (2,560 หน้า) เริ่มต้นที่หน้า 1 เพียวๆ (Page 1 = Physical Page 1) สั่งพิมพ์ตรงหน้าเป๊ะ 100% ปราศจากหน้าสารบัญมาแทรกเลื่อนเลขหน้า
+  - เล่มหน้าปกและสารบัญสรุปการเงินสร้างแยกเดี่ยว: `Folder_Out/Evidence_Chat_Master_Front_Cover_and_Index.pdf` (6 หน้า: 1 หน้าปก + 5 หน้าสารบัญ A4 แนวนอน 89 รายการ ขยายช่องชื่อผู้รับ/ผู้โอน ระยะขอบ 1.25 ซม. สารบัญ-1 ถึง 5)
+  - รายงานสรุปการเงิน Excel: `Folder_Out/Evidence_Chat_Master_Combined_Vol1_to_3_Slip_Index.xlsx` จัดกึ่งกลาง Sarabun Light พร้อมไฮไลต์หน้าระบุสลิปสีอำพัน
+  - ซิงค์การ Decouple ไปยัง `_skills/Dicut_Chat`, `_engines/Dicut_Chat`, `Portable/core`, และ `process_master_slips_system1.py`
+
 ---
 
 ## ⚖️ 2. Immutable Enforced Rules (กฎเหล็กห้ามละเมิดเด็ดขาด)
@@ -91,3 +92,6 @@
 3. **Memo Protection Standard:** ครอปสลิปต้องเว้นระยะเผื่อใต้บรรทัด "วันที่ทำรายการ" ~180px ป้องกันบันทึกช่วยจำสูญหาย
 4. **Table Grid Styling:** ทุกช่องจัดกึ่งกลาง (Center-Aligned) ฟอนต์ Sarabun (11 ปกติ, 12 หนาสำหรับหัว) เส้นขอบบาง 4 ด้าน
 5. **PyMuPDF C-Binding:** ใช้ PyMuPDF (fitz) สตรีมมิ่งเป็นแกนหลักความเร็วสูงเสมอ
+6. **Pixel-Level OCR Standard:** สแกนตรวจ อ่าน และสกัดตัวอักษรลงลึกถึงระดับพิกเซลเท่านั้น ห้ามเดาคำนำหน้าชื่อหรือชื่อย่อ
+7. **Decoupled Dossier Standard:** ห้ามนำหน้าปกหรือสารบัญไปรวมในไฟล์เนื้อหาแชท/สลิปเด็ดขาด เพื่อให้หน้าแรกของไฟล์เนื้อหาคือหน้า 1 ตรงกับเลขหน้ากระดาษที่พิมพ์จริงเสมอ 1:1
+

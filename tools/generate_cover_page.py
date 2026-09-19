@@ -401,13 +401,16 @@ def main():
     except Exception as e:
         print(f"Note: Could not save preview image: {e}")
 
-    # 2. Merge with logical page labels
-    if os.path.exists(master_pdf):
-        merge_cover_to_master_pdf(master_pdf, front_pdf, final_pdf)
-        print(f"📄 [PRINT-READY CHAT 1:1]: {master_pdf}")
-        print(f"   (เล่มแชท 2,557 หน้าล้วน หน้า 1 ใน PDF = แชทหน้า 1 ตรงเป๊ะ 100% สำหรับสั่งพิมพ์)")
-        print(f"📄 [ALL-IN-ONE MASTER DOSSIER]: {final_pdf}")
-        print(f"   (เล่มรวมสมบูรณ์พร้อม Logical Page Labels: หน้า 64 ในโปรแกรมพิมพ์ = แชทหน้า 64)")
+    # 2. Standalone Decoupled Dossier Standard (No shifting of chat page numbers)
+    print("\n" + "=" * 70)
+    print(" 🎉 DECOUPLED EVIDENCE DOSSIER READY FOR PRINTING!")
+    print(f"  📄 [1] เล่มเนื้อหาแชทหลักฐาน (เริ่มหน้า 1 เพียวๆ): {master_pdf}")
+    print(f"         (หน้า 1 ใน PDF = แชทหน้า 1 สั่งพิมพ์ตรงเป๊ะ 100% ไม่มีหน้าสารบัญมาแทรกเลื่อน)")
+    print(f"  📑 [2] เล่มหน้าปกและสารบัญสรุปการเงินเฉพาะ: {front_pdf}")
+    print(f"         (สารบัญ 10 คอลัมน์ระบุหน้าระบุสลิปตรงกับเล่ม [1] 100%)")
+    print(f"  📊 [3] ตารางสรุปการเงิน Excel: {os.path.join(out_dir, 'Evidence_Chat_Master_Combined_Vol1_to_3_Slip_Index.xlsx')}")
+    print("=" * 70)
+
 
 
 if __name__ == "__main__":

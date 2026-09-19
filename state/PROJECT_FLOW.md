@@ -24,7 +24,11 @@
  [STAGE 3: Image Sanitization & Mobile Edge Band Removal]
        │
        ▼
- [STAGE 4: Quiet Zone Lookahead Slicing (Dicut_Chat)]
+ [STAGE 4: Streaming Canvas Pipeline & Quiet Zone Slicing (Dicut_Chat)]
+       │   ├── Input Filter: 100% SHA-256 Duplicate File Pruning
+       │   ├── Safe-Feather Conveyor Belt: Continuous Stream Stitching (12px Cross-Fade)
+       │   ├── Quiet Zone Lookahead (1.30x) & Pack-to-Top Slicing
+       │   └── Post-Slice Dedup Gate (Rule 14): SHA-256 & Slip Ref Duplicate Pruning
        │
        ▼
  [STAGE 5: Forensic Smart Zoom & Pure White Canvas Engine]
@@ -34,11 +38,13 @@
        │
        ▼
  [STAGE 6: Forensic Quality Gate & High-Speed PyMuPDF C-Binding Assembly]
+       │   ├── Master Chat PDF: 2,387 Pages Continuous (1:1 Physical-to-Print Match)
+       │   └── Binary Audit: Image Xref & SHA-256 Stream (0 Duplicates Confirmed)
        │
-       ├──► [STAGE 7A: Executive Dossier & Front Index Merger (generate_cover_page)]
-       │          ├── Page 1: Portrait Dossier Cover with Evidence Ribbon
-       │          ├── Pages 2-5: 10-Column Landscape Slip Index with Gold Highlights
-       │          └── Fast C-Binding Stream Stitching: 2,562 Pages in 6.81s
+       ├──► [STAGE 7A: Decoupled Standalone Dossier & 10-Column Index (Summary_Table)]
+       │          ├── Page 1: Portrait Dossier Cover (PAGE: COVER, 2,387 Chat Pages Referenced)
+       │          ├── Pages 2-6: 10-Column Landscape Slip Index (PAGE: สารบัญ-1 to 5)
+       │          └── Decoupled Architecture: Master Chat Starts at Page 1 (Zero Shift on Print)
        │
        ├──► [STAGE 7B: Cryptographic Evidence Hash Certification (evidence_hash_manifest)]
        │          ├── SHA-256 + MD5 64KB Binary Streaming
