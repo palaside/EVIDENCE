@@ -107,8 +107,9 @@ def get_sarabun_fonts(scale=2.0):
                 "card_highlight": ImageFont.truetype(bold_path, int(22 * scale)),
                 "header_lbl": ImageFont.truetype(bold_path, int(18 * scale)),
                 "header_val": ImageFont.truetype(regular_path, int(18 * scale)),
-                "tbl_hdr": ImageFont.truetype(bold_path, int(16 * scale)),
+                "tbl_hdr": ImageFont.truetype(bold_path, int(12 * scale)),
                 "tbl_body": ImageFont.truetype(regular_path, int(15 * scale)),
+
                 "tbl_body_bold": ImageFont.truetype(bold_path, int(15 * scale)),
                 "footer": ImageFont.truetype(regular_path, int(13 * scale)),
             }
@@ -410,16 +411,27 @@ def generate_10col_landscape_summary_pages(slip_data_list, mode="CHAT", scale=2.
             # Solid, bold black header border (width=3px)
             draw.rectangle([cur_x, tbl_top, cur_x + col_w[i], tbl_top + hdr_h], fill=hdr_bg, outline="#000000", width=int(2.5 * scale))
             try:
-                t_box = draw.textbbox((0, 0), h, font=fonts["tbl_hdr"])
+                f_hdr = fonts["tbl_hdr"]
+                t_box = draw.textbbox((0, 0), h, font=f_hdr)
                 tw = t_box[2] - t_box[0]
                 th = t_box[3] - t_box[1]
-                tx = cur_x + (col_w[i] - tw) // 2
-                ty = tbl_top + (hdr_h - th) // 2 - int(2 * scale)
+                max_w = col_w[i] - int(16 * scale)
+                if tw > max_w:
+                    scale_pt = max(int(8 * scale), int(f_hdr.size * max_w / max(tw, 1)))
+                    if bold_p:
+                        f_hdr = ImageFont.truetype(bold_p, scale_pt)
+                        t_box = draw.textbbox((0, 0), h, font=f_hdr)
+                        tw = t_box[2] - t_box[0]
+                        th = t_box[3] - t_box[1]
+                tx = cur_x + max(int(4 * scale), (col_w[i] - tw) // 2)
+                ty = tbl_top + max(int(2 * scale), (hdr_h - th) // 2) - int(2 * scale)
             except Exception:
+                f_hdr = fonts["tbl_hdr"]
                 tx = cur_x + int(5 * scale)
                 ty = tbl_top + int(7 * scale)
-            draw.text((tx, ty), h, fill="#000000", font=fonts["tbl_hdr"])
+            draw.text((tx, ty), h, fill="#000000", font=f_hdr)
             cur_x += col_w[i]
+
 
         # Table Rows (20 rows max per page)
         row_y = tbl_top + hdr_h
