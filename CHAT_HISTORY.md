@@ -677,16 +677,75 @@
                                                    +-------------------------------------------------------------+
                                                    | 👤 User:                                                    |
                                                    |                                                             |
+                                                   | ทางเลือกที่ 1 (แนะนำ) — แก้ไขชื่อคู่ความตามเลขบัญชี และแก้  |
+                                                   | แถบริบบอนส่วนหัวหน้า 3 ที่ขึ้นสลิปหลักฐานการโอนเงินผิดพลาด  |
+                                                   +-------------------------------------------------------------+
++-------------------------------------------------------------+
+| 🤖 AI Agent (Senior Full-Stack Developer):                  |
+|                                                             |
+| ดำเนินการ Option 1 สำเร็จสมบูรณ์ 100%:                      |
+| 1. ผูกโยงเลขบัญชีที่พิสูจน์แล้วในสำนวนสู่ชื่อคู่ความโดยตรง: |
+|    - KTB 452-9, 526-6 และ ttb 558-9 -> สิบตรี ณัฐชัย รักษาวงษ์|
+|    - BAY 385-0, ttb 996-5 -> น.ส. จิณห์นิภา ประสาทเขตการ    |
+| 2. แก้ไขริบบอนส่วนหัวรูปอาหารหน้า 3 และหน้าแชททั่วไป 144 หน้า|
+|    กลับคืนเป็น `CORROBORATED : บทสนทนาต่อเนื่อง` 100%       |
+| 3. ประกอบเล่ม Master 2,562 หน้า พร้อมคำนวณแฮชและออกใบรับรอง |
+|    EVIDENCE_HASH_CERTIFICATE.pdf กำกับทุกไฟล์ฉบับใหม่        |
++-------------------------------------------------------------+
+
+                                                   +-------------------------------------------------------------+
+                                                   | 👤 User:                                                    |
+                                                   |                                                             |
+                                                   | ทำเป็น WinRAR SFX Archive (ไฟล์บีบอัดดึงตัวเองอัตโนมัติ     |
+                                                   | ที่ล็อกรหัสผ่าน) ตาม 4 ส่วนที่กำหนด                         |
+                                                   +-------------------------------------------------------------+
++-------------------------------------------------------------+
+| 🤖 AI Agent (Senior Full-Stack Developer):                  |
+|                                                             |
+| พัฒนาระบบ WinRAR SFX Locked Archive Protocol สำเร็จสมบูรณ์: |
+| 1. สร้าง `tools/build_sfx_evidence_package.py` พร้อม GUI   |
+| 2. ส่วนที่ 1: หน้าต่างกรอกชื่อและรหัสผ่านรอบเดียว Auto-Sync |
+| 3. ส่วนที่ 2: ตั้งค่าฟอร์แมต RAR, โหมด SFX, เข้ารหัส -hp    |
+|    Title: DIGITAL EVIDENCE, ข้อความปฏิเสธความรับผิดชอบ      |
+|    3 บรรทัดจาก Pattle.pdf, ตราโล่ 150x250 BMP และไอคอน .ico |
+| 4. ตัวสั่งงานคลิกเดียว: `CREATE_SFX_EVIDENCE.bat`           |
+| 5. ทดสอบสร้างสำเร็จ: `Folder_Out/Pattle_Case_Evidence_Test.exe`|
++-------------------------------------------------------------+
+
+                                                   +-------------------------------------------------------------+
+                                                   | 👤 User:                                                    |
+                                                   |                                                             |
+                                                   | สร้างเอเจ่นสำหรับตรวจวัดคุณภาพ ผ่านสกิล @ask-senior         |
+                                                   | (qwen2.5-coder:14b) รันโหมด Agent ทำหน้าที่ตรวจคุณภาพ      |
+                                                   | ผลงานทุกขั้นตอน                                             |
+                                                   +-------------------------------------------------------------+
++-------------------------------------------------------------+
+| 🤖 AI Agent (Senior Full-Stack Developer):                  |
+|                                                             |
+| สร้าง Autonomous Quality Agent สำเร็จสมบูรณ์ 100%:         |
+| 1. สร้างเอนจิน `tools/quality_agent.py` (ซิงค์สู่ F:/tools) |
+|    ขับเคลื่อนด้วย `qwen2.5-coder:14b` บน Local Brain :11434  |
+| 2. รันในโหมด Agent Mode: ตรวจสอบไฟล์จริง (Inspect Before Act)|
+|    ประเมิน 6 มิติ (Scope, Syntax, Tests, Regression, Sec, Clean)|
+| 3. ระบบ Auto Gap-Closing: เสนอโค้ดแก้ไขและสร้าง Unit Test   |
+| 4. ฟันธงผล [APPROVED] / [CHANGES_REQUIRED] พร้อมคะแนน 0-100 |
+| 5. บันทึกรายงาน `Folder_Out/QUALITY_INSPECTION_REPORT.md`   |
+| 6. สร้าง One-Click Launcher: `RUN_QUALITY_AGENT.bat`        |
+|    และสร้างสกิล `quality-senior-agent/SKILL.md`             |
++-------------------------------------------------------------+
+
+                                                   +-------------------------------------------------------------+
+                                                   | 👤 User:                                                    |
+                                                   |                                                             |
                                                    | เซฟ                                                         |
                                                    +-------------------------------------------------------------+
 +-------------------------------------------------------------+
 | 🤖 AI Agent (Senior Full-Stack Developer):                  |
 |                                                             |
-| ดำเนินการแช่แข็งสถานะโปรเจกต์ (Immortal Project Protocol):   |
-| - บันทึกสถานะ 89 สลิปบริสุทธิ์ ยอดเงินรวม 436,018.00 บาท    |
-| - ซิงค์เอกสารสถานะ + LATEST_CHECKPOINT.md เข้าสู่ `state/`  |
-| - อัปเดต Mistakes Log พร้อมกฎห้ามเกิดซ้ำ                     |
-| - ระบบพร้อมเปิดใช้งานต่อได้ทันทีทุกเมื่อ (Resurrection Ready) |
+| ดำเนินการแช่แข็งและบันทึกสถานะโปรเจกต์ (Immortal Protocol):  |
+| - บันทึกและสำรองไฟล์สถานะทั้งหมดลงใน `state/`               |
+| - ซิงค์สกิลสู่คลังกลาง `F:/.agents/skills/`                  |
+| - บันทึก Checkpoint และ Git Commit เรียบร้อยทุกรายการ       |
 +-------------------------------------------------------------+
 ```
 
@@ -694,16 +753,15 @@
 
 ## 📌 Context Preservation Metadata
 - **Project Name:** DIGITAL_EVIDENCE
-- **Active Skills & Engines:** `OCR_Slip`, `Border_excel`, `Detail_Data`, `Search_Slip`, `List_names`, `Dicut_Chat`, `slip-block-fit`, `Stage Forensic Smart Zoom & Crop v2.0`, `Name` (`target-name-matcher`), `Only` (`only-corroborated`), `save-project-state`, `resume-project-state`, `Portable Launcher`
+- **Active Skills & Engines:** `OCR_Slip`, `Border_excel`, `Detail_Data`, `Search_Slip`, `List_names`, `Dicut_Chat`, `slip-block-fit`, `Stage Forensic Smart Zoom & Crop v2.0`, `Name` (`target-name-matcher`), `Only` (`only-corroborated`), `ask-senior`, `quality-senior-agent`, `save-project-state`, `resume-project-state`, `WinRAR SFX Builder`, `Portable Launcher`
 - **Output Artifacts Delivered:**
-  - `Folder_Out/Evidence_Slips_Master_Unique_560.pdf` (588 Pages Master Slip Evidence)
-  - `Folder_Out/Evidence_Target_จิณห์นิภา_ประสาทเขตการ.pdf` (558 Pages Person of Interest Dossier)
-  - `Folder_Out/Evidence_Target_จิณห์นิภา_ประสาทเขตการ.xlsx` (Person of Interest Financial Ledger)
-  - `Folder_Out/Evidence_Slips_Master_Unique_560.xlsx` (10-Column Forensic Master Slip Ledger)
-  - `Folder_Out/DUPLICATE_SLIP_AUDIT_REPORT.xlsx` (Comprehensive Forensic Duplicate Slip Audit Report)
-  - `Folder_Out/Evidence_Chat_Master_Combined_Vol1_to_3_With_Cover.pdf` (2,562 Pages Chat Evidence)
-  - `Folder_Out/EVIDENCE_HASH_CERTIFICATE.pdf` & `Folder_Out/EVIDENCE_HASH_MANIFEST.sha256` (Forensic Integrity Certification)
-  - `RUN_CHAT_EVIDENCE_PROCESSOR.bat` (Auto Multi-Path Python Launcher)
+  - `Folder_Out/Evidence_Chat_Master_Combined_Vol1_to_3_With_Cover.pdf` (2,562 Pages Master Chat Evidence)
+  - `Folder_Out/Evidence_Chat_Master_Front_Cover_and_Index.pdf` (6 Pages Dossier & Index)
+  - `Folder_Out/Evidence_Chat_Master_Combined_Vol1_to_3_Slip_Index.xlsx` (89 Slips Ledger)
+  - `Folder_Out/EVIDENCE_HASH_CERTIFICATE.pdf` & `.sha256` (Court-Grade Certification)
+  - `Folder_Out/Pattle_Case_Evidence_Test.exe` (Encrypted Self-Extracting WinRAR Container)
+  - `Folder_Out/QUALITY_INSPECTION_REPORT.md` (Autonomous Quality Gate Report)
+  - `CREATE_SFX_EVIDENCE.bat` & `RUN_QUALITY_AGENT.bat` (Zero-Command One-Click Launchers)
   - `LATEST_CHECKPOINT.md` (Resurrection Hook for Seamless Next Session Continuation)
 
 <!-- ============================================================================== -->

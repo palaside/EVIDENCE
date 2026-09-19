@@ -37,6 +37,25 @@
   - สกัดยอดเงินเข้า-ออก บัญชีคู่กรณี พร้อมจำแนกคีย์เวิร์ดคดีกู้ยืมเงิน
   - สร้างสำนวนเฉพาะบุคคล: `Evidence_Target_จิณห์นิภา_ประสาทเขตการ.xlsx` และ `Evidence_Target_จิณห์นิภา_ประสาทเขตการ.pdf` (558 หน้า)
 
+- [x] **WINRAR SFX LOCKED ARCHIVE PROTOCOL (สมบูรณ์ 100%):**
+  - ติดตั้งเอนจินบีบอัดและสร้างไฟล์คลายตัวเองอัตโนมัติ: `tools/build_sfx_evidence_package.py`
+  - หน้าต่างกรอกข้อมูลความปลอดภัยรอบเดียว (Initial Input Window): กรอกชื่อและรหัสผ่านครั้งเดียว ระบบหลังบ้าน Auto-Sync Confirm Password อัตโนมัติ 100%
+  - ตั้งค่ามาตรฐาน WinRAR: Archive Format เป็น RAR เท่านั้น, SFX Mode (`-sfx`), เข้ารหัสทั้งข้อมูลและชื่อไฟล์ระดับสูง (`-hp<password>`)
+  - หน้าต่างคำประกาศและสุนทรียภาพ: Title `DIGITAL EVIDENCE`, บรรจุข้อความคำประกาศปฏิเสธความรับผิดชอบ 3 บรรทัดตาม `Pattle.pdf` ไม่ตัดทอนคำ, ตราโล่สีกรมท่า-ฟ้า 150x250 BMP รักษาสัดส่วนสมมาตร, ไอคอนทางการ `app_icon.ico`
+  - รองรับภาษาไทยสมบูรณ์ผ่านสวิตช์ `-scuc` (Unicode UTF-8 Mode)
+  - ตัวสั่งงานคลิกเดียว: `CREATE_SFX_EVIDENCE.bat` (Zero-Command Launcher)
+  - ผลลัพธ์ทดสอบสำเร็จ: `Folder_Out/Pattle_Case_Evidence_Test.exe` (3,882.91 MB) พร้อมไฟล์กำกับ `SHA-256`
+
+- [x] **AUTONOMOUS QUALITY AGENT — POWERED BY ASK-SENIOR (สมบูรณ์ 100%):**
+  - สร้างเอเจนต์ตรวจวัดคุณภาพผลงานทุกขั้นตอน: `tools/quality_agent.py` (ซิงค์สู่ `F:/Project/tools/quality_agent.py`)
+  - ขับเคลื่อนด้วยโมเดล `qwen2.5-coder:14b` ของสกิล `ask-senior` บน Central Local Brain (`http://127.0.0.1:11434`)
+  - รันในโหมด **Agent Mode** ตรวจสอบไฟล์จริง (Inspect Before Act), วิเคราะห์ AST, เช็ค Syntax, ตรวจทาน Tests
+  - เกณฑ์ประเมิน 6 มิติ (Scope, Syntax, Tests & TDD, No Regression, Security & PDPA, Cleanliness & Anti-Slop)
+  - ระบบ Auto Gap-Closing: เสนอทางเลือกแก้ไข 2-3 ข้อที่ดีที่สุด พร้อมโค้ด Unit Test ที่สร้างขึ้นจริงทันที
+  - คำตัดสินแบบ Gatekeeping: ออกคะแนน Quality Score (0-100) และฟันธง `[APPROVED]` หรือ `[CHANGES_REQUIRED]`
+  - สร้างสกิลกำกับ: `quality-senior-agent/SKILL.md` (ซิงค์สู่ `F:/.agents/skills/quality-senior-agent/SKILL.md`) และอัปเดต `ask-senior/SKILL.md`
+  - ตัวสั่งงานคลิกเดียว: `RUN_QUALITY_AGENT.bat` และรายงานผลอัตโนมัติ `Folder_Out/QUALITY_INSPECTION_REPORT.md`
+
 - [x] **SKILL ONLY — CORRELATED EVIDENCE (สมบูรณ์ 100%):**
   - ติดตั้งสกิล `_skills/Only/SKILL.md` และ `C:\Users\EVE\.gemini\config\skills\only-corroborated\SKILL.md`
   - สกัดเฉพาะคู่ [หน้าแชทสั่งโอน ⟷ สลิปจริง] สร้างเล่มสำนวนคดีฉบับคัดเฉพาะพยานเอกสารสำคัญแห่งคดี (Executive Court Edition)
