@@ -11,6 +11,7 @@ PDF dossiers and Excel reports completely decoupled from the main content PDF,
 ensuring Physical Page 1 is always Logical Page 1 of the evidence content.
 
 V2 UPGRADE:
+- Uses authentic Sarabun Font (Sarabun-Regular, Sarabun-Medium, Sarabun-Bold).
 - High-Resolution Print Standard (240-300 DPI canvas: 2812x1986 landscape, 1614x2230 portrait).
 - Crisp, Dark, High-Contrast Grid Lines (solid dark charcoal/black width 2-3px, no faint gray).
 - 100% Date/Time integrity (resolves datetime/date_time across all slip records).
@@ -53,15 +54,21 @@ except ImportError:
 
 def get_sarabun_fonts(scale=2.0):
     """
-    Returns scalable Thai/English TrueType fonts sized proportionally for high-res canvas.
+    Returns scalable Sarabun TrueType fonts sized proportionally for high-res canvas.
+    Explicitly prioritizes Google Font Sarabun (Sarabun-Regular / Sarabun-Bold).
     """
     font_paths = [
+        r"C:\Windows\Fonts\Sarabun-Regular.ttf",
+        r"C:\Windows\Fonts\Sarabun-Medium.ttf",
         r"C:\Windows\Fonts\THSarabunNew.ttf",
         r"C:\Windows\Fonts\THSarabun.ttf",
         r"C:\Windows\Fonts\cordia.ttf",
         r"C:\Windows\Fonts\tahoma.ttf",
     ]
     font_bold_paths = [
+        r"C:\Windows\Fonts\Sarabun-Bold.ttf",
+        r"C:\Windows\Fonts\Sarabun-SemiBold.ttf",
+        r"C:\Windows\Fonts\Sarabun-ExtraBold.ttf",
         r"C:\Windows\Fonts\THSarabunNew Bold.ttf",
         r"C:\Windows\Fonts\THSarabun Bold.ttf",
         r"C:\Windows\Fonts\cordiab.ttf",
@@ -126,7 +133,7 @@ def load_evidence_logo(scale=2.0):
 def generate_executive_cover_image(case_info, scale=2.0):
     """
     Renders official Executive Cover Page in High-Resolution A4 Portrait (1614 x 2230 px at scale=2.0)
-    with crisp, dark borders (width 3px) and high-contrast typography for laser/inkjet printing.
+    using Sarabun font with crisp, dark borders (width 3px) and high-contrast typography.
     """
     fonts = get_sarabun_fonts(scale=scale)
     logo_img = load_evidence_logo(scale=scale)
@@ -201,7 +208,7 @@ def generate_executive_cover_image(case_info, scale=2.0):
     meta_rows = [
         ("ชื่อชุดเอกสาร", case_info.get("dossier_name", "พยานหลักฐานแชทคดีอาญา / ธุรกรรมทางการเงิน")),
         ("ขอบเขตสำนวน", case_info.get("volumes_desc", "รวมเอกสารแชท 3 ชุดสมบูรณ์ (Volume 1, 2, 3)")),
-        ("จำนวนหน้าเอกสารแชท", f"{case_info.get('total_chat_pages', 2559):,} หน้า A4 (เริ่มต้นหน้า 1 สอดคล้องกับเลขหน้าพิมพ์)"),
+        ("จำนวนหน้าเอกสารแชท", f"{case_info.get('total_chat_pages', 2387):,} หน้า A4 (เริ่มต้นหน้า 1 สอดคล้องกับเลขหน้าพิมพ์)"),
         ("วัน-เวลาที่จัดทำเอกสาร", case_info.get("timestamp", datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S"))),
     ]
     for m_idx, (lbl, val) in enumerate(meta_rows):
@@ -226,7 +233,7 @@ def generate_executive_cover_image(case_info, scale=2.0):
     right_x = margin_x + card_w + int(20 * scale)
     draw.rectangle([right_x, cur_y, margin_x + content_w, cur_y + box_h], fill="#FEF3C7", outline="#B45309", width=int(2.5 * scale))
     draw.text((right_x + int(16 * scale), cur_y + int(12 * scale)), "[ มูลค่ายอดเงินธุรกรรมรวม ]", fill="#78350F", font=fonts["card_hdr"])
-    tot_amt = case_info.get("total_amount", "436,018.00")
+    tot_amt = case_info.get("total_amount", "467,218.00")
     draw.text((right_x + int(16 * scale), cur_y + int(40 * scale)), f"{tot_amt} บาท", fill="#92400E", font=fonts["card_highlight"])
     draw.text((right_x + int(16 * scale), cur_y + int(80 * scale)), "ยอดรวมความเสียหาย/ธุรกรรมในสำนวน", fill="#78350F", font=fonts["footer"])
 
@@ -295,7 +302,7 @@ def generate_executive_cover_image(case_info, scale=2.0):
 def generate_10col_landscape_summary_pages(slip_data_list, mode="CHAT", scale=2.0):
     """
     Renders official 10-column Summary Table in High-Resolution A4 LANDSCAPE (2812 x 1986 px at scale=2.0)
-    with crisp, dark, high-contrast borders (width 2-3px) and 100% verified Thai Date/Time.
+    using Sarabun font with crisp, dark, high-contrast borders (width 2-3px) and 100% verified Thai Date/Time.
     """
     fonts = get_sarabun_fonts(scale=scale)
     logo_img = load_evidence_logo(scale=scale)
@@ -306,8 +313,9 @@ def generate_10col_landscape_summary_pages(slip_data_list, mode="CHAT", scale=2.
     margin_r = int(59 * scale)
     content_w = landscape_w - margin_l - margin_r  # 2576 px
 
-    # 10 Columns definition (sum = 2576 px)
-    col_w = [int(w * scale) for w in [112, 130, 105, 188, 110, 208, 115, 90, 125, 105]]
+    # 10 Columns definition optimized for Sarabun font (sum = 1288 px -> 2576 px)
+    col_w_base = [105, 155, 95, 185, 110, 200, 105, 75, 145, 113]
+    col_w = [int(w * scale) for w in col_w_base]
     headers = [
         "หน้าระบุสลิป", "วันที่ - เวลา", "ธนาคารผู้โอน", "ชื่อผู้โอน",
         "จำนวนเงิน (บาท)", "ชื่อผู้รับโอน", "ธนาคารผู้รับ", "บันทึก",
@@ -319,6 +327,23 @@ def generate_10col_landscape_summary_pages(slip_data_list, mode="CHAT", scale=2.
     total_index_pages = len(chunks)
 
     pages = []
+
+    # Prepare fallbacks for scaled text in cells
+    regular_p = next((p for p in [
+        r"C:\Windows\Fonts\Sarabun-Regular.ttf",
+        r"C:\Windows\Fonts\Sarabun-Medium.ttf",
+        r"C:\Windows\Fonts\THSarabunNew.ttf",
+        r"C:\Windows\Fonts\THSarabun.ttf",
+        r"C:\Windows\Fonts\tahoma.ttf"
+    ] if os.path.exists(p)), None)
+
+    bold_p = next((p for p in [
+        r"C:\Windows\Fonts\Sarabun-Bold.ttf",
+        r"C:\Windows\Fonts\Sarabun-SemiBold.ttf",
+        r"C:\Windows\Fonts\THSarabunNew Bold.ttf",
+        r"C:\Windows\Fonts\THSarabun Bold.ttf",
+        r"C:\Windows\Fonts\tahomabd.ttf"
+    ] if os.path.exists(p)), None)
 
     for c_idx, chunk in enumerate(chunks):
         canvas = Image.new('RGB', (landscape_w, landscape_h), '#FFFFFF')
@@ -439,9 +464,9 @@ def generate_10col_landscape_summary_pages(slip_data_list, mode="CHAT", scale=2.
                         padding = int(6 * scale)
                         if tw > (col_w[i] - padding):
                             scale_pt = max(int(8 * scale), int(15 * scale * (col_w[i] - padding) / max(tw, 1)))
-                            regular_p = next((p for p in [r"C:\Windows\Fonts\THSarabunNew.ttf", r"C:\Windows\Fonts\THSarabun.ttf", r"C:\Windows\Fonts\tahoma.ttf"] if os.path.exists(p)), None)
-                            if regular_p:
-                                font_to_use = ImageFont.truetype(regular_p, scale_pt)
+                            target_p = bold_p if i in [0, 4] else regular_p
+                            if target_p:
+                                font_to_use = ImageFont.truetype(target_p, scale_pt)
                                 t_box = draw.textbbox((0, 0), str(v), font=font_to_use)
                                 tw = t_box[2] - t_box[0]
                                 th = t_box[3] - t_box[1]
@@ -499,7 +524,7 @@ def generate_10col_landscape_summary_pages(slip_data_list, mode="CHAT", scale=2.
 
 def export_excel_summary(slip_data_list, output_excel_path):
     """
-    Exports the 10-column financial transaction summary to Excel with 100% verified Thai Date/Time.
+    Exports the 10-column financial transaction summary to Excel with authentic Sarabun font.
     """
     if not HAS_OPENPYXL:
         print("Warning: openpyxl is not installed. Skipping Excel export.")
@@ -510,11 +535,11 @@ def export_excel_summary(slip_data_list, output_excel_path):
     ws.title = "สารบัญสลิปธุรกรรมการเงิน"
     ws.views.sheetView[0].showGridLines = True
 
-    # Styling definitions
-    f_title = Font(name="TH Sarabun New", size=16, bold=True, color="003366")
-    f_hdr = Font(name="TH Sarabun New", size=14, bold=True, color="000000")
-    f_body = Font(name="TH Sarabun New", size=13, color="000000")
-    f_p_amber = Font(name="TH Sarabun New", size=13, bold=True, color="B45309")
+    # Styling definitions with Sarabun font
+    f_title = Font(name="Sarabun", size=16, bold=True, color="003366")
+    f_hdr = Font(name="Sarabun", size=14, bold=True, color="000000")
+    f_body = Font(name="Sarabun", size=13, color="000000")
+    f_p_amber = Font(name="Sarabun", size=13, bold=True, color="B45309")
 
     fill_hdr = PatternFill("solid", fgColor="E2E8F0")
     fill_p_hdr = PatternFill("solid", fgColor="FEF3C7")
@@ -606,13 +631,13 @@ def export_excel_summary(slip_data_list, output_excel_path):
 
     os.makedirs(os.path.dirname(os.path.abspath(output_excel_path)), exist_ok=True)
     wb.save(output_excel_path)
-    print(f"✅ บันทึก Excel ตารางสรุปสำเร็จ -> {output_excel_path}")
+    print(f"✅ บันทึก Excel ตารางสรุปสำเร็จ (ฟอนต์ Sarabun) -> {output_excel_path}")
 
 
 def build_summary_dossier(input_json, output_pdf, output_excel=None, include_cover=True, total_chat_pages=None, scale=2.0):
     """
     Main entry point: Generates dedicated standalone Front Cover & Financial Index PDF
-    with PyMuPDF vector-boxed pages and high-resolution print-grade rendering.
+    using authentic Sarabun font and high-resolution print-grade rendering.
     """
     if isinstance(input_json, str) and os.path.exists(input_json):
         with open(input_json, "r", encoding="utf-8") as f:
@@ -622,7 +647,7 @@ def build_summary_dossier(input_json, output_pdf, output_excel=None, include_cov
     else:
         raise ValueError(f"Invalid input_json: {input_json}")
 
-    print(f"📊 [Summary_Table] กำลังสร้างชุดเอกสารสารบัญสรุป ({len(slip_data)} รายการ) มาตรฐาน High-Resolution Print...")
+    print(f"📊 [Summary_Table] กำลังสร้างชุดเอกสารสารบัญสรุป ({len(slip_data)} รายการ) ด้วยฟอนต์ Sarabun...")
 
     if total_chat_pages is None:
         try:
@@ -633,11 +658,11 @@ def build_summary_dossier(input_json, output_pdf, output_excel=None, include_cov
                     total_chat_pages = len(doc_m)
                     doc_m.close()
                 else:
-                    total_chat_pages = 2559
+                    total_chat_pages = 2387
             else:
-                total_chat_pages = 2559
+                total_chat_pages = 2387
         except Exception:
-            total_chat_pages = 2559
+            total_chat_pages = 2387
 
     # Calculate summary metrics
     total_slips = len(slip_data)
@@ -710,7 +735,7 @@ def build_summary_dossier(input_json, output_pdf, output_excel=None, include_cov
             pages[0].save(os.path.join(preview_dir, "cover_page.png"), format="PNG")
         if len(pages) > 1:
             pages[1].save(os.path.join(preview_dir, "index_page_1.png"), format="PNG")
-        print(f"✅ บันทึกภาพพรีวิว High-Res คมชัด -> {preview_dir}/(cover_page.png, index_page_1.png)")
+        print(f"✅ บันทึกภาพพรีวิว High-Res คมชัด (ฟอนต์ Sarabun) -> {preview_dir}/(cover_page.png, index_page_1.png)")
     except Exception as e:
         print(f"Preview save note: {e}")
 
@@ -721,7 +746,7 @@ def build_summary_dossier(input_json, output_pdf, output_excel=None, include_cov
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Standalone Summary Table & Financial Index Generator (Print-Grade)")
+    parser = argparse.ArgumentParser(description="Standalone Summary Table & Financial Index Generator (Sarabun Font)")
     parser.add_argument("--json", required=True, help="Input JSON file containing slip records")
     parser.add_argument("--out-pdf", required=True, help="Output standalone PDF path (Front Cover + Index)")
     parser.add_argument("--out-excel", help="Output standalone Excel path")
