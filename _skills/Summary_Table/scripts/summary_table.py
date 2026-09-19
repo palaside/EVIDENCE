@@ -25,7 +25,9 @@ import json
 import argparse
 import datetime
 import io
+import re
 from PIL import Image, ImageDraw, ImageFont
+
 
 if sys.stdout.encoding != 'utf-8':
     try:
@@ -52,7 +54,21 @@ except ImportError:
     HAS_OPENPYXL = False
 
 
+def clean_person_name(name):
+    """
+    Cleans person name by stripping bank account numbers (e.g. '(XXX-X-XX526-6)').
+    Guarantees that bank account numbers are never displayed in the name columns.
+    """
+    if not name or name == "-":
+        return "-"
+    cleaned = re.sub(r'\s*\([Xx\d\s\-\.\*]+\)', '', str(name)).strip()
+    if not cleaned:
+        return "ไม่ระบุชื่อ"
+    return cleaned
+
+
 def get_sarabun_fonts(scale=2.0):
+
     """
     Returns scalable Sarabun TrueType fonts sized proportionally for high-res canvas.
     Explicitly prioritizes Google Font Sarabun (Sarabun-Regular / Sarabun-Bold).
@@ -425,8 +441,9 @@ def generate_10col_landscape_summary_pages(slip_data_list, mode="CHAT", scale=2.
                     raw_dt = f"{d_val} {t_val}".strip() if (d_val or t_val) else "-"
                 dt_str = str(raw_dt).strip()
 
-                s_name = str(item.get("sender_name", "-"))
-                r_name = str(item.get("receiver_name", "-"))
+                s_name = clean_person_name(item.get("sender_name", "-"))
+                r_name = clean_person_name(item.get("receiver_name", "-"))
+
                 memo_str = str(item.get("memo", "-") or "-")
                 amt_str = str(item.get("amount", "-") or "-")
                 vals = [
@@ -594,9 +611,10 @@ def export_excel_summary(slip_data_list, output_excel_path):
             f"หน้า {p_no}",
             dt_str,
             str(item.get("sender_bank", "-")),
-            str(item.get("sender_name", "-")),
+            clean_person_name(item.get("sender_name", "-")),
             amt_str,
-            str(item.get("receiver_name", "-")),
+            clean_person_name(item.get("receiver_name", "-")),
+
             str(item.get("receiver_bank", "-")),
             str(item.get("memo", "-") or "-"),
             str(item.get("ref_id", "-") or "-"),
