@@ -121,7 +121,9 @@
   ├── 🟢 System 1: Master Unique 560 Slips (Multi-core OCR, 555 valid amounts, 1,547,803.68 THB)
   ├── 🟢 System 1: DUPLICATE_SLIP_AUDIT_REPORT.xlsx (560 Masters vs 2,232 Duplicates)
   ├── 🟢 Systems 2 & 3: Reference Stems (1,160 Slips) & Full Raw (2,792 Slips) Archives
-  └── 🟢 Skill Only: Corroborated Evidence Extraction (Court Executive Edition)
+  ├── 🟢 Skill Only: Corroborated Evidence Extraction (Court Executive Edition)
+  ├── 🟢 3-Tier Hybrid Architecture (EMVCo QR + Local Forensic CV/OCR + Gemini Emergency Fallback)
+  └── 🟢 OpenTyphoon Thai Sovereign Vision Engine & Skill Typhoon_OCR (Native Thai Vision + 10-Col Schema)
 
 [Phase 5: Legal Evidence Table Grid Layout & Typography] (Completed & Enforced)
   ├── 🟢 Chat Evidence Blueprint Alignment: Exact layout matching Chat_Evidence+Automation+excel+AGENTS.md
@@ -158,10 +160,12 @@ d:/Project/DIGITAL_EVIDENCE/
 │   ├── 📂 Dicut_Chat/                          # Chat Slicing & Slip-Block-Fit Background Normalizer
 │   ├── 📂 Search_Slip/                         # Post-PDF Slip Locator & Page Indexer
 │   ├── 📂 OCR_Slip/                            # Universal 18-Bank Slip Engine with Duplicate Auditor
+│   ├── 📂 Typhoon_OCR/                         # OpenTyphoon Thai Sovereign Vision & Schema Engine
 │   └── 📂 SAVE/                                # System State Preservation Protocol (SAVE.md)
 ├── 📂 _engines/                                # Production Ready Mirrored Engines
 │   ├── 📂 Search_Slip/                         # Search_Slip Mirrored Engine
-│   └── 📂 OCR_Slip/                            # OCR_Slip Mirrored Engine (13-Column + Auditor)
+│   ├── 📂 OCR_Slip/                            # OCR_Slip Mirrored Engine (13-Column + Auditor)
+│   └── 📂 Typhoon_OCR/                         # Typhoon_OCR Mirrored Engine (Native Vision CLI)
 ├── 📂 Folder_Out/                              # Production Output Artifacts
 │   ├── 📄 Evidence_Chat_V1.pdf                 # Golden Standard Chat Evidence (107 Pages)
 │   ├── 📄 Evidence_Chat_V1_Slip_Index.xlsx     # Forensic Slip Page Index (Pages 64, 65, 97)

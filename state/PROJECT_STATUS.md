@@ -102,8 +102,11 @@ graph TD
 - [x] **Pure Financial Slips Quality Gate (89 ใบ):** คัดกรองภาพอาหาร/ภาพถ่ายทั่วไปออกจากสารบัญสลิปการเงิน เหลือเฉพาะสลิปจริง 89 ใบ ยอดเงินรวม 436,018.00 บาท อัตราดึงธนาคารผู้รับสำเร็จ 100.0%
 - [x] **Auto Font-Scaling in Table Cells:** ระบบย่อขนาดฟอนต์อัตโนมัติ (12pt -> 10pt/9pt) ในตาราง A4 แนวนอน ป้องกันข้อความล้นเซลล์หรือตกบรรทัด
 - [x] **Universal Multi-Path Python Launcher (`RUN_CHAT_EVIDENCE_PROCESSOR.bat`):** ระบบค้นหา Python อัตโนมัติ (Miniconda, Py, Python 3.10-3.12) ให้รันได้อย่างราบรื่น 100% บนทุกเครื่อง Windows
-
-### 🟡 2.2 In-Progress & Pending Features ([ ])
+- [x] **Autonomous Quality Agent (`tools/quality_agent.py` & `RUN_QUALITY_AGENT.bat`):** ขับเคลื่อนด้วย `qwen2.5-coder:14b` รันในโหมด Agent Mode ประเมิน 6 มิติ (Scope, Syntax, Tests, Regression, Security, Cleanliness) พร้อมฟันธง [APPROVED]/[CHANGES_REQUIRED]
+- [x] **WinRAR SFX Locked Archive Protocol (`CREATE_SFX_EVIDENCE.bat`):** แพ็กเกจพยานหลักฐานบีบอัดและคลายตัวเองอัตโนมัติ เข้ารหัสสองชั้น ป้องกันรหัสผ่านหลุด พร้อมคำประกาศปฏิเสธความรับผิดชอบและไอคอนทางการ
+- [x] **3-Tier Hybrid Slip Extraction Architecture:** ผสาน Tier 1 (EMVCo QR 100% Bit-accurate), Tier 2 (Local Forensic CV/OCR), และ Tier 3 (Multimodal Emergency Fallback) พร้อมระบบ Persistent SHA-256 Cache
+- [x] **OpenTyphoon Thai Sovereign Vision Engine (`typhoon_slip_engine.py` & `tools/typhoon_audit_slip.py`):** สกัดสระ วรรณยุกต์ และบันทึกช่วยจำ (Memo) ด้วย `typhoon-ocr-v1.5` และตรวจสอบความสมเหตุสมผลทางนิติการเงินด้วย `typhoon-v2.5-30b-a3b-instruct`
+- [x] **Skill Cloned: Typhoon_OCR (`_skills/Typhoon_OCR/`):** โคลนเป็นสกิลอิสระครบชุดทั้งเอกสาร `SKILL.md`, `schema.json`, `typhoon_ocr.json`, `sample_slip.json`, สคริปต์สั่งการ CLI `scripts/typhoon_ocr.py` และซิงค์สู่ Global Customization Root
 - [ ] **Cross-Case Aggregated Dashboard:** ระบบสรุปยอดรวมคดีความข้ามสำนวนแบบ Multi-Case Overview (Roadmap Phase 7)
 
 ---

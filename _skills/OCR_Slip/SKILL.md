@@ -13,9 +13,12 @@ description: "สกัดข้อมูลสลิปโอนเงินธ
 ## 1. ขีดความสามารถหลัก (Core Capabilities)
 1. **Morphological Background Subtraction:** ตัดลายน้ำรูปคลื่น, ลายนกวายุภักษ์ (KTB), ริบบิ้นสีและแถบไล่เฉด (TTB) ออกจากข้อความด้วยเทคนิค Dilation Background Division (`gray / bg * 255`)
 2. **CLAHE Contrast Normalization:** ปรับแต่งคอนทราสต์เฉพาะที่สำหรับตัวอักษรไทยที่มีสระบน/ล่างและตัวเลข
-3. **EMVCo Thai QR Code Decoding:** ถอดรหัสเพย์โหลดมาตรฐาน PromptPay Mini-QR / BScanC จากภาพสลิปโดยตรง ดึงค่า Transaction Reference ID (Tag 02 หรือ Nested Tag 00 -> 02) อย่างแม่นยำ 100%
-4. **Thai Month & Timestamp Normalization:** แปลงตัวย่อเดือนไทยและถอดรหัส Timestamp ที่ฝังใน Ref ID (เช่น TTB `YYYYMMDDHHMM...`)
-5. **10-Column Legal Spreadsheet Export:** ส่งออกตารางเอ็กเซลพร้อมจัดรูปแบบฟอนต์ Cordia New, ความกว้างคอลัมน์ และเส้นขอบรองรับการพิมพ์ A4 แนวนอน
+3. **EMVCo Thai QR Code Decoding (Tier 1 Primary):** ถอดรหัสเพย์โหลดมาตรฐาน PromptPay Mini-QR / BScanC จากภาพสลิปโดยตรง ดึงค่า Transaction Reference ID (Tag 02 หรือ Nested Tag 00 -> 02) อย่างแม่นยำ 100%
+4. **Thai Month & Timestamp Normalization (Tier 2):** แปลงตัวย่อเดือนไทยและถอดรหัส Timestamp ที่ฝังใน Ref ID (เช่น TTB `YYYYMMDDHHMM...`)
+5. **OpenTyphoon Thai Sovereign Engine (Tier 3 Preferred):** ระบบคู่หู 2 จังหวะ: Stage 1 ใช้ `typhoon-ocr-v1.5` สกัดข้อความไทย สระบน-ล่าง วรรณยุกต์ และบันทึกช่วยจำ -> Stage 2 ใช้ `typhoon-v2.5-30b-a3b-instruct` เป็นผู้พิพากษาพยานหลักฐาน (Forensic Judge) ตรวจสอบความถูกต้องและจัดรูปเป็น JSON 10 คอลัมน์มาตรฐาน พร้อมแคชถาวร SHA-256
+6. **Gemini Multimodal Emergency Fallback (Tier 3 Secondary):** กู้ภัยสลิปสำรองข้ามคลาวด์
+7. **Forensic Audit & Correction CLI:** เครื่องมือ `tools/typhoon_audit_slip.py` สำหรับสแกนตรวจทานและแก้ไขสลิปที่มีข้อผิดพลาดรายใบ
+8. **10-Column Legal Spreadsheet Export:** ส่งออกตารางเอ็กเซลพร้อมจัดรูปแบบฟอนต์ Cordia New, ความกว้างคอลัมน์ และเส้นขอบรองรับการพิมพ์ A4 แนวนอน
 
 ---
 

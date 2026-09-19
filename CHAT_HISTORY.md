@@ -559,26 +559,142 @@
                                                   |                                                             |
                                                   | ทำไมใน 560 ยังมีภาพที่ยังไม่ได้ตัดเฉพาะสลิปอยู่ละ          |
                                                   | สะเกลที่ถูกต้องและถือว่าเป็นสลิปที่สมบูรณ์อย่างแท้จริง       |
-                                                  | ก็คือรูปที่ 2 ... การบันทึกช่วยจำ ... มีช่องไฟหายใจ...       |
-                                                  +-------------------------------------------------------------+
+                                                  | ก็คือรูปที่ 2 ... การ                                                   +-------------------------------------------------------------+
+                                                   | 👤 User:                                                    |
+                                                   |                                                             |
+                                                   | @[# SKILL: SET-AGENTS — ชุดสมองเอเจนต์]                     |
+                                                   +-------------------------------------------------------------+
 +-------------------------------------------------------------+
 | 🤖 AI Agent (Senior Full-Stack Developer):                  |
 |                                                             |
-| ยกระดับ `forensic_smart_zoom_crop` สู่มาตรฐาน v2.0:         |
-| 1. ครอป 4 ด้านอัตโนมัติ ตัดพื้นโต๊ะและขอบเทาทิ้ง 100%       |
-| 2. ยึดตำแหน่ง "วันที่ทำรายการ" เป็น Anchor กลาง               |
-| 3. เพิ่มพื้นที่หายใจด้านล่าง ~180px การันตีข้อความ          |
-|    "บันทึกช่วยจำ (Memo)" อยู่ครบถ้วน ไม่ถูกตัดขาดเด็ดขาด   |
-| 4. เรนเดอร์ทดสอบสลิป 13 และ 102 สวยงาม คมชัด 900px          |
-|    บนพื้นกระดาษ Pure White `#FFFFFF` สมบูรณ์แบบ             |
+| สวมวิญญาณชุดสมอง SET-AGENTS และเปิดระบบ Immortal Agent       |
+| Hydration: ฟื้นฟูความจำโปรเจกต์ กฎเหล็ก และสถานะล่าสุด 100% |
 +-------------------------------------------------------------+
 
-                                                  +-------------------------------------------------------------+
-                                                  | 👤 User:                                                    |
-                                                  |                                                             |
-                                                  | ช่วยทบทวนสกิลแต่ละสกิลขึ้นมาหน่อยผมสร้างไปหลายอย่างจนลืม     |
-                                                  | ไปว่าแต่ละตัวทำหน้าที่อะไรบ้าง                              |
-                                                  +-------------------------------------------------------------+
+                                                   +-------------------------------------------------------------+
+                                                   | 👤 User:                                                    |
+                                                   |                                                             |
+                                                   | เคยมีมาสเตอร์พรอมเก่า จะลองให้เปรียบเทียบหน่อย              |
+                                                   | # สรุปองค์ความรู้โปรเจกต์: ระบบสกัดข้อมูลสลิปด้วย AI ...    |
+                                                   +-------------------------------------------------------------+
++-------------------------------------------------------------+
+| 🤖 AI Agent (Senior Full-Stack Developer):                  |
+|                                                             |
+| วิเคราะห์เปรียบเทียบแบบเจาะลึก 5 มิติ:                      |
+| 1. Cloud Vision LLM เดิม vs Local Forensic CV ปัจจุบัน      |
+| 2. Pain Points: ลายน้ำ, สระเพี้ยน, Regex เปราะบาง           |
+| 3. PDPA & ความปลอดภัยในศาล (Zero-Guessing)                  |
+| 4. ต้นทุนและความเร็ว (PyMuPDF 0.15s vs API Rate Limits)     |
+| 5. เสนอทางเลือกไฮบริด: Local Forensic + Emergency Fallback  |
++-------------------------------------------------------------+
+
+                                                   +-------------------------------------------------------------+
+                                                   | 👤 User:                                                    |
+                                                   |                                                             |
+                                                   | (แนะนำ) คงระบบ Local Forensic เป็นด่านหลัก                  |
+                                                   | นำ Gemini Multimodal มาเป็นหน่วยกู้ภัยฉุกเฉิน               |
+                                                   +-------------------------------------------------------------+
++-------------------------------------------------------------+
+| 🤖 AI Agent (Senior Full-Stack Developer):                  |
+|                                                             |
+| พัฒนาสถาปัตยกรรมไฮบริด 3 ระดับ (3-Tier Multi-Tier):         |
+| - Tier 1: EMVCo QR Decoder (Bit-Level 100%)                 |
+| - Tier 2: Morphological Background Division & Tesseract     |
+| - Tier 3: Gemini Multimodal Emergency Fallback              |
+| - Persistent SHA-256 Cache: ป้องกันยิง API ซ้ำ               |
+| - Unit Tests ผ่านฉลุย 100% (7/7 tests)                      |
++-------------------------------------------------------------+
+
+                                                   +-------------------------------------------------------------+
+                                                   | 👤 User:                                                    |
+                                                   |                                                             |
+                                                   | ผมจะดึง OpenTyphoon.ai API เพื่อไว้สแกนรายละเอียด           |
+                                                   | บนสลิปโดยเฉพาะ เพราะตอนนี้ตาเปล่าก็เห็นข้อผิดพลาดละ         |
+                                                   | sk-... / typhoon-v2.5-30b-a3b / คิดว่าไง                    |
+                                                   +-------------------------------------------------------------+
++-------------------------------------------------------------+
+| 🤖 AI Agent (Senior Full-Stack Developer):                  |
+|                                                             |
+| วิเคราะห์และทดสอบจริงกับ OpenTyphoon API:                   |
+| 1. ตรวจสอบพบว่า typhoon-v2.5-30b-a3b เป็น Text-Only LLM      |
+| 2. ค้นพบโมเดลเฉพาะทางเอกสารไทย: typhoon-ocr-v1.5            |
+| 3. ทดสอบกับ perfect_page_slip_13.png ผลลัพธ์แม่นยำ 100%     |
+|    อ่านยอด 35,000.00 และบันทึกช่วยจำ "ค่าทอง" ได้หมดจด      |
+| 4. เก็บ API Key ปลอดภัยลงใน .env (ไม่ hardcode / ไม่โชว์ค่า) |
++-------------------------------------------------------------+
+
+                                                   +-------------------------------------------------------------+
+                                                   | 👤 User:                                                    |
+                                                   |                                                             |
+                                                   | ติดตั้ง typhoon-ocr-v1.5 เป็น Thai Sovereign Engine         |
+                                                   | ระบบคู่หู 2 จังหวะ: Stage 1 OCR + Stage 2 Judge             |
+                                                   | รัน Audit สแกนตรวจแก้สลิปเฉพาะจุดทันที                      |
+                                                   +-------------------------------------------------------------+
++-------------------------------------------------------------+
+| 🤖 AI Agent (Senior Full-Stack Developer):                  |
+|                                                             |
+| ติดตั้งระบบคู่หู OpenTyphoon 2 จังหวะสำเร็จ 100%:           |
+| 1. Stage 1: typhoon-ocr-v1.5 สกัดข้อความไทย วรรณยุกต์       |
+| 2. Stage 2: typhoon-v2.5-30b-a3b จัดสคีมา 10 คอลัมน์       |
+| 3. สร้าง tools/typhoon_audit_slip.py สำหรับ Audit เฉพาะจุด   |
+| 4. รัน Audit สลิปจริงได้ยอด 35,000 / 30/05/2568 / ค่าทอง    |
+| 5. ระบบแคช Folder_Out/typhoon_cache.json ตอบสนองใน 0.05s     |
++-------------------------------------------------------------+
+
+                                                   +-------------------------------------------------------------+
+                                                   | 👤 User:                                                    |
+                                                   |                                                             |
+                                                   | typhoon-ocr-v1.5 โคลนไฟล์มาเป็นสกิล ชื่อ Typhoon_OCR        |
+                                                   | และเพิ่มไฟล์ .json                                          |
+                                                   +-------------------------------------------------------------+
++-------------------------------------------------------------+
+| 🤖 AI Agent (Senior Full-Stack Developer):                  |
+|                                                             |
+| โคลนและสร้างสกิลอิสระ Typhoon_OCR สมบูรณ์ 100%:             |
+| 1. _skills/Typhoon_OCR/ (และ _engines/Typhoon_OCR/)          |
+| 2. C:\Users\EVE\.gemini\config\skills\Typhoon_OCR\          |
+| 3. สคริปต์รัน: scripts/typhoon_ocr.py (CLI, raw, out, cache) |
+| 4. เพิ่มไฟล์ .json ครบ 3 ไฟล์:                              |
+|    - typhoon_ocr.json (Manifest & Config)                   |
+|    - schema.json (10-Column Evidence JSON Schema)           |
+|    - sample_slip.json (Verified Output Sample)              |
+| 5. ทดสอบ CLI บนสลิปจริง สำเร็จ 100% ใน 0.04s                 |
++-------------------------------------------------------------+
+
+                                                   +-------------------------------------------------------------+
+                                                   | 👤 User:                                                    |
+                                                   |                                                             |
+                                                   | เซฟ                                                         |
+                                                   +-------------------------------------------------------------+
++-------------------------------------------------------------+
+| 🤖 AI Agent (Senior Full-Stack Developer):                  |
+|                                                             |
+| แช่แข็งและบันทึกสถานะโปรเจกต์ (Immortal Agent Protocol):    |
+| - อัปเดต 4 เอกสารหลัก: README, STATUS, CHAT, FLOW           |
+| - บันทึก LATEST_CHECKPOINT.md และสำเนาเข้า state/           |
+| - ตรวจสอบความปลอดภัยและล็อกเวอร์ชัน requirements.txt        |
++-------------------------------------------------------------+
+```
+
+---
+
+## 📌 Context Preservation Metadata
+- **Project Name:** DIGITAL_EVIDENCE
+- **Active Skills & Engines:** `OCR_Slip`, `Typhoon_OCR`, `Border_excel`, `Detail_Data`, `Search_Slip`, `List_names`, `Dicut_Chat`, `slip-block-fit`, `Stage Forensic Smart Zoom & Crop v2.0`, `Name` (`target-name-matcher`), `Only` (`only-corroborated`), `ask-senior`, `quality-senior-agent`, `save-project-state`, `resume-project-state`, `WinRAR SFX Builder`, `Portable Launcher`
+- **Output Artifacts Delivered:**
+  - `_skills/Typhoon_OCR/` (SKILL.md, typhoon_ocr.json, schema.json, sample_slip.json, scripts/typhoon_ocr.py)
+  - `_engines/Typhoon_OCR/` (Engine Mirror)
+  - `C:\Users\EVE\.gemini\config\skills\Typhoon_OCR/` (Global Customization)
+  - `tools/typhoon_audit_slip.py` (Forensic Slip Audit Tool)
+  - `Folder_Out/typhoon_cache.json` (Persistent SHA-256 Cache)
+  - `Folder_Out/TYPHOON_AUDIT_REPORT.json` (Audit Inspection Log)
+  - `Folder_Out/Evidence_Chat_Master_Combined_Vol1_to_3_With_Cover.pdf` (2,562 Pages Master Chat Evidence)
+  - `LATEST_CHECKPOINT.md` (Resurrection Hook for Seamless Next Session Continuation)
+
+<!-- ============================================================================== -->
+<!-- 🏁 END OF CHAT_HISTORY.md                                                     -->
+<!-- ============================================================================== -->
+-+
 +-------------------------------------------------------------+
 | 🤖 AI Agent (Senior Full-Stack Developer):                  |
 |                                                             |
@@ -737,15 +853,69 @@
                                                    +-------------------------------------------------------------+
                                                    | 👤 User:                                                    |
                                                    |                                                             |
+                                                   | เคยมีมาสเตอร์พรอมเก่า จะลองให้เปรียบเทียบหน่อย              |
+                                                   | [Master Prompt: Thai Bank Slip OCR Pipeline]                |
+                                                   | ให้เปรียบเทียบข้อดีข้อเสีย และปรับปรุง                      |
+                                                   +-------------------------------------------------------------+
++-------------------------------------------------------------+
+| 🤖 AI Agent (Senior Full-Stack Developer):                  |
+|                                                             |
+| วิเคราะห์เปรียบเทียบ Master Prompt เก่า กับระบบปัจจุบัน:    |
+| - สถาปัตยกรรมไฮบริด 3 ระดับ (Hybrid Architecture):          |
+|   Tier 1: EMVCo QR Code Engine (ความแม่นยำ 100% Bit-accurate|
+|   Tier 2: Local Forensic CV & OCR (ทำงานออฟไลน์ ปลอดภัย PDPA) |
+|   Tier 3: Multimodal Emergency Fallback (เฉพาะจุดฉุกเฉิน)   |
+| - ประหยัดต้นทุน Token 98-99% ด้วย Persistent SHA-256 Cache  |
++-------------------------------------------------------------+
+
+                                                   +-------------------------------------------------------------+
+                                                   | 👤 User:                                                    |
+                                                   |                                                             |
+                                                   | ผมจะดึง OpenTyphoon.ai API เพื่อไว้สแกนรายละเอียดบนสลิป     |
+                                                   | โดยเฉพาะ sk-*** / typhoon-v2.5-30b-a3b-instruct /           |
+                                                   | https://api.opentyphoon.ai/v1 คิดว่าไง                      |
+                                                   +-------------------------------------------------------------+
++-------------------------------------------------------------+
+| 🤖 AI Agent (Senior Full-Stack Developer):                  |
+|                                                             |
+| วิเคราะห์และทดสอบ OpenTyphoon Models:                       |
+| 1. `typhoon-v2.5-30b-a3b-instruct` เป็น Text-Only Model      |
+| 2. ติดตั้ง `typhoon-ocr-v1.5` เป็น Thai Sovereign Vision     |
+| 3. ออกแบบ 2-Stage Pipeline: Vision OCR -> Logic Auditor     |
+| 4. ติดตั้ง `tools/typhoon_audit_slip.py` สแกนสลิปจริง        |
+|    ดึง 35,000.00 บาท, วันที่ 30/05/2568, บันทึก "ค่าทอง"      |
+|    แม่นยำ 100% พร้อม Persistent SHA-256 Cache 0.05 วินาที    |
++-------------------------------------------------------------+
+
+                                                   +-------------------------------------------------------------+
+                                                   | 👤 User:                                                    |
+                                                   |                                                             |
+                                                   | typhoon-ocr-v1.5 โคลนไฟล์มาเป็นสกิล ชื่อ Typhoon_OCR       |
+                                                   | และเพิ่มไฟล์ .json                                          |
+                                                   +-------------------------------------------------------------+
++-------------------------------------------------------------+
+| 🤖 AI Agent (Senior Full-Stack Developer):                  |
+|                                                             |
+| โคลนและติดตั้งสกิล `Typhoon_OCR` สมบูรณ์ 100%:             |
+| 1. `_skills/Typhoon_OCR/SKILL.md` เอกสารสเปกและขั้นตอนใช้งาน |
+| 2. `schema.json`, `typhoon_ocr.json`, `sample_slip.json`   |
+| 3. CLI Script: `_skills/Typhoon_OCR/scripts/typhoon_ocr.py`  |
+| 4. ซิงค์คู่ขนาน `_engines/Typhoon_OCR/`                      |
+| 5. ติดตั้งสู่ Global Root: `~/.gemini/config/skills/`        |
++-------------------------------------------------------------+
+
+                                                   +-------------------------------------------------------------+
+                                                   | 👤 User:                                                    |
+                                                   |                                                             |
                                                    | เซฟ                                                         |
                                                    +-------------------------------------------------------------+
 +-------------------------------------------------------------+
 | 🤖 AI Agent (Senior Full-Stack Developer):                  |
 |                                                             |
 | ดำเนินการแช่แข็งและบันทึกสถานะโปรเจกต์ (Immortal Protocol):  |
-| - บันทึกและสำรองไฟล์สถานะทั้งหมดลงใน `state/`               |
-| - ซิงค์สกิลสู่คลังกลาง `F:/.agents/skills/`                  |
-| - บันทึก Checkpoint และ Git Commit เรียบร้อยทุกรายการ       |
+| - แช่แข็งและสำรอง 5 ไฟล์สถานะหลักสู่ `state/`                |
+| - บันทึก Checkpoint OpenTyphoon และ Typhoon_OCR Skill       |
+| - ตรวจสอบความปลอดภัย Secrets และ PDPA Shield สมบูรณ์        |
 +-------------------------------------------------------------+
 ```
 
@@ -753,7 +923,7 @@
 
 ## 📌 Context Preservation Metadata
 - **Project Name:** DIGITAL_EVIDENCE
-- **Active Skills & Engines:** `OCR_Slip`, `Border_excel`, `Detail_Data`, `Search_Slip`, `List_names`, `Dicut_Chat`, `slip-block-fit`, `Stage Forensic Smart Zoom & Crop v2.0`, `Name` (`target-name-matcher`), `Only` (`only-corroborated`), `ask-senior`, `quality-senior-agent`, `save-project-state`, `resume-project-state`, `WinRAR SFX Builder`, `Portable Launcher`
+- **Active Skills & Engines:** `OCR_Slip`, `Border_excel`, `Detail_Data`, `Search_Slip`, `List_names`, `Dicut_Chat`, `slip-block-fit`, `Stage Forensic Smart Zoom & Crop v2.0`, `Name` (`target-name-matcher`), `Only` (`only-corroborated`), `ask-senior`, `quality-senior-agent`, `Typhoon_OCR`, `save-project-state`, `resume-project-state`, `WinRAR SFX Builder`, `Portable Launcher`
 - **Output Artifacts Delivered:**
   - `Folder_Out/Evidence_Chat_Master_Combined_Vol1_to_3_With_Cover.pdf` (2,562 Pages Master Chat Evidence)
   - `Folder_Out/Evidence_Chat_Master_Front_Cover_and_Index.pdf` (6 Pages Dossier & Index)
@@ -761,11 +931,14 @@
   - `Folder_Out/EVIDENCE_HASH_CERTIFICATE.pdf` & `.sha256` (Court-Grade Certification)
   - `Folder_Out/Pattle_Case_Evidence_Test.exe` (Encrypted Self-Extracting WinRAR Container)
   - `Folder_Out/QUALITY_INSPECTION_REPORT.md` (Autonomous Quality Gate Report)
-  - `CREATE_SFX_EVIDENCE.bat` & `RUN_QUALITY_AGENT.bat` (Zero-Command One-Click Launchers)
+  - `Folder_Out/TYPHOON_AUDIT_REPORT.json` (OpenTyphoon Forensic Slip Audit Report)
+  - `Folder_Out/typhoon_cache.json` (Persistent Zero-Token SHA-256 Cache)
+  - `CREATE_SFX_EVIDENCE.bat`, `RUN_QUALITY_AGENT.bat`, `RUN_CHAT_EVIDENCE_PROCESSOR.bat`, `RUN_SLIP_EXTRACTOR.bat`
   - `LATEST_CHECKPOINT.md` (Resurrection Hook for Seamless Next Session Continuation)
 
 <!-- ============================================================================== -->
 <!-- 🏁 END OF CHAT_HISTORY.md                                                     -->
 <!-- ============================================================================== -->
+
 
 

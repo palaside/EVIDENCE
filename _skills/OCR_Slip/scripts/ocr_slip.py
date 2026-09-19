@@ -27,6 +27,15 @@ if os.path.exists(LOCAL_TESSDATA):
 
 pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
 
+try:
+    from gemini_slip_fallback import recover_unresolved_slip
+except ImportError:
+    try:
+        from _skills.OCR_Slip.scripts.gemini_slip_fallback import recover_unresolved_slip
+    except ImportError:
+        def recover_unresolved_slip(image_input, slip_data: dict) -> dict:
+            return slip_data
+
 _qr_detector = cv2.QRCodeDetector()
 
 def parse_emvco_qr(payload: str) -> dict:
@@ -809,6 +818,9 @@ def extract_slip_data(image_input, default_bank: str = None) -> dict:
                 data["memo"] = f"สาขา: {b_val}"
             else:
                 data["memo"] += f" | สาขา: {b_val}"
+
+    # 9. Tier-3 Emergency Fallback: Gemini Multimodal Recovery (Triggered only when QR failed & critical fields missing)
+    data = recover_unresolved_slip(image_input, data)
 
     return data
 
