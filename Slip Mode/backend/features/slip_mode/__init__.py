@@ -1,1 +1,0 @@
-# Slip Reader MVP package
