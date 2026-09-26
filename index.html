@@ -59,19 +59,6 @@
           <div class="live-date" id="liveDate">26 กันยายน 2569</div>
         </div>
 
-        <button class="btn-header-tool glass" style="background:rgba(56,189,248,0.22) !important; border-color:rgba(56,189,248,0.5) !important; color:#38BDF8 !important;" onclick="loadSampleEvidence('slip')" title="โหลดข้อมูลตัวอย่างสำนวน 95 หน้าพร้อมทดสอบทุกปุ่มทันที">
-          <span>✨ โหลดตัวอย่างคดี (Demo)</span>
-        </button>
-
-        <button class="btn-header-tool glass" onclick="syncData()" title="ซิงค์สถานะระบบและคลังข้อมูล">
-          <span>🔄 SYNC</span>
-        </button>
-
-        <!-- Hidden input for standard digital evidence files (PDF, Images, CSV/Excel/JSON, ZIP, SFX/EXE/RAR) -->
-        <input type="file" id="evidenceFileInput" multiple accept=".pdf,.png,.jpg,.jpeg,.webp,.tiff,.bmp,.csv,.xlsx,.xls,.json,.zip,.sfx,.exe,.rar,application/pdf,image/*,text/csv,application/json,application/zip,application/x-rar-compressed,application/x-msdownload" style="display:none;" onchange="handleEvidenceFiles(event.target.files)">
-        <button class="btn-header-tool glass" onclick="document.getElementById('evidenceFileInput').click()">
-          <span>📂 นำเข้าหลักฐาน</span>
-        </button>
         <button class="btn-header-tool glass" onclick="printCurrentPdf()">
           <span>🖨️ พิมพ์เอกสาร</span>
         </button>
