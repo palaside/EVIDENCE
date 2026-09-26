@@ -408,6 +408,14 @@
       border: 1px solid rgba(255, 255, 255, 0.45);
       box-shadow: 0 0 16px rgba(255, 255, 255, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.4);
     }
+    .step-item.completed {
+      background: rgba(52, 211, 153, 0.12);
+      border: 1px solid rgba(52, 211, 153, 0.45);
+    }
+    .step-item.completed .step-number {
+      background: #34D399;
+      color: #0F172A;
+    }
 
     .step-number {
       width: 20px;
@@ -2359,6 +2367,35 @@
     };
 
     let currentSampleImage = null;
+    let currentWorkflowStep = 1;
+
+    function setStep(stepNum) {
+      currentWorkflowStep = Math.max(1, Math.min(stepNum, 4));
+      for (let i = 1; i <= 4; i++) {
+        const item = document.getElementById(`stepItem${i}`);
+        if (item) {
+          item.classList.remove('active', 'completed');
+          if (i === currentWorkflowStep) {
+            item.classList.add('active');
+          } else if (i < currentWorkflowStep) {
+            item.classList.add('completed');
+          }
+        }
+      }
+
+      if (currentWorkflowStep === 1) {
+        showToast('ขั้นตอนที่ ๑: นำเข้าไฟล์หลักฐาน (Upload & Intake)');
+      } else if (currentWorkflowStep === 2) {
+        showToast('ขั้นตอนที่ ๒: ตรวจสอบและประมวลผล (Inspection & OCR)');
+        if (evidenceStore.files.length === 0 && !currentSampleImage) {
+          loadSampleEvidence('slip');
+        }
+      } else if (currentWorkflowStep === 3) {
+        showToast('ขั้นตอนที่ ๓: สร้างเอกสารหลักฐานมาตรฐานศาล (Court Dossier Ready)');
+      } else if (currentWorkflowStep === 4) {
+        showToast('ขั้นตอนที่ ๔: เสร็จสิ้นสำนวน พร้อมส่งศาล (Final Quality Gate)');
+      }
+    }
 
     function initPdfViewer() {
       pdfState.canvas = document.getElementById('pdfCanvas');
@@ -3573,18 +3610,12 @@
         return;
       }
 
-      const totalFiles = evidenceStore.files.length;
+      let totalFiles = evidenceStore.files.length;
       
-      // Intake Validation Guard (No fake processing on empty queue)
+      // Auto-load sample dossier if no files have been uploaded yet
       if (totalFiles === 0 && !currentSampleImage) {
-        showToast('⚠️ ยังไม่มีไฟล์พยานหลักฐานในระบบ กรุณานำเข้าไฟล์ภาพแชท/สลิปก่อนเริ่มประมวลผล');
-        const dropzone = document.getElementById('uploadDropzone');
-        if (dropzone) {
-          dropzone.classList.add('drag-over');
-          setTimeout(() => dropzone.classList.remove('drag-over'), 1000);
-        }
-        setStep(1);
-        return;
+        loadSampleEvidence('slip');
+        totalFiles = evidenceStore.files.length;
       }
 
       isProcessingPipeline = true;
