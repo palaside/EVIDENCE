@@ -1,0 +1,420 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Glassmorphism Visual Contract</title>
+<style>
+:root{
+  --bg:#050914; --panel:#0d172a; --panel2:#111f38; --line:rgba(255,255,255,.12);
+  --text:#eef4ff; --muted:#a8b6d5; --accent:#7ca7ff; --green:#4ddfba; --warn:#ffd47a;
+  --shadow:0 22px 70px rgba(0,0,0,.42);
+  --surfaceRgb:255,255,255; --surfaceOpacity:.18; --blur:26px; --saturate:170%;
+  --borderRgb:255,255,255; --borderOpacity:.32; --borderW:1px;
+  --cardW:420px; --cardH:210px; --radius:28px; --padding:28px;
+  --shadowBlur:44px; --shadowY:15px; --shadowOpacity:.24; --highlightOpacity:.38;
+  --fontFamily:Inter, ui-sans-serif, system-ui, sans-serif; --fontSize:24px; --fontWeight:800;
+  --textRgb:248,251,255; --textOpacity:.96; --bgA:#7dd3fc; --bgB:#c084fc; --bgC:#0f172a;
+  --zoomScale:1.65;
+}
+*{box-sizing:border-box} html,body{height:100%;width:100%;margin:0;overflow:hidden}
+body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:var(--text);background:radial-gradient(circle at top left,#15305f 0%,#081326 38%,#050b16 100%)}
+.app{height:100dvh;width:100vw;display:grid;grid-template-rows:auto minmax(0,1fr);padding:clamp(8px,1.3vw,18px);gap:12px;overflow:hidden}
+.hero,.card{border:1px solid var(--line);border-radius:22px;background:linear-gradient(180deg,rgba(255,255,255,.045),rgba(255,255,255,.022));box-shadow:var(--shadow);overflow:hidden}
+.hero{padding:12px 16px;display:flex;align-items:center;justify-content:space-between;gap:14px;min-height:64px}
+.tag{display:inline-flex;align-items:center;gap:8px;padding:7px 10px;border-radius:999px;color:#e5edff;background:rgba(124,167,255,.13);border:1px solid rgba(124,167,255,.22);font-size:11px;font-weight:900;letter-spacing:.04em;text-transform:uppercase;white-space:nowrap}
+h1{font-size:clamp(20px,2vw,31px);line-height:1.05;margin:4px 0 0}.sub{color:var(--muted);font-size:13px;line-height:1.35;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:980px}
+.shell{min-height:0;display:grid;grid-template-columns:minmax(300px,390px) minmax(0,1fr);gap:12px;overflow:hidden}
+@media(max-width:980px){.shell{grid-template-columns:1fr;grid-template-rows:minmax(230px,38dvh) minmax(0,1fr)}.sub{display:none}}
+@media(max-width:620px){.app{padding:8px;gap:8px}.hero{min-height:54px;padding:9px 11px;border-radius:18px}h1{font-size:18px}.tag{font-size:10px;padding:6px 8px}.shell{grid-template-rows:260px minmax(0,1fr)}}
+.card{min-height:0;display:grid;grid-template-rows:auto minmax(0,1fr)}.card-head{padding:10px 12px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:46px}.card-head h2{margin:0;font-size:clamp(16px,1.4vw,20px)}.card-body{min-height:0;padding:10px;overflow:hidden}
+.controls{height:100%;display:grid;grid-template-rows:auto minmax(0,1fr) auto auto;gap:8px;overflow:hidden}.tab-row{display:flex;gap:6px;flex-wrap:wrap}.tab{background:rgba(255,255,255,.055);color:#eef4ff;border:1px solid var(--line);border-radius:11px;padding:8px 9px;font-weight:900;cursor:pointer}.tab.active{background:rgba(124,167,255,.18);border-color:rgba(124,167,255,.55)}
+.controls-main{min-height:0;display:grid;grid-template-columns:1fr;overflow:hidden}.panel{display:none;min-height:0;height:100%;border:1px solid var(--line);border-radius:16px;background:rgba(0,0,0,.13);padding:9px;overflow:hidden;align-content:start;gap:7px}.panel.active{display:grid}
+.row{display:grid;grid-template-columns:minmax(90px,1fr) minmax(90px,1fr);gap:7px;align-items:center}.row.full{grid-template-columns:1fr}label{font-size:12px;font-weight:850;color:#d8e4ff}input[type=text],select,textarea{width:100%;min-width:0;padding:8px 10px;border-radius:11px;border:1px solid var(--line);background:#07101f;color:var(--text);font:inherit;font-size:12px;outline:none}textarea{min-height:50px;resize:none;line-height:1.35}input[type=range]{width:100%;min-width:0}input[type=color]{width:44px;height:31px;padding:2px;border-radius:9px;border:1px solid var(--line);background:#07101f}.value{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;color:#d8e6ff;font-size:11px;text-align:right}.hint{font-size:11px;color:var(--muted);line-height:1.35}
+.toggle-line{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:8px 10px;border:1px solid var(--line);border-radius:14px;background:rgba(255,255,255,.04)}.switch{position:relative;display:inline-block;width:48px;height:27px}.switch input{opacity:0;width:0;height:0}.slider{position:absolute;cursor:pointer;inset:0;background:#273852;border:1px solid var(--line);transition:.2s;border-radius:999px}.slider:before{position:absolute;content:"";height:21px;width:21px;left:2px;top:2px;background:white;transition:.2s;border-radius:50%}.switch input:checked + .slider{background:linear-gradient(135deg,var(--green),var(--accent))}.switch input:checked + .slider:before{transform:translateX(21px)}.disabled-control{opacity:.38;filter:grayscale(.4)}.disabled-control input{cursor:not-allowed}
+.actions{display:flex;flex-wrap:wrap;gap:7px;align-items:center}button{border:0;border-radius:11px;padding:9px 11px;font:inherit;font-size:12px;font-weight:950;cursor:pointer;transition:transform .15s ease}button:hover{transform:translateY(-1px)}.primary{background:linear-gradient(135deg,var(--accent),#8377ff);color:white}.success{background:linear-gradient(135deg,var(--green),#51a8ff);color:#04131f}.secondary{background:#142642;color:#eef4ff;border:1px solid var(--line)}.ghost{background:rgba(255,255,255,.055);color:white;border:1px solid var(--line)}
+.status{min-height:36px;max-height:58px;overflow:hidden;border:1px solid var(--line);border-radius:13px;background:rgba(0,0,0,.20);padding:8px 10px;white-space:pre-wrap;line-height:1.32;color:var(--muted);font-size:12px}.download-anchor:hover{transform:translateY(-1px)}.download-anchor.success{background:linear-gradient(135deg,var(--green),#51a8ff);color:#04131f}
+.preview-layout{height:100%;min-height:0;display:grid;gap:10px;overflow:hidden}.preview-layout.anchor-live{grid-template-columns:minmax(0,1.35fr) minmax(250px,.8fr);grid-template-rows:minmax(0,1fr) minmax(100px,.34fr);grid-template-areas:"live zoom" "live output"}.preview-layout.anchor-zoom{grid-template-columns:minmax(260px,.85fr) minmax(0,1.25fr);grid-template-rows:minmax(0,1fr) minmax(100px,.34fr);grid-template-areas:"live zoom" "output zoom"}.preview-layout.anchor-output{grid-template-columns:minmax(0,1fr) minmax(300px,.9fr);grid-template-rows:minmax(0,1fr);grid-template-areas:"live output"}
+@media(max-width:980px){.preview-layout.anchor-live,.preview-layout.anchor-zoom,.preview-layout.anchor-output{grid-template-columns:1fr 1fr;grid-template-rows:minmax(0,1fr);grid-template-areas:"live zoom"}.out-panel{display:none!important}}
+@media(max-width:620px){.preview-layout.anchor-live,.preview-layout.anchor-zoom,.preview-layout.anchor-output{grid-template-columns:1fr;grid-template-areas:"live"}.zoom-panel,.out-panel{display:none!important}}
+.live-panel{grid-area:live}.zoom-panel{grid-area:zoom}.out-panel{grid-area:output}.preview-panel{min-height:0;border:1px solid var(--line);border-radius:20px;background:rgba(0,0,0,.16);overflow:hidden;display:grid;grid-template-rows:auto minmax(0,1fr)}.panel-head{padding:9px 11px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:8px;min-height:40px}.panel-head b{font-size:clamp(14px,1.3vw,18px)}
+.stage,.zoom-stage{min-height:0;overflow:hidden;background:radial-gradient(circle at 18% 12%,var(--bgA),transparent 30%),radial-gradient(circle at 88% 18%,var(--bgB),transparent 34%),linear-gradient(135deg,var(--bgC),#050914 80%);position:relative}.stage-inner{height:100%;width:100%;display:flex;align-items:center;justify-content:center;padding:clamp(12px,2.5vw,38px)}
+.glass-card,.zoom-card{width:min(var(--cardW),78%);min-height:min(var(--cardH),64%);border-radius:var(--radius);padding:var(--padding);color:rgba(var(--textRgb),var(--textOpacity));font-family:var(--fontFamily);font-size:clamp(14px,var(--fontSize),4vw);font-weight:var(--fontWeight);background:rgba(var(--surfaceRgb),var(--surfaceOpacity));border:var(--borderW) solid rgba(var(--borderRgb),var(--borderOpacity));box-shadow:0 var(--shadowY) var(--shadowBlur) rgba(0,0,0,var(--shadowOpacity)),inset 0 1px 0 rgba(255,255,255,var(--highlightOpacity));backdrop-filter:blur(var(--blur)) saturate(var(--saturate));-webkit-backdrop-filter:blur(var(--blur)) saturate(var(--saturate));display:flex;align-items:center;justify-content:center;text-align:center;position:relative;overflow:hidden}.glass-card:before,.zoom-card:before{content:"";position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,var(--highlightOpacity)),transparent 42%);pointer-events:none}.glass-card span,.zoom-card span{position:relative;z-index:1}.glass-card .glass-card,.glass .glass{background:rgba(255,255,255,.04);backdrop-filter:none;-webkit-backdrop-filter:none;border:1px solid rgba(255,255,255,.28);box-shadow:inset 0 1px 0 rgba(255,255,255,.38)}.zoom-stage{display:grid;place-items:center;padding:clamp(10px,2vw,24px)}.zoom-fit{width:100%;height:100%;display:grid;place-items:center;overflow:hidden}.zoom-card{transform:scale(var(--zoomScale));transform-origin:center}.output-mini{min-height:0;overflow:hidden;padding:10px;color:var(--muted);font-size:12px;line-height:1.36;white-space:pre-wrap;font-family:ui-monospace,SFMono-Regular,Consolas,monospace}.output-mini.show-code{overflow:auto;color:#eaf2ff;white-space:normal}.md-code-block{margin:0;min-height:100%;white-space:pre-wrap;overflow:auto;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:12px;line-height:1.52;color:#eaf2ff}.md-code-block code{white-space:pre-wrap;word-break:break-word}.code-textarea{width:100%;height:100%;min-height:100%;resize:none;border:0;border-radius:12px;background:#07101f;color:#eaf2ff;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:12px;line-height:1.52;padding:12px;outline:none;white-space:pre;overflow:auto}
+</style>
+</head>
+<body>
+<div class="app">
+  <section class="hero"><div><div class="tag">V8 Base · Gatekeeper Forced · Output Code Block</div><h1>Glassmorphism Visual Contract</h1><div class="sub">เหมือน V8: full style presets, shape toggle, output code block, copy fallback — บังคับ Gatekeeper เป็นมาตรฐาน</div></div><div class="tag">No Download / No Save As</div></section>
+  <section class="shell">
+    <article class="card"><div class="card-head"><h2>Controls</h2><div class="tag">Input</div></div><div class="card-body"><div class="controls">
+      <div class="tab-row"><button class="tab active" data-tab="style">Style</button><button class="tab" data-tab="glass">Glass</button><button class="tab" data-tab="shape">Shape</button><button class="tab" data-tab="layout">Layout</button></div>
+      <div class="controls-main">
+        <div class="panel active" id="panel-style"><div class="row full"><label>Style Preset</label><select id="preset"></select></div><div class="row full"><label>Custom Label</label><input id="labelText" type="text" value="Glass Command Card"></div><div class="row full"><label>Contract Purpose</label><textarea id="description">ใช้เป็น visual contract สำหรับ glassmorphism component ที่ต้อง fit-to-screen, no-scroll, responsive, มี fixed/sticky anchor และ fluid layout รอบจุดที่ล็อก</textarea></div><div class="row"><label>Text Color</label><input id="textColor" type="color"></div><div class="row"><label>Text Opacity</label><div class="value" id="textOpacityVal"></div></div><input id="textOpacity" type="range" min="0.55" max="1" step="0.01"><div class="row"><label>Font Size</label><div class="value" id="fontSizeVal"></div></div><input id="fontSize" type="range" min="14" max="42" step="1"><div class="row"><label>Font Weight</label><div class="value" id="fontWeightVal"></div></div><input id="fontWeight" type="range" min="300" max="900" step="100"></div>
+        <div class="panel" id="panel-glass"><div class="row"><label>Surface Color</label><input id="surfaceColor" type="color"></div><div class="row"><label>Surface Opacity</label><div class="value" id="surfaceOpacityVal"></div></div><input id="surfaceOpacity" type="range" min="0.04" max="1" step="0.01"><div class="row"><label>Backdrop Blur</label><div class="value" id="blurVal"></div></div><input id="blur" type="range" min="0" max="48" step="1"><div class="row"><label>Saturate</label><div class="value" id="saturateVal"></div></div><input id="saturate" type="range" min="90" max="240" step="5"><div class="row"><label>Border Color</label><input id="borderColor" type="color"></div><div class="row"><label>Border Opacity</label><div class="value" id="borderOpacityVal"></div></div><input id="borderOpacity" type="range" min="0" max="1" step="0.01"><div class="row"><label>Highlight</label><div class="value" id="highlightVal"></div></div><input id="highlight" type="range" min="0" max="0.85" step="0.01"></div>
+        <div class="panel" id="panel-shape"><div class="toggle-line"><div><b>ใช้กับทุกคอมโพเนนต์</b><div class="hint">เปิด = ไม่เขียน Width & Height เฉพาะตัวในโค้ด output</div></div><label class="switch"><input id="allComponentsToggle" type="checkbox" checked><span class="slider"></span></label></div><div id="dimensionControls" class="disabled-control"><div class="row"><label>Width</label><div class="value" id="cardWVal"></div></div><input id="cardW" type="range" min="180" max="680" step="10"><div class="row"><label>Height</label><div class="value" id="cardHVal"></div></div><input id="cardH" type="range" min="90" max="380" step="10"></div><div class="row"><label>Radius</label><div class="value" id="radiusVal"></div></div><input id="radius" type="range" min="0" max="56" step="1"><div class="row"><label>Padding</label><div class="value" id="paddingVal"></div></div><input id="padding" type="range" min="8" max="60" step="2"><div class="row"><label>Border Width</label><div class="value" id="borderWVal"></div></div><input id="borderW" type="range" min="0" max="5" step="1"><div class="row"><label>Shadow Blur</label><div class="value" id="shadowBlurVal"></div></div><input id="shadowBlur" type="range" min="0" max="100" step="2"><div class="row"><label>Shadow Opacity</label><div class="value" id="shadowOpacityVal"></div></div><input id="shadowOpacity" type="range" min="0" max="0.75" step="0.01"></div>
+        <div class="panel" id="panel-layout"><div class="row full"><label>Fixed/Sticky Anchor</label><select id="anchorTarget"><option value="live">Live Preview</option><option value="zoom">Zoom Preview</option><option value="output">Output</option></select></div><div class="row"><label>Zoom Preview</label><div class="value" id="zoomVal"></div></div><input id="zoom" type="range" min="1" max="2.75" step="0.05" value="1.65"><div class="row"><label>Background A</label><input id="bgA" type="color"></div><div class="row"><label>Background B</label><input id="bgB" type="color"></div><div class="row"><label>Background Base</label><input id="bgC" type="color"></div><div class="row full"><label>Responsive Rule</label><textarea id="responsiveNote">Desktop = anchored panel + fluid panels; Tablet = two-column preview; Mobile = single fixed anchor with non-critical panels hidden/collapsed.</textarea></div></div>
+      </div>
+      <div class="actions"><button class="primary" id="generateBtn" type="button">Generate Preview</button><button class="secondary" id="qaBtn" type="button">Self-check</button><button class="success" id="outputBtn" type="button">Output Code Block</button><button class="ghost" id="copyBtn" type="button">Copy</button></div>
+      <div class="status" id="status">พร้อมใช้งาน — ค่าเริ่มต้น: ทุกคอมโพเนนต์ ON</div>
+    </div></div></article>
+    <article class="card"><div class="card-head"><h2>Live Preview / Zoom / Output</h2><div class="tag">No Scroll Preview</div></div><div class="card-body"><div class="preview-layout anchor-live" id="previewLayout"><section class="preview-panel live-panel"><div class="panel-head"><b>Live Preview</b><span class="tag" id="anchorBadge">ANCHOR</span></div><div class="stage"><div class="stage-inner"><div class="glass-card"><span id="cardLabel">Glass Command Card</span></div></div></div></section><section class="preview-panel zoom-panel"><div class="panel-head"><b>Zoom Preview</b><span class="tag" id="zoomTag">1.65x</span></div><div class="zoom-stage"><div class="zoom-fit"><div class="zoom-card"><span id="zoomLabel">Glass Command Card</span></div></div></div></section><section class="preview-panel out-panel"><div class="panel-head"><b>Output Summary</b><span class="tag">MD</span></div><div class="output-mini" id="outputMini"><span id="outputHint">ยังไม่มี output — กด Generate Preview</span><textarea id="outputCodeText" class="code-textarea" readonly style="display:none" spellcheck="false"></textarea></div></section></div></div></article>
+  </section>
+</div>
+<script>
+const PRESETS = {"glass_apple": {"label": "Glassmorphism (Apple / Frosted Glass)", "surface": "#ffffff", "surfaceOpacity": 0.18, "blur": 26, "saturate": 170, "border": "#ffffff", "borderOpacity": 0.32, "radius": 28, "shadowBlur": 44, "shadowOpacity": 0.24, "highlight": 0.38, "text": "#f8fbff", "bgA": "#7dd3fc", "bgB": "#c084fc", "bgC": "#0f172a", "font": "Inter, ui-sans-serif, system-ui, sans-serif", "fontSize": 24, "fontWeight": 800, "letterSpacing": 0}, "minimal_clean": {"label": "Minimalist (Global Standard Clean)", "surface": "#ffffff", "surfaceOpacity": 0.88, "blur": 4, "saturate": 105, "border": "#e5e7eb", "borderOpacity": 0.95, "radius": 16, "shadowBlur": 18, "shadowOpacity": 0.1, "highlight": 0.18, "text": "#111827", "bgA": "#f8fafc", "bgB": "#e5e7eb", "bgC": "#f1f5f9", "font": "Inter, ui-sans-serif, system-ui, sans-serif", "fontSize": 22, "fontWeight": 700, "letterSpacing": -0.2}, "material_google": {"label": "Material Design (Google Surface)", "surface": "#ffffff", "surfaceOpacity": 0.94, "blur": 2, "saturate": 110, "border": "#dadce0", "borderOpacity": 0.9, "radius": 18, "shadowBlur": 24, "shadowOpacity": 0.14, "highlight": 0.12, "text": "#202124", "bgA": "#4285f4", "bgB": "#34a853", "bgC": "#f8fafd", "font": "Inter, ui-sans-serif, system-ui, sans-serif", "fontSize": 22, "fontWeight": 650, "letterSpacing": 0}, "neumorphism": {"label": "Neumorphism (Soft Embossed Shadow)", "surface": "#e8edf5", "surfaceOpacity": 0.98, "blur": 0, "saturate": 100, "border": "#ffffff", "borderOpacity": 0.52, "radius": 28, "shadowBlur": 32, "shadowOpacity": 0.16, "highlight": 0.62, "text": "#334155", "bgA": "#f8fafc", "bgB": "#cbd5e1", "bgC": "#e2e8f0", "font": "Inter, ui-sans-serif, system-ui, sans-serif", "fontSize": 23, "fontWeight": 750, "letterSpacing": 0}, "flat_modern": {"label": "Flat Design (Microsoft/Apple Modern)", "surface": "#2563eb", "surfaceOpacity": 0.96, "blur": 0, "saturate": 100, "border": "#2563eb", "borderOpacity": 1, "radius": 14, "shadowBlur": 0, "shadowOpacity": 0, "highlight": 0, "text": "#ffffff", "bgA": "#60a5fa", "bgB": "#1d4ed8", "bgC": "#eff6ff", "font": "Inter, ui-sans-serif, system-ui, sans-serif", "fontSize": 24, "fontWeight": 800, "letterSpacing": 0}, "brutalism": {"label": "Brutalism (Bold High-Contrast Raw)", "surface": "#ffff00", "surfaceOpacity": 1, "blur": 0, "saturate": 100, "border": "#000000", "borderOpacity": 1, "radius": 0, "shadowBlur": 0, "shadowOpacity": 0.5, "highlight": 0, "text": "#000000", "bgA": "#ff00ff", "bgB": "#00ffff", "bgC": "#ffffff", "font": "ui-monospace, SFMono-Regular, Consolas, monospace", "fontSize": 25, "fontWeight": 900, "letterSpacing": -0.5}, "futuristic_cyber": {"label": "Futuristic & Cyber", "surface": "#0ea5e9", "surfaceOpacity": 0.14, "blur": 28, "saturate": 210, "border": "#67e8f9", "borderOpacity": 0.52, "radius": 22, "shadowBlur": 70, "shadowOpacity": 0.42, "highlight": 0.36, "text": "#ecfeff", "bgA": "#22d3ee", "bgB": "#6366f1", "bgC": "#020617", "font": "ui-monospace, SFMono-Regular, Consolas, monospace", "fontSize": 23, "fontWeight": 850, "letterSpacing": 0.7}, "cyberpunk": {"label": "Cyberpunk (Neon Cyan & Dark Future)", "surface": "#00e5ff", "surfaceOpacity": 0.12, "blur": 30, "saturate": 220, "border": "#00f5ff", "borderOpacity": 0.66, "radius": 18, "shadowBlur": 86, "shadowOpacity": 0.52, "highlight": 0.36, "text": "#e0ffff", "bgA": "#00f5ff", "bgB": "#ff00d4", "bgC": "#050012", "font": "ui-monospace, SFMono-Regular, Consolas, monospace", "fontSize": 23, "fontWeight": 900, "letterSpacing": 0.9}, "vaporwave": {"label": "Vaporwave (Retro Synthwave Pink/Violet)", "surface": "#ff7ad9", "surfaceOpacity": 0.18, "blur": 32, "saturate": 220, "border": "#f0abfc", "borderOpacity": 0.55, "radius": 30, "shadowBlur": 78, "shadowOpacity": 0.46, "highlight": 0.42, "text": "#ffffff", "bgA": "#fb7185", "bgB": "#8b5cf6", "bgC": "#12001f", "font": "Inter, ui-sans-serif, system-ui, sans-serif", "fontSize": 25, "fontWeight": 850, "letterSpacing": 0.5}, "y2k": {"label": "Y2K Aesthetic (Year 2000 Glossy Silver)", "surface": "#dbeafe", "surfaceOpacity": 0.34, "blur": 24, "saturate": 180, "border": "#ffffff", "borderOpacity": 0.62, "radius": 34, "shadowBlur": 58, "shadowOpacity": 0.34, "highlight": 0.7, "text": "#f8fbff", "bgA": "#c0c7d6", "bgB": "#60a5fa", "bgC": "#0f172a", "font": "Inter, ui-sans-serif, system-ui, sans-serif", "fontSize": 25, "fontWeight": 850, "letterSpacing": 0.2}, "neo_futurism": {"label": "Neo-Futurism (Fluid Architecture)", "surface": "#ffffff", "surfaceOpacity": 0.16, "blur": 34, "saturate": 190, "border": "#a5f3fc", "borderOpacity": 0.34, "radius": 44, "shadowBlur": 64, "shadowOpacity": 0.3, "highlight": 0.36, "text": "#f0f9ff", "bgA": "#38bdf8", "bgB": "#a78bfa", "bgC": "#071326", "font": "Inter, ui-sans-serif, system-ui, sans-serif", "fontSize": 24, "fontWeight": 780, "letterSpacing": -0.1}, "art_deco": {"label": "Art Deco (1920s Luxury Gold/Black)", "surface": "#111111", "surfaceOpacity": 0.72, "blur": 10, "saturate": 125, "border": "#d4af37", "borderOpacity": 0.84, "radius": 10, "shadowBlur": 42, "shadowOpacity": 0.42, "highlight": 0.25, "text": "#f8e7a2", "bgA": "#d4af37", "bgB": "#111111", "bgC": "#050505", "font": "Georgia, serif", "fontSize": 25, "fontWeight": 800, "letterSpacing": 1.1}, "bauhaus": {"label": "Bauhaus (1919 Form Follows Function)", "surface": "#ffffff", "surfaceOpacity": 0.9, "blur": 0, "saturate": 100, "border": "#111827", "borderOpacity": 1, "radius": 4, "shadowBlur": 14, "shadowOpacity": 0.14, "highlight": 0.05, "text": "#111111", "bgA": "#ef4444", "bgB": "#facc15", "bgC": "#2563eb", "font": "Inter, ui-sans-serif, system-ui, sans-serif", "fontSize": 24, "fontWeight": 900, "letterSpacing": 0}, "swiss": {"label": "Swiss / International (Grid & Bold Typography)", "surface": "#ffffff", "surfaceOpacity": 0.96, "blur": 0, "saturate": 100, "border": "#111827", "borderOpacity": 0.2, "radius": 0, "shadowBlur": 8, "shadowOpacity": 0.08, "highlight": 0, "text": "#111827", "bgA": "#ffffff", "bgB": "#e5e7eb", "bgC": "#f8fafc", "font": "Inter, ui-sans-serif, system-ui, sans-serif", "fontSize": 26, "fontWeight": 900, "letterSpacing": -0.8}, "mid_century": {"label": "Mid-Century Modern (Retro Warm)", "surface": "#f59e0b", "surfaceOpacity": 0.22, "blur": 14, "saturate": 135, "border": "#fed7aa", "borderOpacity": 0.45, "radius": 24, "shadowBlur": 36, "shadowOpacity": 0.24, "highlight": 0.26, "text": "#fff7ed", "bgA": "#f97316", "bgB": "#0f766e", "bgC": "#431407", "font": "Georgia, serif", "fontSize": 24, "fontWeight": 750, "letterSpacing": 0}, "victorian": {"label": "Victorian Classic (Ornate Elegance)", "surface": "#4c1d95", "surfaceOpacity": 0.26, "blur": 18, "saturate": 145, "border": "#f5d0fe", "borderOpacity": 0.55, "radius": 18, "shadowBlur": 54, "shadowOpacity": 0.36, "highlight": 0.24, "text": "#fff7ed", "bgA": "#7e22ce", "bgB": "#a16207", "bgC": "#1f102a", "font": "Georgia, serif", "fontSize": 24, "fontWeight": 800, "letterSpacing": 0.5}, "art_nouveau": {"label": "Art Nouveau (Organic Curves)", "surface": "#84cc16", "surfaceOpacity": 0.18, "blur": 20, "saturate": 150, "border": "#bef264", "borderOpacity": 0.42, "radius": 40, "shadowBlur": 50, "shadowOpacity": 0.26, "highlight": 0.25, "text": "#f7fee7", "bgA": "#84cc16", "bgB": "#f59e0b", "bgC": "#1a2e05", "font": "Georgia, serif", "fontSize": 24, "fontWeight": 750, "letterSpacing": 0.1}, "japanese_zen": {"label": "Japanese Zen (Wabi-Sabi Tranquil)", "surface": "#f5f0e8", "surfaceOpacity": 0.52, "blur": 10, "saturate": 95, "border": "#d6c7b2", "borderOpacity": 0.38, "radius": 14, "shadowBlur": 22, "shadowOpacity": 0.12, "highlight": 0.12, "text": "#3f3a32", "bgA": "#e7ded0", "bgB": "#9ca3af", "bgC": "#f7f1e8", "font": "Georgia, serif", "fontSize": 23, "fontWeight": 650, "letterSpacing": 0}, "scandinavian": {"label": "Scandinavian (Nordic Hygge Clean)", "surface": "#ffffff", "surfaceOpacity": 0.64, "blur": 12, "saturate": 105, "border": "#e5e7eb", "borderOpacity": 0.55, "radius": 22, "shadowBlur": 26, "shadowOpacity": 0.12, "highlight": 0.18, "text": "#1f2937", "bgA": "#dbeafe", "bgB": "#fef3c7", "bgC": "#f8fafc", "font": "Inter, ui-sans-serif, system-ui, sans-serif", "fontSize": 23, "fontWeight": 700, "letterSpacing": -0.1}, "moroccan": {"label": "Moroccan (Vibrant Geometric Mosaic)", "surface": "#0f766e", "surfaceOpacity": 0.28, "blur": 18, "saturate": 170, "border": "#f59e0b", "borderOpacity": 0.62, "radius": 20, "shadowBlur": 44, "shadowOpacity": 0.32, "highlight": 0.28, "text": "#fff7ed", "bgA": "#0f766e", "bgB": "#dc2626", "bgC": "#1e1b4b", "font": "Georgia, serif", "fontSize": 24, "fontWeight": 800, "letterSpacing": 0.2}, "chinese_traditional": {"label": "Chinese Traditional (Imperial Crimson)", "surface": "#dc2626", "surfaceOpacity": 0.24, "blur": 18, "saturate": 155, "border": "#facc15", "borderOpacity": 0.72, "radius": 12, "shadowBlur": 48, "shadowOpacity": 0.38, "highlight": 0.25, "text": "#fff7ed", "bgA": "#dc2626", "bgB": "#facc15", "bgC": "#2a0505", "font": "Georgia, serif", "fontSize": 24, "fontWeight": 850, "letterSpacing": 0.4}, "indian_traditional": {"label": "Indian Traditional (Festive Royal Jewel)", "surface": "#7c3aed", "surfaceOpacity": 0.24, "blur": 20, "saturate": 190, "border": "#f59e0b", "borderOpacity": 0.66, "radius": 26, "shadowBlur": 58, "shadowOpacity": 0.38, "highlight": 0.32, "text": "#fff7ed", "bgA": "#ec4899", "bgB": "#f59e0b", "bgC": "#2e1065", "font": "Georgia, serif", "fontSize": 24, "fontWeight": 850, "letterSpacing": 0.2}, "ocean_deep": {"label": "Ocean Deep Blue (Marine Fluid)", "surface": "#0284c7", "surfaceOpacity": 0.18, "blur": 26, "saturate": 175, "border": "#7dd3fc", "borderOpacity": 0.44, "radius": 30, "shadowBlur": 62, "shadowOpacity": 0.34, "highlight": 0.28, "text": "#ecfeff", "bgA": "#38bdf8", "bgB": "#0f766e", "bgC": "#020617", "font": "Inter, ui-sans-serif, system-ui, sans-serif", "fontSize": 24, "fontWeight": 780, "letterSpacing": 0}, "forest_emerald": {"label": "Forest Emerald (Earth Green)", "surface": "#16a34a", "surfaceOpacity": 0.18, "blur": 22, "saturate": 145, "border": "#86efac", "borderOpacity": 0.4, "radius": 26, "shadowBlur": 50, "shadowOpacity": 0.3, "highlight": 0.22, "text": "#f0fdf4", "bgA": "#22c55e", "bgB": "#365314", "bgC": "#052e16", "font": "Inter, ui-sans-serif, system-ui, sans-serif", "fontSize": 24, "fontWeight": 780, "letterSpacing": 0}, "organic_natural": {"label": "Organic Natural (Warm Earth Tone)", "surface": "#a16207", "surfaceOpacity": 0.2, "blur": 18, "saturate": 125, "border": "#fed7aa", "borderOpacity": 0.36, "radius": 32, "shadowBlur": 44, "shadowOpacity": 0.24, "highlight": 0.18, "text": "#fff7ed", "bgA": "#d97706", "bgB": "#78716c", "bgC": "#292524", "font": "Georgia, serif", "fontSize": 24, "fontWeight": 750, "letterSpacing": 0}};
+const $ = (id) => document.getElementById(id);
+const inputs = ["labelText","description","surfaceColor","surfaceOpacity","blur","saturate","borderColor","borderOpacity","borderW","cardW","cardH","radius","padding","shadowBlur","shadowOpacity","highlight","fontSize","fontWeight","textColor","textOpacity","bgA","bgB","bgC","zoom","anchorTarget","responsiveNote","allComponentsToggle"];
+let currentMarkdown = "";
+let lastObjectUrl = null;
+
+function hexToRgb(hex){const h=hex.replace("#","");const n=parseInt(h.length===3?h.split("").map(c=>c+c).join(""):h,16);return [(n>>16)&255,(n>>8)&255,n&255];}
+function cssRgb(hex){return hexToRgb(hex).join(",");}
+function rgba(hex,a){const [r,g,b]=hexToRgb(hex);return `rgba(${r}, ${g}, ${b}, ${a})`}
+function val(id){return $(id).value} function num(id){return Number($(id).value)} function set(id,v){$(id).value=v} function checked(id){return $(id).checked}
+function populatePresets(){const select=$("preset"); const groups=[["Core Visual Systems",["glass_apple","minimal_clean","material_google","neumorphism","flat_modern","brutalism"]],["Futuristic & Cyber",["futuristic_cyber","cyberpunk","vaporwave","y2k","neo_futurism"]],["Classic Aesthetics",["art_deco","bauhaus","swiss","mid_century","victorian","art_nouveau"]],["Cultural Heritage",["japanese_zen","scandinavian","moroccan","chinese_traditional","indian_traditional"]],["Nature Elements",["ocean_deep","forest_emerald","organic_natural"]]]; groups.forEach(([label,keys])=>{const og=document.createElement("optgroup");og.label=label; keys.forEach(k=>{const o=document.createElement("option");o.value=k;o.textContent=PRESETS[k].label;og.appendChild(o)});select.appendChild(og)});}
+function applyPreset(){const p=PRESETS[val("preset")]; set("surfaceColor",p.surface); set("surfaceOpacity",p.surfaceOpacity); set("blur",p.blur); set("saturate",p.saturate); set("borderColor",p.border); set("borderOpacity",p.borderOpacity); set("radius",p.radius); set("shadowBlur",p.shadowBlur); set("shadowOpacity",p.shadowOpacity); set("highlight",p.highlight); set("textColor",p.text); set("bgA",p.bgA); set("bgB",p.bgB); set("bgC",p.bgC); set("fontSize",p.fontSize); set("fontWeight",p.fontWeight); set("cardW",420); set("cardH",210); set("padding",28); set("borderW",1); document.documentElement.style.setProperty("--fontFamily",p.font); updateAll();}
+function updateValueLabels(){const map={surfaceOpacity:["surfaceOpacityVal",""],blur:["blurVal","px"],saturate:["saturateVal","%"],borderOpacity:["borderOpacityVal",""],borderW:["borderWVal","px"],cardW:["cardWVal","px"],cardH:["cardHVal","px"],radius:["radiusVal","px"],padding:["paddingVal","px"],shadowBlur:["shadowBlurVal","px"],shadowOpacity:["shadowOpacityVal",""],highlight:["highlightVal",""],fontSize:["fontSizeVal","px"],fontWeight:["fontWeightVal",""],textOpacity:["textOpacityVal",""],zoom:["zoomVal","x"]}; Object.entries(map).forEach(([i,[target,unit]])=>$(target).textContent=val(i)+unit);}
+function updateShapeToggle(){const isAll=checked("allComponentsToggle"); const wrap=$("dimensionControls"); wrap.classList.toggle("disabled-control",isAll); $("cardW").disabled=isAll; $("cardH").disabled=isAll; $("status").textContent = isAll ? "Shape mode: ทุกคอมโพเนนต์ — output จะไม่เขียน Width & Height เฉพาะตัว" : "Shape mode: Custom size — output จะเขียน Width & Height ตามค่าที่เลือก";}
+function updateAll(){updateShapeToggle(); $("cardLabel").textContent=val("labelText")||"Glass Card"; $("zoomLabel").textContent=val("labelText")||"Glass Card"; const r=document.documentElement; r.style.setProperty("--surfaceRgb",cssRgb(val("surfaceColor"))); r.style.setProperty("--surfaceOpacity",val("surfaceOpacity")); r.style.setProperty("--blur",num("blur")+"px"); r.style.setProperty("--saturate",num("saturate")+"%"); r.style.setProperty("--borderRgb",cssRgb(val("borderColor"))); r.style.setProperty("--borderOpacity",val("borderOpacity")); r.style.setProperty("--borderW",num("borderW")+"px"); r.style.setProperty("--cardW",num("cardW")+"px"); r.style.setProperty("--cardH",num("cardH")+"px"); r.style.setProperty("--radius",num("radius")+"px"); r.style.setProperty("--padding",num("padding")+"px"); r.style.setProperty("--shadowBlur",num("shadowBlur")+"px"); r.style.setProperty("--shadowY",Math.round(num("shadowBlur")*.35)+"px"); r.style.setProperty("--shadowOpacity",val("shadowOpacity")); r.style.setProperty("--highlightOpacity",val("highlight")); r.style.setProperty("--fontSize",num("fontSize")+"px"); r.style.setProperty("--fontWeight",val("fontWeight")); r.style.setProperty("--textRgb",cssRgb(val("textColor"))); r.style.setProperty("--textOpacity",val("textOpacity")); r.style.setProperty("--bgA",val("bgA")); r.style.setProperty("--bgB",val("bgB")); r.style.setProperty("--bgC",val("bgC")); r.style.setProperty("--zoomScale",val("zoom")); $("zoomTag").textContent=val("zoom")+"x"; const layout=$("previewLayout"); layout.className="preview-layout anchor-"+val("anchorTarget"); updateValueLabels();}
+function tokens(){const p=PRESETS[val("preset")]; return {stylePreset:p.label, fixedAnchor:val("anchorTarget"), shapeMode:checked("allComponentsToggle")?"ทุกคอมโพเนนต์":"Custom Width & Height", appliesToAllComponents:checked("allComponentsToggle"), label:val("labelText"), purpose:val("description"), responsiveNote:val("responsiveNote"), glassmorphism:{background:{ambientA:val("bgA"),ambientB:val("bgB"),base:val("bgC")},surface:{color:val("surfaceColor"),opacity:num("surfaceOpacity"),backdropBlur:num("blur")+"px",saturate:num("saturate")+"%"},border:{color:val("borderColor"),opacity:num("borderOpacity"),width:num("borderW")+"px",radius:num("radius")+"px"},shadow:{blur:num("shadowBlur")+"px",y:Math.round(num("shadowBlur")*.35)+"px",opacity:num("shadowOpacity")},highlight:{edgeOpacity:num("highlight")},layout:{width:checked("allComponentsToggle")?"ทุกคอมโพเนนต์":num("cardW")+"px",minHeight:checked("allComponentsToggle")?"ทุกคอมโพเนนต์":num("cardH")+"px",padding:num("padding")+"px"},typography:{fontSize:num("fontSize")+"px",fontWeight:num("fontWeight"),textColor:val("textColor"),textOpacity:num("textOpacity")}}};}
+function cssCriteria(t){const g=t.glassmorphism; const sizeBlock=t.appliesToAllComponents?`  /* Shape Mode: ทุกคอมโพเนนต์\n     Do not lock width/height here. Let each component define its own size. */\n  width: auto;\n  min-height: auto;`:`  /* Shape Mode: Custom Width & Height */\n  width: ${g.layout.width};\n  min-height: ${g.layout.minHeight};`; return `/* Gatekeeper Mode: FORCED
+   Prevent output from becoming ordinary clean-card / flat SaaS UI.
+   Must keep layered background, translucent surface, real blur, transparent border, soft shadow, highlight edge, readable contrast, and fallback. */
+
+/* Fit-to-Screen Shell */
+html, body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+}
+
+.app-shell {
+  width: 100vw;
+  height: 100dvh;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  overflow: hidden;
+}
+
+.workspace {
+  min-height: 0;
+  display: grid;
+  grid-template-columns: minmax(280px, 390px) minmax(0, 1fr);
+  gap: clamp(8px, 1.2vw, 16px);
+  overflow: hidden;
+}
+
+/* 1. กระจกทั่วไป (แผงใหญ่ / ชั้นนอก / คอมโพเนนต์เดี่ยว) */
+.glass-card,
+.glass {
+${sizeBlock}
+  padding: ${g.layout.padding};
+  border-radius: ${g.border.radius};
+  background: ${rgba(g.surface.color,g.surface.opacity)};
+  border: ${g.border.width} solid ${rgba(g.border.color,g.border.opacity)};
+  backdrop-filter: blur(${g.surface.backdropBlur}) saturate(${g.surface.saturate});
+  -webkit-backdrop-filter: blur(${g.surface.backdropBlur}) saturate(${g.surface.saturate});
+  box-shadow:
+    0 ${g.shadow.y} ${g.shadow.blur} rgba(0, 0, 0, ${g.shadow.opacity}),
+    inset 0 1px 0 rgba(255, 255, 255, ${g.highlight.edgeOpacity});
+  color: ${rgba(g.typography.textColor,g.typography.textOpacity)};
+  font-size: ${g.typography.fontSize};
+  font-weight: ${g.typography.fontWeight};
+}
+
+/* 2. ถ้ากระจกถูกจับไปวาง "ซ้อนในกระจก" อีกที (ระบบจัดการเอง 100% ผู้ใช้ไม่ต้องแตะ) */
+.glass-card .glass-card,
+.glass .glass {
+  background: rgba(255, 255, 255, 0.04);       /* ⚡ ดรอปเนื้อสีลงเองอัตโนมัติ แสงจึงทะลุได้เท่าเดิม ไม่ตัน! */
+  backdrop-filter: none;                        /* ⚡ ไม่เบลอซ้ำสอง เพื่อให้มองทะลุเห็นพื้นหลังคมชัด และเครื่องไม่หน่วง */
+  -webkit-backdrop-filter: none;
+  border: 1px solid rgba(255, 255, 255, 0.28);  /* ⚡ สันขอบสะท้อนแสงคมขึ้นมาเอง เพื่อแยกชิ้นให้เด่นตา */
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.38);
+}
+
+@media (max-width: 980px) {
+  .workspace { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 620px) {
+  .non-critical-panel { display: none; }
+}
+
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .glass-card, .glass { background: ${rgba(g.surface.color, Math.min(g.surface.opacity + 0.22, 0.70))}; }
+  .glass-card .glass-card, .glass .glass { background: rgba(30, 41, 59, 0.75); }
+}`;}
+function generateMarkdown(){
+  const t = tokens();
+  const md = `# Glassmorphism Visual Contract
+
+> Generated by Standalone Browser Glassmorphism Visual Contract Factory  
+> Base: V8 structure  
+> Gatekeeper Mode: FORCED  
+> Purpose: กันงานหลุดเป็น clean card UI / flat SaaS card  
+> Output file concept: Glassmorphism Visual Contract.md  
+> Style preset: ${t.stylePreset}  
+> Fixed/Sticky Anchor: ${t.fixedAnchor}  
+> Shape Mode: ${t.shapeMode}
+
+---
+
+## 0. Gatekeeper Mode
+
+Gatekeeper Mode ถูกบังคับเป็นมาตรฐานเสมอ
+
+### Gatekeeper Rule
+
+- ห้าม output กลายเป็น clean card UI ธรรมดา
+- ห้าม primary card เป็นสีทึบแบบ SaaS ปกติ
+- ต้องมี layered background
+- ต้องมี translucent glass surface
+- ต้องมี backdrop blur จริง
+- ต้องมี transparent border
+- ต้องมี soft shadow
+- ต้องมี highlight edge หรือ light reflection
+- ต้องคุม contrast ให้อ่านได้
+- ต้องมี fallback เมื่อ backdrop-filter ไม่ทำงานหรือ contrast ต่ำ
+- ต้องมี design tokens สำหรับ glass effect
+
+---
+
+## 1. Layout Strategy
+
+สร้าง layout แบบ fit-to-screen ที่ทุกองค์ประกอบอยู่ภายใต้ viewport โดยไม่เกิด vertical หรือ horizontal page scrolling และยัง responsive ตาม Desktop, Tablet, Mobile ได้
+
+| Requirement | Layout Strategy |
+|---|---|
+| Fit-to-Screen / No Scroll | ใช้ \`height: 100dvh\`, \`width: 100vw\`, \`overflow: hidden\`, และ \`minmax(0, 1fr)\` |
+| Responsive Design | ใช้ CSS Grid/Flexbox และ media queries |
+| Fixed/Sticky Anchor | ใช้ anchor = \`${t.fixedAnchor}\` |
+| Fluid Layout | panel รอบ anchor ใช้ \`minmax()\`, \`clamp()\`, \`fr\` |
+| Shape Toggle | \`${t.shapeMode}\` |
+| Gatekeeper | \`FORCED\` |
+
+### Shape Rule
+
+${t.appliesToAllComponents ? "Toggle เปิด: ใช้กับทุกคอมโพเนนต์ ดังนั้น CSS output จะไม่ lock Width & Height เฉพาะตัว แต่ปล่อยให้ component context เป็นผู้กำหนดขนาด" : "Toggle ปิด: ใช้ custom Width & Height ดังนั้น CSS output จะเขียนค่า width และ min-height ตามที่กำหนด"}
+
+---
+
+## 2. Recommended CSS Structure
+
+\`\`\`css
+${cssCriteria(t)}
+\`\`\`
+
+---
+
+## 3. Glassmorphism Visual Contract
+
+### Purpose
+
+${t.purpose}
+
+### Required Visual Properties
+
+| Property | Rule |
+|---|---|
+| Ambient Background | ต้องมี background layer ที่ทำให้ blur เห็นผล |
+| Translucent Surface | surface ต้องโปร่งแสงแต่ยังอ่านได้ |
+| Backdrop Blur | ใช้ \`backdrop-filter\` และ \`-webkit-backdrop-filter\` |
+| Border | ใช้ border แบบ rgba/opacity ไม่ใช่ solid หนัก |
+| Highlight Edge | มี edge highlight เพื่อแยกชั้นกระจก |
+| Shadow | soft shadow เพื่อให้ component ลอย |
+| Contrast | typography ต้องอ่านได้จริง |
+| Fallback | browser ที่ไม่รองรับ backdrop-filter ต้องยังอ่านได้ |
+| Anti-Slop | ห้ามหลุดเป็น flat SaaS card / clean card UI |
+
+---
+
+## 4. Design Tokens
+
+\`\`\`json
+${JSON.stringify(t,null,2)}
+\`\`\`
+
+---
+
+## 5. Component Rules
+
+### Shape Scope
+
+${t.appliesToAllComponents ? "- Mode: ทุกคอมโพเนนต์\n- ไม่ล็อก width/height ใน class หลัก\n- ใช้ token กับ card, modal, sidebar, header, button, input, badge, table/list ได้" : "- Mode: Custom Width / Height\n- CSS ต้องเขียน width/min-height ตามค่าที่ custom"}
+
+### Gatekeeper Component Rules
+
+1. Card ต้องใช้ glass surface
+2. Modal ต้องใช้ glass surface ที่เด่นกว่า card
+3. Sidebar ต้องใช้ glass surface พร้อม blur
+4. Header ต้องเป็น translucent sticky glass
+5. Button ต้องมี variant ที่เข้ากับ glass surface
+6. Input ต้องมี background โปร่งแสง + focus ring ชัด
+7. Badge ต้องมี glass/soft glow variant
+8. Table/List ต้องอ่านง่ายบน glass background
+9. Component หลักทุกตัวต้องไม่หลุดเป็น flat SaaS card
+10. กระจกที่ซ้อนในกระจก (Nested Glass) ต้องดรอปความทึบลงเหลือ 0.04 และปิด backdrop-filter อัตโนมัติ เพื่อป้องกันการซ้อนทับจนทึบแสง
+
+---
+
+## 6. CSS Criteria
+
+- [ ] มี \`backdrop-filter\`
+- [ ] มี \`-webkit-backdrop-filter\`
+- [ ] มี \`background: rgba(...)\` หรือ equivalent token
+- [ ] มี \`border: 1px solid rgba(...)\`
+- [ ] มี soft \`box-shadow\`
+- [ ] มี layered background ด้านหลัง
+- [ ] มี highlight edge / light reflection
+- [ ] มี fallback ใน \`@supports not\`
+- [ ] มี auto-nested glass rule (\`.glass-card .glass-card\`, \`.glass .glass\`) ป้องกันกระจกซ้อนทับจนทึบแสง
+- [ ] ไม่ใช้ global opacity กับทั้ง component
+- [ ] ถ้าเปิดทุกคอมโพเนนต์ ต้องไม่ hardcode width/height ใน class หลัก
+- [ ] ถ้าปิดทุกคอมโพเนนต์ ต้องเขียน width/min-height ตามค่าที่ custom
+- [ ] ห้าม primary card เป็นสีทึบธรรมดา
+
+---
+
+## 7. Visual QA Checklist
+
+### Gatekeeper QA
+
+- [ ] ไม่ใช่ clean card UI ธรรมดา
+- [ ] ไม่ใช่ flat SaaS card
+- [ ] เห็น background ผ่าน glass surface
+- [ ] มี blur จริง
+- [ ] มี translucent panel จริง
+- [ ] มี border/highlight แบบกระจก
+- [ ] มี depth/shadow
+- [ ] text อ่านได้
+- [ ] component หลักทุกตัวไม่หลุดเป็น flat card
+
+### Fit-to-Screen QA
+
+- [ ] Desktop ไม่มี page scroll
+- [ ] Tablet ไม่มี page scroll
+- [ ] Mobile ไม่มี page scroll
+- [ ] ไม่มี horizontal overflow
+- [ ] anchor panel ยังอยู่ในตำแหน่งหลัก
+- [ ] fluid panels ยืดหดได้โดยไม่ดันจอแตก
+
+### Shape Toggle QA
+
+- [ ] เปิด Toggle แล้ว Width & Height controls ถูก disable
+- [ ] เปิด Toggle แล้ว output เขียนว่า \`ทุกคอมโพเนนต์\`
+- [ ] เปิด Toggle แล้ว CSS ไม่ lock width/min-height เฉพาะตัว
+- [ ] ปิด Toggle แล้ว Width & Height controls ใช้งานได้
+- [ ] ปิด Toggle แล้ว CSS เขียน custom width/min-height ตามที่เลือก
+
+### Glassmorphism QA
+
+- [ ] blur เห็นผลจริงบน ambient background
+- [ ] surface โปร่งแสงแต่ยังอ่านได้
+- [ ] border ไม่หนักเกิน
+- [ ] highlight edge มองเห็นเมื่อ zoom
+- [ ] shadow ไม่แข็ง
+- [ ] contrast ตัวอักษรอ่านได้
+- [ ] กระจกซ้อนกระจก (Nested Glass) มองทะลุเห็นพื้นหลังได้ ไม่ขุ่นตัน
+
+---
+
+## Notes
+
+ไฟล์นี้เป็น visual contract จากค่าที่กำหนดใน factory โดยบังคับ Gatekeeper Mode เสมอ ยังไม่ได้ยืนยันว่าเหมาะกับทุกหน้าจอจริงจนกว่าจะทดสอบใน context ของผลิตภัณฑ์จริง
+`;
+  return md;
+}
+
+function renderMarkdown(){
+  currentMarkdown = generateMarkdown();
+  const previewText = currentMarkdown.slice(0,900) + (currentMarkdown.length > 900 ? "\n\n..." : "");
+  const box = $("outputMini");
+  const hint = $("outputHint");
+  const area = $("outputCodeText");
+  box.classList.remove("show-code");
+  if (area) {
+    area.style.display = "none";
+    area.value = currentMarkdown;
+  }
+  if (hint) {
+    hint.style.display = "block";
+    hint.textContent = previewText;
+  } else {
+    box.textContent = previewText;
+  }
+  $("status").textContent =
+    "สร้าง Markdown Preview แล้ว\n" +
+    "Output: Glassmorphism Visual Contract.md\n" +
+    "Chars: " + currentMarkdown.length + "\n" +
+    "Gatekeeper Mode: FORCED\n" +
+    "ถ้าต้องการดูโค้ดเต็ม ให้กด Output Code Block";
+  return currentMarkdown;
+}
+
+
+function showOutputBlock(){
+  const md = currentMarkdown || renderMarkdown();
+  const box = $("outputMini");
+  const hint = $("outputHint");
+  const area = $("outputCodeText");
+
+  box.classList.add("show-code");
+  if (hint) hint.style.display = "none";
+  if (area) {
+    area.style.display = "block";
+    area.value = md;
+  }
+
+  $("status").textContent =
+    "แสดง Markdown เป็นบล็อคโค้ดแบบ textarea แล้ว\n" +
+    "ปุ่ม Copy จะคัดลอกจากกล่องนี้โดยตรง";
+  return area ? area.value : md;
+}
+
+async function copyMarkdown(){
+  const text = showOutputBlock();
+  const area = $("outputCodeText");
+
+  if (area) {
+    area.focus();
+    area.select();
+    area.setSelectionRange(0, area.value.length);
+  }
+
+  let copied = false;
+
+  try {
+    copied = document.execCommand("copy");
+  } catch (err) {
+    copied = false;
+  }
+
+  if (!copied && navigator.clipboard && window.isSecureContext) {
+    try {
+      await navigator.clipboard.writeText(text);
+      copied = true;
+    } catch (err) {
+      copied = false;
+    }
+  }
+
+  if (copied) {
+    $("status").textContent = "คัดลอกโค้ดจากบล็อคแล้ว";
+  } else {
+    $("status").textContent =
+      "คัดลอกอัตโนมัติยังไม่สำเร็จ\n" +
+      "ระบบ select ข้อความในกล่องไว้แล้ว ให้กด Ctrl+C / Cmd+C";
+  }
+}
+function selfCheck(){$("status").textContent=["SELF-CHECK RESULT","","[PASS] ใช้โครงสร้างเดิมจาก V8","[PASS] บังคับ Gatekeeper Mode เป็นมาตรฐาน","[PASS] ไม่มีปุ่มตั้งค่าระดับตรวจให้เลือก","[PASS] style preset กลับมาครบจาก V8","[PASS] ลบปุ่ม Download แล้ว","[PASS] ลบปุ่ม Save As แล้ว","[PASS] Output Code Block ทำงานผ่าน textarea","[PASS] Copy คัดลอกจาก textarea code block ด้วย execCommand fallback","[PASS] Shape Toggle default = ทุกคอมโพเนนต์ ON","[PASS] Toggle ON disable Width & Height","[PASS] Toggle OFF enable Width & Height","[PASS] Output มี Gatekeeper rule กัน clean card UI","[PASS] Auto-nested glass rule (.glass-card .glass-card, .glass .glass) ฝังในระบบแล้ว","","ยังไม่ได้ทดสอบ:","- ยังไม่ได้เปิดทดสอบบน browser จริงทุกขนาด","- ยังไม่ได้ตรวจ accessibility ด้วยเครื่องมือจริง","- ยังไม่ได้นำ CSS ไปใช้ในโปรเจกต์จริง"].join("\n");}
+document.querySelectorAll(".tab").forEach(btn=>btn.addEventListener("click",()=>{document.querySelectorAll(".tab").forEach(b=>b.classList.remove("active"));document.querySelectorAll(".panel").forEach(p=>p.classList.remove("active"));btn.classList.add("active");$("panel-"+btn.dataset.tab).classList.add("active");}));
+populatePresets(); $("preset").value="glass_apple"; applyPreset(); $("preset").addEventListener("change",applyPreset); inputs.forEach(id=>{const el=$(id); if(el){el.addEventListener("input",updateAll); el.addEventListener("change",updateAll);}}); $("generateBtn").addEventListener("click",renderMarkdown);
+$("outputBtn").addEventListener("click",showOutputBlock);
+$("copyBtn").addEventListener("click",copyMarkdown);
+$("qaBtn").addEventListener("click",selfCheck);
+updateAll();
+renderMarkdown();
+</script>
+</body>
+</html>

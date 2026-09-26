@@ -1,0 +1,3246 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DIGITAL EVIDENCE v2.1 — Dark Glassmorphism Command Center</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    /* ==========================================================================
+       1. GLASSMORPHISM VISUAL CONTRACT ENGINE (Apple Frosted Glass SSOT)
+       ========================================================================== */
+    :root {
+      --bg-base:              #05080E;
+      
+      /* Pure Deep Dark Glassmorphism (Tactical Obsidian Glass) */
+      --glass-surface:        rgba(13, 19, 32, 0.72);
+      --glass-surface-hover:  rgba(20, 28, 48, 0.85);
+      --glass-blur:           blur(20px) saturate(140%);
+      --glass-border:         1px solid rgba(255, 255, 255, 0.11);
+      --glass-border-focus:   1px solid #38BDF8;
+      --glass-shadow:         0 20px 50px rgba(0, 0, 0, 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.14);
+
+      /* Auto-Nested Glass Card Contract (0.04 Opacity + No Double Blur) */
+      --nested-card-bg:       rgba(255, 255, 255, 0.035);
+      --nested-card-border:   1px solid rgba(255, 255, 255, 0.09);
+      --nested-card-highlight:inset 0 1px 0 rgba(255, 255, 255, 0.12);
+
+      /* Colors & Accents */
+      --accent-cyan:          #0284C7;
+      --accent-cyan-glow:     #38BDF8;
+      --court-emerald:        #10B981;
+      --court-emerald-hover:  #059669;
+      --court-emerald-glow:   rgba(16, 185, 129, 0.55);
+      
+      --text-main:            #FFFFFF;
+      --text-sub:             #F1F5F9;
+      --text-muted:           #94A3B8;
+      --text-dim:             #64748B;
+
+      --font-sans:            'Sarabun', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-mono:            'JetBrains Mono', monospace;
+
+      --radius-sm:            6px;
+      --radius-md:            10px;
+      --radius-lg:            14px;
+      --radius-pill:          9999px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      font-family: var(--font-sans);
+      font-weight: 400;
+      font-size: 13.5px;
+      line-height: 1.4;
+      color: var(--text-main);
+      user-select: none;
+      background-color: var(--bg-base);
+    }
+
+    /* Ambient Wallpaper: Pure Deep Dark Tactical Base */
+    body {
+      background-color: #05080E;
+      background-image: 
+        radial-gradient(circle at 50% 0%, rgba(20, 30, 50, 0.70) 0%, transparent 65%),
+        linear-gradient(180deg, #05080E 0%, #080D18 50%, #03050A 100%);
+      background-attachment: fixed;
+    }
+
+    /* Background Watermark: Untitled-1.png Spanning Behind Workspace ONLY (Pure Backdrop) */
+    .bg-brand-backdrop {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(1.15);
+      width: 100vw;
+      height: 100vh;
+      background: url('Untitled-1.png') no-repeat center center;
+      background-size: contain;
+      opacity: 0.16;
+      filter: drop-shadow(0 0 40px rgba(0, 0, 0, 0.95));
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* Full-Width Mountain Panorama behind Header & Stepper */
+    .mountain-panorama {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 155px;
+      pointer-events: none;
+      z-index: 1;
+      overflow: hidden;
+    }
+
+    /* 1. Translucent Frosted Glass Panels (Clearly reveals Untitled-1.png through glass) */
+    .glass-panel {
+      background: var(--glass-surface);
+      backdrop-filter: var(--glass-blur);
+      -webkit-backdrop-filter: var(--glass-blur);
+      border: var(--glass-border);
+      box-shadow: var(--glass-shadow);
+      border-radius: var(--radius-lg);
+      position: relative;
+    }
+
+    /* Specular Reflection Rim (Apple Glass Light Catch) */
+    .glass-panel::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.35) 0%, rgba(255, 255, 255, 0.06) 35%, transparent 65%);
+      pointer-events: none;
+    }
+
+    /* 2. Nested Glass Cards (Auto-Nesting 0.04 Opacity - No Murkiness) */
+    .glass-panel .glass-card,
+    .glass-card {
+      background: var(--nested-card-bg);
+      border: var(--nested-card-border);
+      box-shadow: var(--nested-card-highlight);
+      border-radius: var(--radius-md);
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      position: relative;
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
+    }
+
+    .glass-panel .glass-card:hover,
+    .glass-card:hover {
+      background: rgba(255, 255, 255, 0.09);
+      border-color: rgba(56, 189, 248, 0.50);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.45);
+    }
+
+    /* App Shell */
+    .app-shell {
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      z-index: 2;
+    }
+
+    /* Accessibility Focus Ring */
+    button:focus-visible, input:focus-visible, select:focus-visible {
+      outline: none;
+      box-shadow: 0 0 0 2px var(--accent-cyan-glow);
+    }
+
+    /* ==========================================================================
+       2. TOP COMMAND HEADER
+       ========================================================================== */
+    header.command-header {
+      height: 58px;
+      background: rgba(255, 255, 255, 0.07);
+      backdrop-filter: blur(24px) saturate(175%);
+      -webkit-backdrop-filter: blur(24px) saturate(175%);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.22);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      z-index: 100;
+      flex-shrink: 0;
+      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.35), inset 0 -1px 0 rgba(255, 255, 255, 0.25);
+    }
+
+    .brand-section {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .brand-logo-img {
+      height: 38px;
+      width: auto;
+      object-fit: contain;
+      filter: drop-shadow(0 0 10px rgba(0, 161, 228, 0.7));
+    }
+
+    .brand-meta {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .brand-title {
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: 0.8px;
+      color: #FFFFFF;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .brand-title-sub {
+      font-size: 11px;
+      color: var(--accent-cyan-glow);
+      font-weight: 500;
+    }
+
+    .brand-subtitle-eng {
+      font-size: 9.5px;
+      color: var(--text-dim);
+      letter-spacing: 0.5px;
+      font-family: var(--font-mono);
+    }
+
+    /* Mode Switcher Pill */
+    .mode-switch-pill {
+      display: flex;
+      align-items: center;
+      background: rgba(255, 255, 255, 0.07);
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      border-radius: var(--radius-pill);
+      padding: 3px;
+      gap: 2px;
+      box-shadow: inset 0 1px 3px rgba(0,0,0,0.3);
+    }
+
+    .mode-btn {
+      padding: 5px 16px;
+      border-radius: var(--radius-pill);
+      border: none;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.6px;
+      cursor: pointer;
+      color: var(--text-muted);
+      background: transparent;
+      transition: all 150ms ease;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .mode-btn.active {
+      background: linear-gradient(135deg, #00A1E4, #0284C7);
+      color: #FFFFFF;
+      box-shadow: 0 0 14px rgba(0, 161, 228, 0.7);
+    }
+
+    /* Center Motto */
+    .header-motto {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+
+    .motto-th {
+      font-size: 12.5px;
+      font-weight: 600;
+      color: #E2E8F0;
+      letter-spacing: 0.3px;
+    }
+
+    .motto-en {
+      font-size: 9px;
+      color: var(--text-dim);
+      font-family: var(--font-mono);
+      letter-spacing: 0.8px;
+    }
+
+    /* Header Right Tools */
+    .header-right-tools {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .online-badge {
+      display: flex;
+      flex-direction: column;
+      background: rgba(16, 185, 129, 0.12);
+      border: 1px solid rgba(16, 185, 129, 0.4);
+      padding: 4px 12px;
+      border-radius: var(--radius-pill);
+      box-shadow: 0 0 12px rgba(16, 185, 129, 0.25);
+    }
+
+    .online-top-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      font-weight: 700;
+      color: #34D399;
+    }
+
+    .online-dot {
+      width: 6px;
+      height: 6px;
+      background: #34D399;
+      border-radius: 50%;
+      box-shadow: 0 0 8px #34D399;
+      animation: pulseGreen 2s infinite;
+    }
+
+    @keyframes pulseGreen {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(1.3); }
+    }
+
+    .online-sub {
+      font-size: 8.5px;
+      color: #6EE7B7;
+    }
+
+    .header-clock-box {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+    }
+
+    .live-clock {
+      font-family: var(--font-mono);
+      font-size: 13.5px;
+      font-weight: 700;
+      color: #FFFFFF;
+      letter-spacing: 0.5px;
+    }
+
+    .live-date {
+      font-size: 10px;
+      color: var(--text-muted);
+    }
+
+    .btn-header-tool {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      color: var(--text-sub);
+      padding: 6px 12px;
+      border-radius: var(--radius-sm);
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 150ms ease;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.2);
+    }
+
+    .btn-header-tool:hover {
+      background: rgba(255, 255, 255, 0.18);
+      border-color: rgba(255, 255, 255, 0.45);
+      color: #FFFFFF;
+    }
+
+    .user-pill {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      padding: 4px 10px;
+      border-radius: var(--radius-pill);
+      cursor: pointer;
+    }
+
+    .user-avatar {
+      width: 24px;
+      height: 24px;
+      background: linear-gradient(135deg, #38BDF8, #0284C7);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    /* ==========================================================================
+       3. WORKFLOW STEPPER BAR (4 STEPS OVER MOUNTAINS)
+       ========================================================================== */
+    .stepper-container {
+      height: 48px;
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(20px) saturate(160%);
+      -webkit-backdrop-filter: blur(20px) saturate(160%);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.18);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 20px;
+      position: relative;
+      z-index: 50;
+      flex-shrink: 0;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.15);
+    }
+
+    .stepper-nav {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      width: 100%;
+      max-width: 1100px;
+      justify-content: space-between;
+    }
+
+    .step-item {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      padding: 5px 14px;
+      border-radius: var(--radius-pill);
+      cursor: pointer;
+      transition: all 200ms ease;
+      background: rgba(255, 255, 255, 0.045);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+    }
+
+    .step-item:hover {
+      background: rgba(255, 255, 255, 0.12);
+      border-color: rgba(255, 255, 255, 0.28);
+    }
+
+    .step-item.active {
+      background: linear-gradient(135deg, rgba(0, 161, 228, 0.9) 0%, rgba(2, 132, 199, 0.95) 100%);
+      border: 1px solid rgba(56, 189, 248, 0.75);
+      box-shadow: 0 0 18px rgba(0, 161, 228, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.5);
+    }
+
+    .step-number {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.18);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 700;
+      color: #FFFFFF;
+      flex-shrink: 0;
+    }
+
+    .step-item.active .step-number {
+      background: #FFFFFF;
+      color: var(--accent-cyan);
+    }
+
+    .step-texts {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .step-title {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+
+    .step-item.active .step-title {
+      color: #FFFFFF;
+      font-weight: 700;
+    }
+
+    .step-sub {
+      font-size: 9.5px;
+      color: var(--text-dim);
+    }
+
+    .step-item.active .step-sub {
+      color: rgba(255, 255, 255, 0.85);
+    }
+
+    .step-arrow-line {
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(90deg, rgba(255, 255, 255, 0.20), rgba(255, 255, 255, 0.06));
+      max-width: 40px;
+      position: relative;
+    }
+
+    .step-arrow-line::after {
+      content: "";
+      position: absolute;
+      right: 0;
+      top: -3px;
+      width: 6px;
+      height: 6px;
+      border-top: 1px solid rgba(255, 255, 255, 0.35);
+      border-right: 1px solid rgba(255, 255, 255, 0.35);
+      transform: rotate(45deg);
+    }
+
+    /* ==========================================================================
+       4. 3-COLUMN WORKSPACE (28% : 44% : 28%)
+       ========================================================================== */
+    .workspace-grid {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 28fr 44fr 28fr;
+      gap: 14px;
+      padding: 14px 18px;
+      overflow: hidden;
+      min-height: 0;
+      position: relative;
+      z-index: 2;
+    }
+
+    /* Panels */
+    .panel-scrollable {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      overflow-y: auto;
+      padding: 14px;
+      min-height: 0;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+    }
+
+    .panel-scrollable::-webkit-scrollbar { width: 5px; }
+    .panel-scrollable::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 10px;
+    }
+
+    .panel-header-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: #FFFFFF;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      letter-spacing: 0.3px;
+    }
+
+    /* --------------------------------------------------------------------------
+       COLUMN 1: LEFT CONTROL RAIL
+       -------------------------------------------------------------------------- */
+    /* 1. Dropzone */
+    .dropzone-box {
+      border: 1.5px dashed rgba(56, 189, 248, 0.55);
+      border-radius: var(--radius-md);
+      background: rgba(0, 161, 228, 0.08);
+      padding: 16px 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      cursor: pointer;
+      transition: all 200ms ease;
+    }
+
+    .dropzone-box:hover {
+      background: rgba(0, 161, 228, 0.16);
+      border-color: var(--accent-cyan-glow);
+      box-shadow: 0 0 20px rgba(0, 161, 228, 0.35);
+    }
+
+    .dropzone-icon {
+      font-size: 28px;
+      margin-bottom: 4px;
+      filter: drop-shadow(0 2px 8px rgba(56, 189, 248, 0.7));
+    }
+
+    .dropzone-title {
+      font-size: 13.5px;
+      font-weight: 600;
+      color: #FFFFFF;
+    }
+
+    .dropzone-sub {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .file-chip {
+      margin-top: 10px;
+      width: 100%;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(56, 189, 248, 0.4);
+      border-radius: var(--radius-sm);
+      padding: 6px 10px;
+      font-size: 11.5px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: #FFFFFF;
+    }
+
+    /* 2. Search */
+    .search-row {
+      position: relative;
+    }
+
+    .search-input {
+      width: 100%;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      border-radius: var(--radius-sm);
+      padding: 8px 12px 8px 32px;
+      font-size: 12.5px;
+      color: #FFFFFF;
+      font-family: var(--font-sans);
+      outline: none;
+      transition: all 150ms ease;
+    }
+
+    .search-input:focus {
+      border-color: var(--accent-cyan-glow);
+      box-shadow: 0 0 12px rgba(56, 189, 248, 0.4);
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    /* 3. Consistency Switch */
+    .switch-card {
+      padding: 10px 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-radius: var(--radius-sm);
+    }
+
+    .switch-label {
+      font-size: 12.5px;
+      font-weight: 600;
+      color: var(--text-sub);
+    }
+
+    .toggle-ui {
+      position: relative;
+      width: 42px;
+      height: 22px;
+    }
+    .toggle-ui input { opacity: 0; width: 0; height: 0; }
+    .toggle-slider {
+      position: absolute; inset: 0; cursor: pointer;
+      background: #334155; border-radius: var(--radius-pill);
+      transition: .2s; border: 1px solid rgba(255, 255, 255, 0.18);
+    }
+    .toggle-slider:before {
+      position: absolute; content: ""; height: 16px; width: 16px;
+      left: 2px; bottom: 2px; background: white; border-radius: 50%;
+      transition: .2s;
+    }
+    .toggle-ui input:checked + .toggle-slider {
+      background: var(--accent-cyan);
+      box-shadow: 0 0 10px rgba(0, 161, 228, 0.7);
+    }
+    .toggle-ui input:checked + .toggle-slider:before {
+      transform: translateX(20px);
+    }
+
+    /* 4. Target Person List (Auto-Detected Names & Evidence Breakdown) */
+    .target-list {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    /* 4. Target Person List (Target Action & Forensic Profile) */
+    .target-list {
+      display: flex;
+      flex-direction: column;
+      gap: 9px;
+    }
+
+    .target-card {
+      padding: 10px 12px;
+      border-radius: var(--radius-sm);
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      cursor: pointer;
+      transition: all 180ms ease;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+    }
+
+    .target-card:hover {
+      background: rgba(255, 255, 255, 0.07);
+      border-color: rgba(56, 189, 248, 0.4);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+    }
+
+    .target-card.selected {
+      border-color: var(--accent-cyan);
+      background: rgba(0, 161, 228, 0.08);
+    }
+
+    .target-card-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .target-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-width: 0;
+    }
+
+    .target-checkbox {
+      accent-color: var(--accent-cyan);
+      cursor: pointer;
+      width: 14px;
+      height: 14px;
+      flex-shrink: 0;
+    }
+
+    .target-name {
+      font-size: 12.5px;
+      font-weight: 700;
+      color: #FFFFFF;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .target-amount-badge {
+      font-size: 11px;
+      font-family: var(--font-mono);
+      font-weight: 700;
+      color: #34D399;
+      background: rgba(52, 211, 153, 0.12);
+      padding: 1px 7px;
+      border-radius: 4px;
+      border: 1px solid rgba(52, 211, 153, 0.25);
+    }
+
+    .target-action-desc {
+      font-size: 10.5px;
+      color: #CBD5E1;
+      line-height: 1.35;
+      padding-left: 22px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .target-card-bottom {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-left: 22px;
+      margin-top: 2px;
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+      padding-top: 6px;
+    }
+
+    .target-badges-group {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .badge-breakdown {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 9.5px;
+      font-family: var(--font-mono);
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .badge-chat-ev {
+      background: rgba(56, 189, 248, 0.12);
+      color: #38BDF8;
+      border: 1px solid rgba(56, 189, 248, 0.28);
+    }
+
+    .badge-slip-ev {
+      background: rgba(52, 211, 153, 0.12);
+      color: #34D399;
+      border: 1px solid rgba(52, 211, 153, 0.28);
+    }
+
+    .btn-target-details {
+      font-size: 10px;
+      color: var(--accent-cyan-glow);
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      padding: 2px 4px;
+      border-radius: 3px;
+      transition: all 120ms ease;
+    }
+
+    .btn-target-details:hover {
+      background: rgba(56, 189, 248, 0.15);
+      text-decoration: underline;
+    }
+
+    /* 5. Process Button & Ring Progress */
+    .btn-process {
+      background: linear-gradient(135deg, #00A1E4 0%, #0284C7 100%);
+      color: #FFFFFF;
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      border-radius: var(--radius-md);
+      padding: 11px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      box-shadow: 0 4px 18px rgba(0, 161, 228, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.45);
+      transition: all 150ms ease;
+      margin-top: 4px;
+    }
+
+    .btn-process:hover {
+      box-shadow: 0 6px 26px rgba(0, 161, 228, 0.85);
+      transform: translateY(-1px);
+    }
+
+    .progress-box {
+      padding: 12px;
+      border-radius: var(--radius-sm);
+      display: flex;
+      flex-direction: column;
+      gap: 9px;
+    }
+
+    .progress-top-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .progress-ring-svg {
+      width: 38px;
+      height: 38px;
+      transform: rotate(-90deg);
+      flex-shrink: 0;
+    }
+
+    .ring-bg {
+      fill: none;
+      stroke: rgba(255, 255, 255, 0.12);
+      stroke-width: 4;
+    }
+
+    .ring-bar {
+      fill: none;
+      stroke: var(--accent-cyan-glow);
+      stroke-width: 4;
+      stroke-dasharray: 100;
+      stroke-dashoffset: 63; /* 37% */
+      stroke-linecap: round;
+      filter: drop-shadow(0 0 6px rgba(56, 189, 248, 0.95));
+    }
+
+    .progress-info {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .progress-title {
+      font-size: 12px;
+      font-weight: 600;
+      color: #FFFFFF;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .progress-timer {
+      font-family: var(--font-mono);
+      color: var(--accent-cyan-glow);
+      font-size: 11.5px;
+    }
+
+    .progress-subtitle {
+      font-size: 10px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .linear-progress-track {
+      width: 100%;
+      height: 6px;
+      background: rgba(10, 18, 36, 0.8);
+      border-radius: var(--radius-pill);
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+    }
+
+    .linear-progress-fill {
+      width: 37%;
+      height: 100%;
+      background: linear-gradient(90deg, #00A1E4, #38BDF8);
+      box-shadow: 0 0 10px rgba(56, 189, 248, 0.95);
+      border-radius: var(--radius-pill);
+    }
+
+    /* --------------------------------------------------------------------------
+       COLUMN 2: LIVE A4 PREVIEW STAGE (Tactical Blueprint Grid)
+       -------------------------------------------------------------------------- */
+    .col-stage {
+      background-color: rgba(10, 15, 26, 0.72);
+      backdrop-filter: blur(24px) saturate(140%);
+      -webkit-backdrop-filter: blur(24px) saturate(140%);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+      border-radius: var(--radius-lg);
+      background-image: 
+        radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.015) 0%, transparent 75%),
+        linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+      background-size: 100% 100%, 28px 28px, 28px 28px;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow: hidden;
+      padding: 10px 14px;
+    }
+
+    .col-stage::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.18) 0%, rgba(255, 255, 255, 0.02) 35%, transparent 65%);
+      pointer-events: none;
+    }
+
+    .stage-top-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-bottom: 8px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.14);
+      z-index: 10;
+    }
+
+    .stage-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: #FFFFFF;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .mode-chat-pill {
+      background: rgba(0, 161, 228, 0.22);
+      border: 1px solid rgba(0, 161, 228, 0.55);
+      color: var(--accent-cyan-glow);
+      font-size: 10.5px;
+      font-weight: 700;
+      padding: 2px 9px;
+      border-radius: var(--radius-pill);
+      font-family: var(--font-mono);
+    }
+
+    .page-nav-simple {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11.5px;
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+      background: rgba(0,0,0,0.35);
+      padding: 2px 8px;
+      border-radius: var(--radius-sm);
+      border: 1px solid rgba(255,255,255,0.12);
+    }
+
+    .canvas-viewport {
+      flex: 1;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      margin: 8px 0;
+    }
+
+    /* Floating Chevrons */
+    .chevron-floating {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 40px;
+      height: 40px;
+      background: rgba(13, 23, 42, 0.75);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #FFFFFF;
+      font-size: 18px;
+      cursor: pointer;
+      z-index: 20;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.6);
+      transition: all 150ms ease;
+    }
+
+    .chevron-floating:hover {
+      background: rgba(0, 161, 228, 0.5);
+      border-color: var(--accent-cyan-glow);
+      box-shadow: 0 0 16px rgba(0, 161, 228, 0.7);
+    }
+
+    .chevron-left { left: 10px; }
+    .chevron-right { right: 10px; }
+
+    /* High-Fidelity A4 Paper (Warm LINE Chat Theme) */
+    .a4-paper {
+      width: 480px;
+      height: 678px;
+      background: #FFFFFF;
+      border-radius: 3px;
+      box-shadow: 0 18px 48px rgba(0, 0, 0, 0.85), 0 0 0 1px rgba(255, 255, 255, 0.15);
+      display: flex;
+      flex-direction: column;
+      padding: 16px 20px;
+      color: #1E293B;
+      position: relative;
+      transform-origin: center center;
+    }
+
+    .a4-header-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid #CBD5E1;
+      padding-bottom: 6px;
+      margin-bottom: 6px;
+      font-size: 9.5px;
+      color: #475569;
+    }
+
+    .a4-brand-mini {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-weight: 700;
+      color: #0F172A;
+    }
+
+    /* LINE Warm Beige Theme Inside A4 */
+    .chat-beige-body {
+      flex: 1;
+      background: #F7EFE4;
+      border-radius: 4px;
+      border: 1px solid #E5D5C5;
+      padding: 12px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .date-divider {
+      align-self: center;
+      background: rgba(0, 0, 0, 0.08);
+      color: #786C5E;
+      font-size: 9.5px;
+      padding: 2px 10px;
+      border-radius: var(--radius-pill);
+      font-weight: 500;
+    }
+
+    .chat-row-left {
+      display: flex;
+      gap: 8px;
+      align-items: flex-start;
+    }
+
+    .brown-avatar {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: #8B5E3C;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      flex-shrink: 0;
+      border: 1px solid rgba(0,0,0,0.1);
+    }
+
+    .bubble-white {
+      background: #FFFFFF;
+      border: 1px solid #E8DFD5;
+      border-radius: 3px 12px 12px 12px;
+      padding: 5px 9px;
+      font-size: 11px;
+      color: #2D241E;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+      max-width: 75%;
+    }
+
+    .chat-row-right {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 4px;
+      margin-left: auto;
+      max-width: 80%;
+    }
+
+    .bubble-green {
+      background: #D5E8D4;
+      border: 1px solid #C2DAC0;
+      border-radius: 12px 3px 12px 12px;
+      padding: 5px 9px;
+      font-size: 11px;
+      color: #1E3A1E;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    }
+
+    /* Saluting Soldier Sticker */
+    .soldier-sticker-box {
+      background: #FFFFFF;
+      border: 1px solid #E5D5C5;
+      border-radius: 8px;
+      padding: 6px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      margin: 2px 0;
+      width: 90px;
+    }
+
+    .soldier-icon {
+      font-size: 38px;
+      line-height: 1;
+    }
+
+    .soldier-text {
+      font-size: 9.5px;
+      font-weight: 700;
+      color: #2F3E2F;
+      margin-top: 3px;
+    }
+
+    .time-stamp {
+      font-size: 8.5px;
+      color: #A39686;
+      font-family: var(--font-mono);
+      margin-top: 2px;
+    }
+
+    .a4-footer-disclaimer {
+      font-size: 8px;
+      color: #94A3B8;
+      text-align: center;
+      line-height: 1.3;
+      margin-top: 6px;
+      border-top: 1px solid #E2E8F0;
+      padding-top: 5px;
+    }
+
+    /* Bottom Zoom Bar */
+    .stage-bottom-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      padding: 5px 14px;
+      border-radius: var(--radius-pill);
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(20px) saturate(160%);
+      -webkit-backdrop-filter: blur(20px) saturate(160%);
+      border: 1px solid rgba(255, 255, 255, 0.24);
+      margin: 0 auto;
+      z-index: 10;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+    }
+
+    .zoom-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-sub);
+      font-size: 13px;
+      cursor: pointer;
+      padding: 2px 6px;
+    }
+
+    .zoom-btn:hover { color: #FFFFFF; }
+
+    .zoom-dropdown {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      color: #FFFFFF;
+      font-size: 11px;
+      border-radius: var(--radius-sm);
+      padding: 2px 8px;
+      font-family: var(--font-mono);
+      outline: none;
+    }
+
+    /* --------------------------------------------------------------------------
+       COLUMN 3: 4D SUMMARY & COURT EXPORTER
+       -------------------------------------------------------------------------- */
+    /* 4-Dimensional Summary 2x2 Grid */
+    .summary-4d-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 9px;
+    }
+
+    .summary-card {
+      padding: 10px 10px 8px 10px;
+      border-radius: var(--radius-sm);
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      min-height: 84px;
+      cursor: pointer;
+      position: relative;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      transition: all 180ms ease;
+      user-select: none;
+    }
+
+    .summary-card:hover {
+      border-color: rgba(56, 189, 248, 0.45);
+      background: rgba(255, 255, 255, 0.08);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
+    }
+
+    .summary-card.card-active {
+      border-color: var(--accent-cyan-glow);
+      background: rgba(0, 161, 228, 0.15);
+      box-shadow: 0 0 16px rgba(0, 161, 228, 0.4), inset 0 0 12px rgba(56, 189, 248, 0.15);
+    }
+
+    .card-top-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 4px;
+    }
+
+    .summary-card-label {
+      font-size: 11px;
+      color: #E2E8F0;
+      line-height: 1.2;
+      font-weight: 600;
+    }
+
+    .card-led-box {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      flex-shrink: 0;
+    }
+
+    .card-led-light {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #10B981;
+      box-shadow: 0 0 8px #10B981;
+      transition: all 180ms ease;
+    }
+
+    .summary-card.card-active .card-led-light {
+      background: #38BDF8;
+      box-shadow: 0 0 10px #38BDF8, 0 0 4px #FFFFFF;
+    }
+
+    .card-led-text {
+      font-size: 9px;
+      font-weight: 600;
+      color: #34D399;
+      font-family: var(--font-mono);
+      transition: all 180ms ease;
+    }
+
+    .summary-card.card-active .card-led-text {
+      color: #38BDF8;
+    }
+
+    .summary-card-value {
+      font-size: 15px;
+      font-weight: 700;
+      color: #FFFFFF;
+      font-family: var(--font-mono);
+      margin-top: 2px;
+    }
+
+    .card-addon-tag {
+      font-size: 9px;
+      color: var(--text-muted);
+      border-top: 1px dashed rgba(255, 255, 255, 0.10);
+      padding-top: 4px;
+      margin-top: auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .summary-card.card-active .card-addon-tag {
+      color: #7DD3FC;
+      border-top-color: rgba(56, 189, 248, 0.25);
+    }
+
+    .btn-full-table {
+      background: rgba(0, 161, 228, 0.16);
+      border: 1px solid rgba(56, 189, 248, 0.55);
+      color: #FFFFFF;
+      padding: 10px 14px;
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 150ms ease;
+      box-shadow: 0 4px 14px rgba(0, 161, 228, 0.3);
+    }
+
+    .btn-full-table:hover {
+      background: rgba(0, 161, 228, 0.28);
+      box-shadow: 0 4px 20px rgba(0, 161, 228, 0.5);
+      border-color: var(--accent-cyan-glow);
+    }
+
+    /* Master Slips (Deduped) Section */
+    .master-slips-card {
+      padding: 12px;
+      border-radius: var(--radius-sm);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .master-slips-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .badge-master-status {
+      font-size: 10px;
+      font-weight: 600;
+      color: #34D399;
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid rgba(16, 185, 129, 0.4);
+      padding: 2px 8px;
+      border-radius: var(--radius-pill);
+    }
+
+    .master-slips-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .btn-view-master {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.24);
+      color: #FFFFFF;
+      padding: 5px 12px;
+      border-radius: var(--radius-sm);
+      font-size: 11.5px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      transition: all 150ms ease;
+    }
+
+    .btn-view-master:hover {
+      background: rgba(255, 255, 255, 0.18);
+      border-color: rgba(255, 255, 255, 0.45);
+    }
+
+    /* Password Input */
+    .pass-input-box {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      background: var(--nested-card-bg);
+      border: var(--nested-card-border);
+      padding: 10px 12px;
+      border-radius: var(--radius-sm);
+    }
+
+    .pass-label {
+      font-size: 11.5px;
+      color: var(--text-sub);
+      font-weight: 600;
+    }
+
+    .pass-input-row {
+      position: relative;
+    }
+
+    .pass-input {
+      width: 100%;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      border-radius: var(--radius-sm);
+      padding: 8px 30px 8px 10px;
+      font-size: 12px;
+      color: #FFFFFF;
+      font-family: var(--font-mono);
+      outline: none;
+    }
+
+    .pass-input:focus {
+      border-color: var(--accent-cyan-glow);
+    }
+
+    .pass-eye-icon {
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 13px;
+    }
+
+    /* Huge Emerald Green Court Export Button */
+    .export-section {
+      margin-top: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      padding-top: 8px;
+    }
+
+    .btn-court-export {
+      background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+      color: #FFFFFF;
+      border: 1px solid rgba(255, 255, 255, 0.45);
+      border-radius: var(--radius-md);
+      padding: 13px 16px;
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: 0.6px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      box-shadow: 0 6px 26px rgba(16, 185, 129, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.5);
+      transition: all 150ms ease;
+    }
+
+    .btn-court-export:hover {
+      box-shadow: 0 8px 32px rgba(16, 185, 129, 0.85);
+      transform: translateY(-1px);
+      background: linear-gradient(135deg, #12C288 0%, #047857 100%);
+    }
+
+    .court-badge-sub {
+      text-align: center;
+      font-size: 11px;
+      color: #A7F3D0;
+      letter-spacing: 0.2px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+    }
+
+    /* ==========================================================================
+       5. FULL-WIDTH FOOTER STATUS BAR
+       ========================================================================== */
+    footer.app-footer {
+      height: 32px;
+      background: rgba(255, 255, 255, 0.06);
+      backdrop-filter: blur(20px) saturate(160%);
+      -webkit-backdrop-filter: blur(20px) saturate(160%);
+      border-top: 1px solid rgba(255, 255, 255, 0.20);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 18px;
+      font-size: 11px;
+      color: var(--text-muted);
+      z-index: 100;
+      flex-shrink: 0;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.15);
+    }
+
+    .footer-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .footer-right {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    /* ==========================================================================
+       6. MODAL: 13-COLUMN SUMMARY TABLE
+       ========================================================================== */
+    .modal-backdrop {
+      position: fixed; inset: 0;
+      background: rgba(6, 11, 20, 0.85);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 1000; opacity: 0; pointer-events: none;
+      transition: opacity 200ms ease;
+    }
+    .modal-backdrop.active { opacity: 1; pointer-events: auto; }
+    
+    .modal-card {
+      background: rgba(13, 23, 42, 0.94);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      border-radius: var(--radius-lg);
+      width: 95vw; max-width: 1300px; max-height: 88vh;
+      display: flex; flex-direction: column;
+      box-shadow: 0 25px 70px rgba(0, 0, 0, 0.9);
+      overflow: hidden;
+    }
+
+    .modal-head {
+      padding: 14px 22px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.16);
+      display: flex; justify-content: space-between; align-items: center;
+    }
+
+    .modal-body {
+      padding: 16px 22px;
+      overflow-y: auto;
+    }
+
+    .table-wrapper {
+      overflow-x: auto;
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      border-radius: var(--radius-sm);
+    }
+
+    .table-13col {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+      text-align: center;
+      background: #FFFFFF;
+      color: #1E293B;
+    }
+
+    .table-13col th {
+      background: #0F172A;
+      color: #FFFFFF;
+      font-weight: 700;
+      padding: 9px 6px;
+      border: 1px solid #CBD5E1;
+      white-space: nowrap;
+      font-size: 11.5px;
+    }
+
+    .table-13col td {
+      padding: 8px 6px;
+      border: 1px solid #E2E8F0;
+      vertical-align: middle;
+    }
+
+    .row-failed {
+      background-color: #FDE8E8 !important;
+      color: #C53030 !important;
+      font-weight: 600;
+    }
+
+    .double-underline {
+      text-decoration: underline double;
+      font-family: var(--font-mono);
+      font-weight: 700;
+    }
+
+    /* Modal Tabs & Master Slips Audit Styles */
+    .modal-tabs {
+      display: flex;
+      gap: 6px;
+      padding: 0 22px;
+      background: rgba(0, 0, 0, 0.25);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.16);
+    }
+
+    .modal-tab-btn {
+      padding: 10px 18px;
+      background: transparent;
+      border: none;
+      border-bottom: 2px solid transparent;
+      color: var(--text-muted);
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      transition: all 150ms ease;
+    }
+
+    .modal-tab-btn:hover {
+      color: #FFFFFF;
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    .modal-tab-btn.active {
+      color: #FFFFFF;
+      border-bottom-color: var(--accent-cyan);
+      background: rgba(0, 161, 228, 0.12);
+    }
+
+    .modal-tab-badge {
+      font-size: 11px;
+      padding: 2px 7px;
+      border-radius: var(--radius-pill);
+      font-family: var(--font-mono);
+      font-weight: 700;
+    }
+
+    .badge-master { background: rgba(16, 185, 129, 0.2); color: #34D399; border: 1px solid rgba(16, 185, 129, 0.4); }
+    .badge-duplicate { background: rgba(245, 158, 11, 0.2); color: #FBBF24; border: 1px solid rgba(245, 158, 11, 0.4); }
+
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+
+    .master-stat-banner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 16px;
+      border-radius: var(--radius-sm);
+      margin-bottom: 14px;
+      background: rgba(0, 161, 228, 0.10);
+      border: 1px solid rgba(56, 189, 248, 0.35);
+    }
+
+    .master-stat-banner.warn {
+      background: rgba(245, 158, 11, 0.10);
+      border-color: rgba(245, 158, 11, 0.35);
+    }
+
+    .master-cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 12px;
+    }
+
+    .master-slip-card {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.20);
+      border-radius: var(--radius-sm);
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      transition: all 150ms ease;
+    }
+
+    .master-slip-card:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: var(--accent-cyan-glow);
+    }
+
+    .slip-voucher-body {
+      flex: 1;
+      background: #F8FAFC;
+      border-radius: 4px;
+      border: 1px solid #E2E8F0;
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      color: #0F172A;
+    }
+
+    .slip-bank-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px dashed #CBD5E1;
+      padding-bottom: 8px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Background Watermark: Untitled-1.png Centered & Visible through Glass Panels -->
+  <div class="bg-brand-backdrop"></div>
+
+  <!-- Full-Width Mountain Panorama Backdrop with Snowy Ridges -->
+  <svg class="mountain-panorama" viewBox="0 0 1920 220" fill="none" preserveAspectRatio="none">
+    <!-- Starry Nebula Points -->
+    <circle cx="180" cy="35" r="1.5" fill="#38BDF8" opacity="0.9"/>
+    <circle cx="380" cy="20" r="1" fill="#FFFFFF" opacity="0.8"/>
+    <circle cx="720" cy="45" r="2" fill="#38BDF8" opacity="0.95"/>
+    <circle cx="1100" cy="25" r="1.5" fill="#FFFFFF" opacity="0.75"/>
+    <circle cx="1520" cy="38" r="1.5" fill="#C084FC" opacity="0.85"/>
+    <circle cx="1820" cy="28" r="1.2" fill="#38BDF8" opacity="0.9"/>
+    
+    <!-- Distant Mountain Ridge -->
+    <path d="M0 220L160 110L300 155L460 75L620 140L800 60L960 130L1140 80L1320 150L1500 65L1680 125L1920 70V220H0Z" fill="url(#mountGradFar)" opacity="0.55"/>
+    
+    <!-- Mid Mountain Ridge with Vivid Snowy Highlights -->
+    <path d="M0 220L120 140L260 110L420 170L600 100L760 155L940 85L1100 145L1260 95L1440 160L1620 105L1780 165L1920 120V220H0Z" fill="url(#mountGradMid)" opacity="0.85"/>
+    
+    <!-- Crisp Snow Caps on Summits -->
+    <path d="M460 75L440 95L480 95Z" fill="#FFFFFF" opacity="0.7"/>
+    <path d="M800 60L780 80L820 80Z" fill="#FFFFFF" opacity="0.85"/>
+    <path d="M940 85L925 105L955 105Z" fill="#E0F2FE" opacity="0.8"/>
+    <path d="M1500 65L1480 88L1520 88Z" fill="#FFFFFF" opacity="0.9"/>
+    <path d="M1620 105L1605 120L1635 120Z" fill="#BAE6FD" opacity="0.8"/>
+    
+    <!-- Near Dark Mountain Silhouette -->
+    <path d="M0 220L80 175L220 145L380 190L540 135L700 185L880 125L1060 180L1220 130L1400 190L1560 140L1720 185L1920 155V220H0Z" fill="url(#mountGradNear)" opacity="0.95"/>
+    
+    <defs>
+      <linearGradient id="mountGradFar" x1="960" y1="60" x2="960" y2="220" gradientUnits="userSpaceOnUse">
+        <stop stop-color="#38BDF8" stop-opacity="0.5"/>
+        <stop offset="1" stop-color="#0B132B" stop-opacity="0.95"/>
+      </linearGradient>
+      <linearGradient id="mountGradMid" x1="960" y1="85" x2="960" y2="220" gradientUnits="userSpaceOnUse">
+        <stop stop-color="#0284C7" stop-opacity="0.45"/>
+        <stop offset="1" stop-color="#080F21" stop-opacity="0.98"/>
+      </linearGradient>
+      <linearGradient id="mountGradNear" x1="960" y1="125" x2="960" y2="220" gradientUnits="userSpaceOnUse">
+        <stop stop-color="#1E293B" stop-opacity="0.7"/>
+        <stop offset="1" stop-color="#040711" stop-opacity="1"/>
+      </linearGradient>
+    </defs>
+  </svg>
+
+  <div class="app-shell">
+
+    <!-- ======================================================================
+         1. TOP COMMAND HEADER
+         ====================================================================== -->
+    <header class="command-header">
+      <div class="brand-section">
+        <div class="brand-logo-badge" style="width: 38px; height: 38px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.22); border-radius: 10px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 14px rgba(0,0,0,0.5); flex-shrink: 0;">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 2L4 5.5V11.5C4 16.5 7.4 21.1 12 22.5C16.6 21.1 20 16.5 20 11.5V5.5L12 2Z" fill="rgba(2, 132, 199, 0.25)" stroke="#38BDF8" stroke-width="1.8" stroke-linejoin="round"/>
+            <path d="M9 12L11 14L15 9.5" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div class="brand-meta">
+          <div class="brand-title">
+            <span>DIGITAL EVIDENCE</span>
+            <span class="brand-title-sub">หลักฐานดิจิทัล</span>
+          </div>
+          <div class="brand-subtitle-eng">FORENSIC EVIDENCE PROCESSING SYSTEM</div>
+        </div>
+
+        <!-- Mode Toggle (PDF Document Views) -->
+        <div class="mode-switch-pill">
+          <button class="mode-btn" id="btnModeCover" onclick="switchMode('COVER')">
+            <span>🏛️</span>
+            <span>หน้าปก (COVER)</span>
+          </button>
+          <button class="mode-btn" id="btnModeIndex" onclick="switchMode('INDEX')">
+            <span>📊</span>
+            <span>สารบัญ (INDEX)</span>
+          </button>
+          <button class="mode-btn active" id="btnModeChat" onclick="switchMode('CHAT')">
+            <span>💬</span>
+            <span>แชท (CHAT)</span>
+          </button>
+          <button class="mode-btn" id="btnModeSlip" onclick="switchMode('SLIP')">
+            <span>📄</span>
+            <span>สลิป (SLIP)</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Center Motto from Mockup -->
+      <div class="header-motto">
+        <div class="motto-th">จากข้อมูลดิจิทัล สู่ความยุติธรรม</div>
+        <div class="motto-en">DIGITAL EVIDENCE FOR A FAIRER TOMORROW</div>
+      </div>
+
+      <div class="header-right-tools">
+        <div class="online-badge">
+          <div class="online-top-row">
+            <div class="online-dot"></div>
+            <span>SYSTEM ONLINE</span>
+          </div>
+          <div class="online-sub">All Services Operational</div>
+        </div>
+
+        <div class="header-clock-box">
+          <div class="live-clock" id="liveClock">14:27:36</div>
+          <div class="live-date">10 มีนาคม 2568</div>
+        </div>
+
+        <button class="btn-header-tool" onclick="syncData()">
+          <span>🔄</span>
+          <span>SYNC</span>
+        </button>
+
+        <button class="btn-header-tool" onclick="openSummaryModal()">
+          <span>📊</span>
+          <span>สรุปทั้งหมด</span>
+        </button>
+
+        <div class="user-pill">
+          <div class="user-avatar">AD</div>
+        </div>
+      </div>
+    </header>
+
+    <!-- ======================================================================
+         2. WORKFLOW STEPPER BAR (4 STEPS OVER MOUNTAINS)
+         ====================================================================== -->
+    <div class="stepper-container">
+      <div class="stepper-nav">
+        <!-- Step 1: Active -->
+        <div class="step-item active" onclick="setStep(1)">
+          <div class="step-number">1</div>
+          <div class="step-texts">
+            <span class="step-title">อัพโหลดข้อมูล</span>
+            <span class="step-sub">นำเข้าข้อมูลจากไฟล์</span>
+          </div>
+        </div>
+
+        <div class="step-arrow-line"></div>
+
+        <!-- Step 2 -->
+        <div class="step-item" onclick="setStep(2)">
+          <div class="step-number">2</div>
+          <div class="step-texts">
+            <span class="step-title">ตรวจสอบและประมวลผล</span>
+            <span class="step-sub">ค้นหาและจับคู่ความสอดคล้อง</span>
+          </div>
+        </div>
+
+        <div class="step-arrow-line"></div>
+
+        <!-- Step 3 -->
+        <div class="step-item" onclick="setStep(3)">
+          <div class="step-number">3</div>
+          <div class="step-texts">
+            <span class="step-title">สร้างเอกสารหลักฐาน</span>
+            <span class="step-sub">จัดรูปแบบตามมาตรฐาน</span>
+          </div>
+        </div>
+
+        <div class="step-arrow-line"></div>
+
+        <!-- Step 4 -->
+        <div class="step-item" onclick="setStep(4)">
+          <div class="step-number">4</div>
+          <div class="step-texts">
+            <span class="step-title">เสร็จสิ้น</span>
+            <span class="step-sub">พร้อมส่งศาล</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ======================================================================
+         3. 3-COLUMN WORKSPACE (28% : 44% : 28%)
+         ====================================================================== -->
+    <main class="workspace-grid">
+
+      <!-- --------------------------------------------------------------------
+           COLUMN 1: LEFT CONTROL RAIL
+           -------------------------------------------------------------------- -->
+      <aside class="glass-panel panel-scrollable">
+        
+        <!-- 1. Dropzone Upload -->
+        <div class="dropzone-box" onclick="document.getElementById('fileInput').click()">
+          <input type="file" id="fileInput" multiple style="display:none;" onchange="handleUpload(this.files)">
+          <div class="dropzone-icon">☁️</div>
+          <div class="dropzone-title">ลากไฟล์มาวางที่นี่</div>
+          <div class="dropzone-sub">รองรับไฟล์ภาพ, PDF, PNG, JPG (สูงสุด 100 MB)</div>
+          
+          <div class="file-chip" id="fileChip">
+            <div style="display:flex; align-items:center; gap:6px;">
+              <span style="color:#34D399; font-weight:700;">✓</span>
+              <span>จำนวนไฟล์ 1 ไฟล์</span>
+            </div>
+            <div style="display:flex; align-items:center; gap:8px;">
+              <span style="font-family:var(--font-mono); color:var(--accent-cyan-glow);">2.4 MB</span>
+              <span style="cursor:pointer;" onclick="event.stopPropagation(); removeFile();">✕</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2. Search Bar -->
+        <div class="search-row">
+          <span class="search-icon">🔍</span>
+          <input type="text" class="search-input" id="targetSearchInput" placeholder="ค้นหาชื่อ ข้อความ หรือเลขที่บัญชี..." oninput="filterTargets(this.value)">
+        </div>
+
+        <!-- 3. Consistency Toggle Switch -->
+        <div class="glass-card switch-card">
+          <div class="switch-label">สลิป-แชท สอดคล้องกัน ⓘ</div>
+          <label class="toggle-ui">
+            <input type="checkbox" id="toggleCorroborated" checked onchange="handleToggleConsistent(this.checked)">
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+
+        <!-- 4. Target Person List (Auto-Detected Names & Evidence Breakdown) -->
+        <div style="display:flex; flex-direction:column; gap:7px;">
+          <div class="panel-header-title">
+            <div style="display:flex; align-items:center; gap:6px;">
+              <span>👥 บุคคลที่ตรวจพบในคดี (4)</span>
+              <span style="font-size:9.5px; background:rgba(56,189,248,0.15); color:var(--accent-cyan-glow); padding:1px 6px; border-radius:999px; border:1px solid rgba(56,189,248,0.3);">Auto-Detect</span>
+            </div>
+            <button class="btn-header-tool" style="padding:3px 10px; font-size:11px;" onclick="promptAddTarget()">+ เพิ่ม</button>
+          </div>
+
+          <div class="target-list" id="targetListContainer">
+            <!-- Target 1: นายสมชาย ใจดี -->
+            <div class="glass-card target-card" onclick="toggleTargetCheck(1)">
+              <div class="target-left">
+                <input type="checkbox" class="target-checkbox" id="chkTarget1" checked onclick="event.stopPropagation()">
+                <div class="target-name-col">
+                  <div class="target-name">นายสมชาย ใจดี</div>
+                  <div class="target-role-sub">บัญชีผู้โอน &amp; ผู้สนทนาหลัก</div>
+                </div>
+              </div>
+              <div class="target-right">
+                <span class="badge-breakdown badge-chat-ev" title="พบในบทสนทนาแชท 7 หลักฐาน">💬 แชท 7</span>
+                <span class="badge-breakdown badge-slip-ev" title="พบในสลิปการเงิน 5 หลักฐาน">📄 สลิป 5</span>
+                <span class="target-total-count">(12)</span>
+                <span class="target-dots">•••</span>
+              </div>
+            </div>
+
+            <!-- Target 2: น.ส.สุภารัตน์ ดีพร้อม -->
+            <div class="glass-card target-card" onclick="toggleTargetCheck(2)">
+              <div class="target-left">
+                <input type="checkbox" class="target-checkbox" id="chkTarget2" onclick="event.stopPropagation()">
+                <div class="target-name-col">
+                  <div class="target-name">น.ส.สุภารัตน์ ดีพร้อม</div>
+                  <div class="target-role-sub">บัญชีปลายทาง &amp; คู่สนทนา</div>
+                </div>
+              </div>
+              <div class="target-right">
+                <span class="badge-breakdown badge-chat-ev" title="พบในบทสนทนาแชท 5 หลักฐาน">💬 แชท 5</span>
+                <span class="badge-breakdown badge-slip-ev" title="พบในสลิปการเงิน 3 หลักฐาน">📄 สลิป 3</span>
+                <span class="target-total-count">(8)</span>
+                <span class="target-dots">•••</span>
+              </div>
+            </div>
+
+            <!-- Target 3: นายกิตติพงษ์ วัฒนา -->
+            <div class="glass-card target-card" onclick="toggleTargetCheck(3)">
+              <div class="target-left">
+                <input type="checkbox" class="target-checkbox" id="chkTarget3" onclick="event.stopPropagation()">
+                <div class="target-name-col">
+                  <div class="target-name">นายกิตติพงษ์ วัฒนา</div>
+                  <div class="target-role-sub">ผู้รับโอนเงิน</div>
+                </div>
+              </div>
+              <div class="target-right">
+                <span class="badge-breakdown badge-chat-ev" title="พบในบทสนทนาแชท 3 หลักฐาน">💬 แชท 3</span>
+                <span class="badge-breakdown badge-slip-ev" title="พบในสลิปการเงิน 2 หลักฐาน">📄 สลิป 2</span>
+                <span class="target-total-count">(5)</span>
+                <span class="target-dots">•••</span>
+              </div>
+            </div>
+
+            <!-- Target 4: บริษัท ABC จำกัด -->
+            <div class="glass-card target-card" onclick="toggleTargetCheck(4)">
+              <div class="target-left">
+                <input type="checkbox" class="target-checkbox" id="chkTarget4" onclick="event.stopPropagation()">
+                <div class="target-name-col">
+                  <div class="target-name">บริษัท ABC จำกัด</div>
+                  <div class="target-role-sub">นิติบุคคลรับโอน</div>
+                </div>
+              </div>
+              <div class="target-right">
+                <span class="badge-breakdown badge-chat-ev" title="พบในบทสนทนาแชท 1 หลักฐาน">💬 แชท 1</span>
+                <span class="badge-breakdown badge-slip-ev" title="พบในสลิปการเงิน 2 หลักฐาน">📄 สลิป 2</span>
+                <span class="target-total-count">(3)</span>
+                <span class="target-dots">•••</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 5. Process Button & Ring Progress -->
+        <button class="btn-process" onclick="startProcessing()">
+          <span>⚙️</span>
+          <span>เริ่มประมวลผลหลักฐาน</span>
+        </button>
+
+        <div class="glass-card progress-box">
+          <div class="progress-top-row" style="display:flex; align-items:center; gap:10px;">
+            <div style="width:34px; height:34px; min-width:34px; min-height:34px; max-width:34px; max-height:34px; flex-shrink:0; display:flex; align-items:center; justify-content:center; position:relative;">
+              <svg width="34" height="34" viewBox="0 0 36 36" style="width:34px; height:34px; transform: rotate(-90deg); overflow:visible;">
+                <circle cx="18" cy="18" r="15" fill="none" stroke="rgba(255, 255, 255, 0.12)" stroke-width="3.5" />
+                <circle id="ringBar" cx="18" cy="18" r="15" fill="none" stroke="#38BDF8" stroke-width="3.5" stroke-dasharray="94.2" stroke-dashoffset="59.3" stroke-linecap="round" style="filter: drop-shadow(0 0 4px #38BDF8);" />
+              </svg>
+            </div>
+            <div class="progress-info">
+              <div class="progress-title">
+                <span>กำลังประมวลผล...</span>
+              </div>
+              <div class="progress-subtitle">สแกน OCR ระดับพิกเซล &amp; ตรวจจับสลิป...</div>
+            </div>
+            <div style="margin-left:auto; display:flex; flex-direction:column; align-items:flex-end;">
+              <span class="progress-timer" id="progressTimer">00:02:18</span>
+              <span style="font-size:12px; font-weight:700; color:var(--accent-cyan-glow); font-family:var(--font-mono);">37%</span>
+            </div>
+          </div>
+          <div class="linear-progress-track">
+            <div class="linear-progress-fill" id="linearProgressFill"></div>
+          </div>
+          <div style="display:flex; justify-content:flex-end; font-size:10px; color:var(--text-muted); font-family:var(--font-mono);">
+            12 / 32 ไฟล์
+          </div>
+        </div>
+
+      </aside>
+
+      <!-- --------------------------------------------------------------------
+           COLUMN 2: FORENSIC PDF DOCUMENT VIEWER (เอกสาร PDF ส่งศาล)
+           -------------------------------------------------------------------- -->
+      <section class="glass-panel col-stage">
+        
+        <!-- PDF Document Header Toolbar -->
+        <div class="stage-top-bar">
+          <div class="stage-title">
+            <div style="display:flex; align-items:center; gap:8px;">
+              <span style="font-size:16px;">📄</span>
+              <span style="font-weight:700; color:#FFFFFF; font-size:13.5px;" id="pdfDocumentTitle">Master_Evidence_Dossier_CRIM-2568.pdf</span>
+              <span class="mode-chat-pill" id="stageModePill">PDF/A • FORENSIC</span>
+            </div>
+          </div>
+
+          <div style="display:flex; align-items:center; gap:10px;">
+            <!-- PDF Document Page Nav -->
+            <div class="page-nav-simple">
+              <span style="cursor:pointer; padding: 2px 6px;" onclick="prevPage()" title="หน้าก่อนหน้า">◀</span>
+              <span id="pageSimpleIndicator" style="font-weight:600; color:#FFFFFF; min-width: 75px; text-align: center;">หน้า 1 / 12</span>
+              <span style="cursor:pointer; padding: 2px 6px;" onclick="nextPage()" title="หน้าถัดไป">▶</span>
+            </div>
+            
+            <button class="btn-header-tool" style="padding:4px 11px; font-size:11px;" onclick="exportCourtPdf()" title="ส่งออกไฟล์ PDF ส่งศาล">
+              <span>📥</span>
+              <span>ส่งออก PDF</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Canvas Viewport with Official A4 PDF Sheet -->
+        <div class="canvas-viewport">
+          <!-- Floating Chevrons -->
+          <button class="chevron-floating chevron-left" onclick="prevPage()" title="หน้าก่อนหน้า">&lt;</button>
+          <button class="chevron-floating chevron-right" onclick="nextPage()" title="หน้าถัดไป">&gt;</button>
+
+          <!-- Authentic A4 PDF Document Sheet -->
+          <div class="a4-paper" id="a4Paper">
+            <!-- Rendered dynamically by renderPdfStage(currentPage) -->
+          </div>
+        </div>
+
+        <!-- Bottom Zoom & Tool Toolbar -->
+        <div class="stage-bottom-toolbar">
+          <button class="zoom-btn" onclick="zoomChange(-10)" title="ซูมออก">🔍 -</button>
+          <select class="zoom-dropdown" id="zoomSelect" onchange="applyZoom(this.value)">
+            <option value="75">75%</option>
+            <option value="90">90%</option>
+            <option value="100" selected>100%</option>
+            <option value="125">125%</option>
+            <option value="150">150%</option>
+          </select>
+          <button class="zoom-btn" onclick="zoomChange(10)" title="ซูมเข้า">🔍 +</button>
+          <span style="color:rgba(255,255,255,0.25);">|</span>
+          <span style="font-family:var(--font-mono); font-size:11.5px;" id="zoomPageCounter">1 / 12</span>
+          <span style="color:rgba(255,255,255,0.25);">|</span>
+          <button class="zoom-btn" title="พอดีหน้าจอ (Fit to Screen)" onclick="fitToScreen()">⛶ Fit</button>
+        </div>
+
+      </section>
+
+      <!-- --------------------------------------------------------------------
+           COLUMN 3: 4D SUMMARY & COURT EXPORTER
+           -------------------------------------------------------------------- -->
+      <aside class="glass-panel panel-scrollable">
+        
+        <div class="panel-header-title">
+          <span>📊 สรุปผลการประมวลผล</span>
+        </div>
+
+        <!-- 4-Dimensional Summary Cards (2x2 Grid) - Interactive Toggle Cards with LED Indicators -->
+        <div class="summary-4d-grid">
+          
+          <!-- Card 1: รายละเอียด และ ยอดรวม (1.ยอดรวม 2.จำนวนสลิป) -->
+          <div class="glass-card summary-card" id="cardSummary1" onclick="toggleSummaryCard(1)" title="คลิกเพื่อเลือกแนบ/ถอด ตาราง 13 ช่อง รวมทุกบัญชี พร้อมเขียนลงหน้าปก">
+            <div class="card-top-header">
+              <div class="summary-card-label">1. ยอดรวม &amp; จำนวนสลิป</div>
+              <div class="card-led-box">
+                <span class="card-led-light" id="cardLed1"></span>
+                <span class="card-led-text" id="cardLedText1">● พร้อม</span>
+              </div>
+            </div>
+            <div class="summary-card-value">฿ 1,450,000.00</div>
+            <div style="font-size: 10px; color: var(--text-muted); margin-top: 2px;">จำนวนสลิปในบัญชี: <b style="color:#FFF;">16 ใบ</b></div>
+            <div class="card-addon-tag">
+              <span>📎 พ่วงตาราง 13 ช่อง (รวม)</span>
+              <span id="cardBadge1" style="font-size: 8.5px; opacity: 0.85;">คลิกเพื่อแนบ</span>
+            </div>
+          </div>
+
+          <!-- Card 2: เป้าหมาย (1.ยอดรวมเป้าหมาย 2.จำนวนสลิปเป้าหมาย) -->
+          <div class="glass-card summary-card" id="cardSummary2" onclick="toggleSummaryCard(2)" title="คลิกเพื่อเลือกแนบ/ถอด ตาราง 13 ช่องเฉพาะเป้าหมาย (1 เป้า/1 คน) พร้อมเขียนลงหน้าปก">
+            <div class="card-top-header">
+              <div class="summary-card-label">2. ยอด &amp; สลิปเป้าหมาย</div>
+              <div class="card-led-box">
+                <span class="card-led-light" id="cardLed2"></span>
+                <span class="card-led-text" id="cardLedText2">● พร้อม</span>
+              </div>
+            </div>
+            <div class="summary-card-value">฿ 980,000.00</div>
+            <div style="font-size: 10px; color: var(--text-muted); margin-top: 2px;">4 บุคคล (<b style="color:#FFF;">10 ใบ</b>)</div>
+            <div class="card-addon-tag">
+              <span>📎 พ่วงตาราง 13 ช่อง (1เป้า/1เล่ม)</span>
+              <span id="cardBadge2" style="font-size: 8.5px; opacity: 0.85;">คลิกเพื่อแนบ</span>
+            </div>
+          </div>
+
+          <!-- Card 3: หน้าที่สัมพันธ์กันหรือสอดคล้องกัน (Consistent) -->
+          <div class="glass-card summary-card" id="cardSummary3" onclick="toggleSummaryCard(3)" title="คลิกเพื่อเลือกแนบ/ถอด สำนวนแชทคู่สลิปที่สัมพันธ์กัน พร้อมเขียนลงหน้าปก">
+            <div class="card-top-header">
+              <div class="summary-card-label">3. หน้าสัมพันธ์ (Consistent)</div>
+              <div class="card-led-box">
+                <span class="card-led-light" id="cardLed3"></span>
+                <span class="card-led-text" id="cardLedText3">● พร้อม</span>
+              </div>
+            </div>
+            <div class="summary-card-value" style="color:#34D399;">24 หน้า</div>
+            <div style="font-size: 10px; color: var(--text-muted); margin-top: 2px;">บทสนทนาเชื่อมโยงตรง 1:1</div>
+            <div class="card-addon-tag">
+              <span>📎 พ่วงสำนวนแชทคู่สลิป</span>
+              <span id="cardBadge3" style="font-size: 8.5px; opacity: 0.85;">คลิกเพื่อแนบ</span>
+            </div>
+          </div>
+
+          <!-- Card 4: จำนวนหน้าที่มีสลิป/จำนวนจุดตรวจพบ (Duplicate & NET_Detail) -->
+          <div class="glass-card summary-card" id="cardSummary4" onclick="toggleSummaryCard(4)" title="คลิกเพื่อเลือกแนบ/ถอด รายงานสแกนตัดสลิปซ้ำ (NET_Detail) พร้อมเขียนลงหน้าปก">
+            <div class="card-top-header">
+              <div class="summary-card-label">4. ตรวจจับสลิปซ้ำ (NET)</div>
+              <div class="card-led-box">
+                <span class="card-led-light" id="cardLed4"></span>
+                <span class="card-led-text" id="cardLedText4">● พร้อม</span>
+              </div>
+            </div>
+            <div class="summary-card-value" style="color:var(--accent-cyan-glow);">28 จุด</div>
+            <div style="font-size: 9.5px; color: var(--text-muted); margin-top: 2px;">
+              พบ <b style="color:#FFF;">28 จุด</b> / ตัดซ้ำ <b style="color:#F87171;">12 จุด</b>
+            </div>
+            <div class="card-addon-tag">
+              <span>📎 พ่วงรายงานคัดกรองซ้ำ</span>
+              <span id="cardBadge4" style="font-size: 8.5px; opacity: 0.85;">คลิกเพื่อแนบ</span>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Button: Open 13-Column Table -->
+        <button class="btn-full-table" onclick="openSummaryModal('ledger')">
+          <span>⊞</span>
+          <span>ดูตารางสรุปทั้งหมด</span>
+          <span>&gt;</span>
+        </button>
+
+        <!-- Master Slips (Deduped) Section - System Flow Row 12 (งดแสดง 'พบสลิปต้นฉบับ' มีแต่ปุ่มกด [👁 ดูสลิปต้นฉบับ]) -->
+        <div class="glass-card master-slips-card">
+          <div class="master-slips-header">
+            <div style="font-size:13px; font-weight:700; color:#FFFFFF; display:flex; align-items:center; gap:6px;">
+              <span>💾</span>
+              <span>ศูนย์ตรวจสอบสลิปต้นฉบับ (Master Slips)</span>
+            </div>
+            <div class="badge-master-status">● ระบบพร้อม</div>
+          </div>
+
+          <div class="master-slips-row" style="margin-top: 8px;">
+            <button class="btn-view-master" onclick="openSummaryModal('master')" style="width: 100%; justify-content: center; padding: 10px 16px; font-size: 13px; font-weight: 700;">
+              <span>👁</span>
+              <span>ดูสลิปต้นฉบับ</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Password Encryption -->
+        <div class="pass-input-box">
+          <div class="pass-label">🔒 ตั้งรหัสผ่านไฟล์ (PDF)</div>
+          <div class="pass-input-row">
+            <input type="password" class="pass-input" id="pdfPasswordInput" placeholder="ตั้งรหัสผ่าน (อย่างน้อย 6 ตัว)" value="Evidence2026@Court">
+            <span class="pass-eye-icon" onclick="togglePassVisibility()">👁</span>
+          </div>
+        </div>
+
+        <!-- Huge Court Export Section -->
+        <div class="export-section">
+          <button class="btn-court-export" onclick="exportCourtPdf()">
+            <span>📄</span>
+            <span>EXPORT PDF ส่งศาล &gt;</span>
+          </button>
+          <div class="court-badge-sub">
+            <span>🏛</span>
+            <span>เอกสารจะถูกจัดรูปแบบตามมาตรฐานสำหรับศาล</span>
+          </div>
+        </div>
+
+      </aside>
+
+    </main>
+
+    <!-- ======================================================================
+         4. FULL-WIDTH STATUS FOOTER
+         ====================================================================== -->
+    <footer class="app-footer">
+      <div class="footer-left">
+        <span style="color:var(--accent-cyan-glow); font-family:var(--font-mono); font-weight:700;">v2.1.0</span>
+        <span>|</span>
+        <span style="font-weight:700; color:#FFFFFF;">DIGITAL EVIDENCE</span>
+        <span>|</span>
+        <span>หลักฐานดิจิทัล</span>
+      </div>
+
+      <div class="footer-right">
+        <span style="color:#34D399; font-weight:600;">● Connected</span>
+        <span>|</span>
+        <span>🛡 Secure Processing</span>
+        <span>|</span>
+        <span style="cursor:pointer; display:flex; align-items:center; gap:4px;">TH 🇹🇭 ▾</span>
+      </div>
+    </footer>
+
+  </div>
+
+  <!-- ======================================================================
+       MODAL: FORENSIC SLIP & DEDUPLICATION AUDIT CENTER
+       ====================================================================== -->
+  <div class="modal-backdrop" id="summaryModal">
+    <div class="modal-card">
+      <div class="modal-head">
+        <div style="font-size:16px; font-weight:700; color:#FFFFFF; display:flex; align-items:center; gap:8px;">
+          <span>🗄️</span>
+          <span>ศูนย์ตรวจสอบสลิปต้นฉบับและรายการคดีความ (Forensic Slip & Deduplication Audit Center)</span>
+        </div>
+        <button onclick="closeSummaryModal()" style="background:none; border:none; color:var(--text-muted); font-size:22px; cursor:pointer;">✕</button>
+      </div>
+
+      <!-- Modal Tabs Bar -->
+      <div class="modal-tabs">
+        <button class="modal-tab-btn active" id="tabBtnMaster" onclick="switchModalTab('master')">
+          <span>💾 สลิปต้นฉบับ (Master Slips)</span>
+          <span class="modal-tab-badge badge-master">16 รายการจริง</span>
+        </button>
+        <button class="modal-tab-btn" id="tabBtnDuplicate" onclick="switchModalTab('duplicate')">
+          <span>⚠️ รายการสลิปซ้ำ (Duplicate Audit)</span>
+          <span class="modal-tab-badge badge-duplicate">12 ใบ (ตัดออก)</span>
+        </button>
+        <button class="modal-tab-btn" id="tabBtnLedger" onclick="switchModalTab('ledger')">
+          <span>🧾 ตารางสารบัญคดี 13 คอลัมน์</span>
+          <span class="modal-tab-badge" style="background:rgba(255,255,255,0.15); color:#fff;">Standard</span>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        
+        <!-- PANE 1: MASTER SLIPS (16 UNIQUE TRANSACTIONS) -->
+        <div class="tab-content active" id="paneMaster">
+          <div class="master-stat-banner">
+            <div>
+              <div style="font-size:13px; font-weight:700; color:#FFFFFF;">✅ สลิปต้นฉบับแท้จริง (Master Unique Slips): 16 รายการ</div>
+              <div style="font-size:11px; color:var(--text-muted); margin-top:2px;">ผ่านการพิสูจน์รหัสธุรกรรม (Transaction Ref ID) และลายนิ้วมือ 5 มิติ — คัดกรองสลิปซ้ำ 12 ใบออกแล้ว ยอดเงินไม่เบิ้ล 100%</div>
+            </div>
+            <div style="text-align:right;">
+              <div style="font-size:10px; color:var(--text-muted);">ยอดความเสียหายแท้จริง:</div>
+              <div style="font-size:18px; font-weight:700; color:#34D399; font-family:var(--font-mono);">฿ 1,450,000.00</div>
+            </div>
+          </div>
+
+          <div class="master-cards-grid">
+            <!-- Master 1 -->
+            <div class="master-slip-card">
+              <div style="display:flex; justify-content:space-between; align-items:center;">
+                <span class="badge-master-status" style="font-size:9.5px;">MASTER #01</span>
+                <span style="font-family:var(--font-mono); font-size:10px; color:var(--accent-cyan-glow);">KBANK0948X01</span>
+              </div>
+              <div style="display:flex; justify-content:space-between; align-items:baseline; margin-top:4px;">
+                <span style="font-size:12px; font-weight:600; color:#fff;">สมชาย ใจดี ➔ สุภารัตน์ ดีพร้อม</span>
+                <span style="font-size:15px; font-weight:700; color:#34D399; font-family:var(--font-mono);">฿ 50,000.00</span>
+              </div>
+              <div style="display:flex; justify-content:space-between; font-size:10.5px; color:var(--text-muted);">
+                <span>19/01/2025 20:53 (KBANK ➔ BBL)</span>
+                <span style="color:#10B981;">✓ นับรวมในสำนวน</span>
+              </div>
+            </div>
+
+            <!-- Master 2 -->
+            <div class="master-slip-card">
+              <div style="display:flex; justify-content:space-between; align-items:center;">
+                <span class="badge-master-status" style="font-size:9.5px;">MASTER #02</span>
+                <span style="font-family:var(--font-mono); font-size:10px; color:var(--accent-cyan-glow);">SCB1120M02</span>
+              </div>
+              <div style="display:flex; justify-content:space-between; align-items:baseline; margin-top:4px;">
+                <span style="font-size:12px; font-weight:600; color:#fff;">สมชาย ใจดี ➔ กิตติพงษ์ วัฒนา</span>
+                <span style="font-size:15px; font-weight:700; color:#34D399; font-family:var(--font-mono);">฿ 120,000.00</span>
+              </div>
+              <div style="display:flex; justify-content:space-between; font-size:10.5px; color:var(--text-muted);">
+                <span>19/01/2025 21:10 (SCB ➔ KBANK)</span>
+                <span style="color:#10B981;">✓ นับรวมในสำนวน</span>
+              </div>
+            </div>
+
+            <!-- Master 3 -->
+            <div class="master-slip-card">
+              <div style="display:flex; justify-content:space-between; align-items:center;">
+                <span class="badge-master-status" style="font-size:9.5px;">MASTER #03</span>
+                <span style="font-family:var(--font-mono); font-size:10px; color:var(--accent-cyan-glow);">KTB1405T03</span>
+              </div>
+              <div style="display:flex; justify-content:space-between; align-items:baseline; margin-top:4px;">
+                <span style="font-size:12px; font-weight:600; color:#fff;">สมชาย ใจดี ➔ บริษัท ABC จำกัด</span>
+                <span style="font-size:15px; font-weight:700; color:#34D399; font-family:var(--font-mono);">฿ 75,000.00</span>
+              </div>
+              <div style="display:flex; justify-content:space-between; font-size:10.5px; color:var(--text-muted);">
+                <span>20/01/2025 14:05 (KTB ➔ TTB)</span>
+                <span style="color:#10B981;">✓ นับรวมในสำนวน</span>
+              </div>
+            </div>
+
+            <!-- Master 4 -->
+            <div class="master-slip-card">
+              <div style="display:flex; justify-content:space-between; align-items:center;">
+                <span class="badge-master-status" style="font-size:9.5px;">MASTER #04</span>
+                <span style="font-family:var(--font-mono); font-size:10px; color:var(--accent-cyan-glow);">TTB0915K04</span>
+              </div>
+              <div style="display:flex; justify-content:space-between; align-items:baseline; margin-top:4px;">
+                <span style="font-size:12px; font-weight:600; color:#fff;">สุภารัตน์ ดีพร้อม ➔ สมชาย ใจดี</span>
+                <span style="font-size:15px; font-weight:700; color:#34D399; font-family:var(--font-mono);">฿ 60,000.00</span>
+              </div>
+              <div style="display:flex; justify-content:space-between; font-size:10.5px; color:var(--text-muted);">
+                <span>21/01/2025 09:15 (TTB ➔ KBANK)</span>
+                <span style="color:#10B981;">✓ นับรวมในสำนวน</span>
+              </div>
+            </div>
+
+            <!-- Master 5 to 16 summary pill -->
+            <div class="master-slip-card" style="border-style:dashed; align-items:center; justify-content:center; text-align:center; min-height:90px;">
+              <span style="color:var(--text-muted); font-size:12px;">และอีก 12 สลิปต้นฉบับ (Master #05 - #16)</span>
+              <span style="font-size:14px; font-weight:700; color:#38BDF8; font-family:var(--font-mono); margin-top:4px;">รวม 16 รายการ = ฿ 1,450,000.00</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- PANE 2: DUPLICATE AUDIT TRAIL (12 EXCLUDED ITEMS) -->
+        <div class="tab-content" id="paneDuplicate">
+          <div class="master-stat-banner warn">
+            <div>
+              <div style="font-size:13px; font-weight:700; color:#FBBF24;">⚠️ ตรวจพบสลิปซ้ำซ้อน 12 จุดในสำนวน (Excluded from Total)</div>
+              <div style="font-size:11px; color:var(--text-muted); margin-top:2px;">ตัดออกจากการคำนวณยอดเงินความเสียหายโดยอัตโนมัติ เพื่อป้องกันการคัดค้านยอดเงินเบิ้ล (Double-Counting) ในชั้นศาล</div>
+            </div>
+            <div style="text-align:right;">
+              <div style="font-size:10px; color:var(--text-muted);">ยอดเงินที่ถูกตัดออก (กันเบิ้ล):</div>
+              <div style="font-size:18px; font-weight:700; color:#F87171; font-family:var(--font-mono); text-decoration:line-through;">฿ 895,000.00</div>
+            </div>
+          </div>
+
+          <div class="table-wrapper">
+            <table class="table-13col">
+              <thead>
+                <tr>
+                  <th>จุดที่ตรวจพบ</th>
+                  <th>พิกัดในหลักฐาน</th>
+                  <th>รหัสธุรกรรม (Ref ID)</th>
+                  <th>ซ้ำกับสลิปต้นฉบับ</th>
+                  <th>ยอดเงินในสลิป</th>
+                  <th>สาเหตุที่เกิดความซ้ำซ้อน</th>
+                  <th>คำสั่งระบบ</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr class="row-failed">
+                  <td>หลักฐานที่ 3</td>
+                  <td>แชท LINE หน้า 3</td>
+                  <td><code>KBANK0948X01</code></td>
+                  <td><b style="color:#0F172A;">สลิปต้นฉบับ #01</b></td>
+                  <td>฿ 50,000.00</td>
+                  <td style="text-align:left; padding-left:10px;">ผู้โอนส่งภาพสลิปใบเดิมซ้ำในแชทเพื่อยืนยันยอด</td>
+                  <td><span style="color:#DC2626; font-weight:700;">🚫 ไม่นับยอดซ้ำ</span></td>
+                </tr>
+                <tr class="row-failed">
+                  <td>หลักฐานที่ 6</td>
+                  <td>แชท LINE หน้า 15</td>
+                  <td><code>SCB1120M02</code></td>
+                  <td><b style="color:#0F172A;">สลิปต้นฉบับ #02</b></td>
+                  <td>฿ 120,000.00</td>
+                  <td style="text-align:left; padding-left:10px;">รอยต่อการเลื่อนแคปหน้าจอระหว่างหน้า 14 กับ 15</td>
+                  <td><span style="color:#DC2626; font-weight:700;">🚫 ไม่นับยอดซ้ำ</span></td>
+                </tr>
+                <tr class="row-failed">
+                  <td>หลักฐานที่ 8</td>
+                  <td>แชท LINE หน้า 22</td>
+                  <td><code>KTB1405T03</code></td>
+                  <td><b style="color:#0F172A;">สลิปต้นฉบับ #03</b></td>
+                  <td>฿ 75,000.00</td>
+                  <td style="text-align:left; padding-left:10px;">แคปภาพหน้าจอครอปคนละขนาด (รูปเดียวกัน)</td>
+                  <td><span style="color:#DC2626; font-weight:700;">🚫 ไม่นับยอดซ้ำ</span></td>
+                </tr>
+                <tr class="row-failed">
+                  <td>หลักฐานที่ 11</td>
+                  <td>แชท LINE หน้า 28</td>
+                  <td><code>TTB0915K04</code></td>
+                  <td><b style="color:#0F172A;">สลิปต้นฉบับ #04</b></td>
+                  <td>฿ 60,000.00</td>
+                  <td style="text-align:left; padding-left:10px;">ผู้เสียหายส่งต่อสลิปเดิมซ้ำในกลุ่มแชท</td>
+                  <td><span style="color:#DC2626; font-weight:700;">🚫 ไม่นับยอดซ้ำ</span></td>
+                </tr>
+                <tr class="row-failed">
+                  <td>หลักฐานที่ 14-28</td>
+                  <td>แชท LINE หน้า 35-85</td>
+                  <td><code>(อีก 8 รายการ)</code></td>
+                  <td><b style="color:#0F172A;">สลิปต้นฉบับ #05-#12</b></td>
+                  <td>฿ 590,000.00</td>
+                  <td style="text-align:left; padding-left:10px;">ส่งสลิปเดิมซ้ำเพื่อทวงถามและรอยต่อหน้าแคป</td>
+                  <td><span style="color:#DC2626; font-weight:700;">🚫 ไม่นับยอดซ้ำ</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- PANE 3: 13-COLUMN COURT LEDGER -->
+        <div class="tab-content" id="paneLedger">
+          <div class="table-wrapper">
+            <table class="table-13col">
+              <thead>
+                <tr>
+                  <th>ลำดับ</th>
+                  <th>หน้าระบุสลิป</th>
+                  <th>วันที่</th>
+                  <th>เวลา</th>
+                  <th>ธนาคารผู้โอน</th>
+                  <th>ชื่อผู้โอน (ล้างยศ)</th>
+                  <th>จำนวนเงิน (บาท)</th>
+                  <th>ชื่อผู้รับ (ล้างยศ)</th>
+                  <th>ธนาคารผู้รับ</th>
+                  <th>สาขา</th>
+                  <th>บันทึกช่วยจำ</th>
+                  <th>รหัสอ้างอิง</th>
+                  <th>สถานะตรวจสอบ</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>1</td>
+                  <td><span style="color:var(--accent-cyan); font-weight:700;">หน้า 1</span></td>
+                  <td>19/01/2025</td>
+                  <td>20:53</td>
+                  <td>KBANK</td>
+                  <td>สมชาย ใจดี</td>
+                  <td style="font-family:var(--font-mono); font-weight:700;">50,000.00</td>
+                  <td>สุภารัตน์ ดีพร้อม</td>
+                  <td>BBL</td>
+                  <td>สยามพารากอน</td>
+                  <td>ค่าดูแลศูนย์พักพิง</td>
+                  <td style="font-family:var(--font-mono); font-size:10px;">KBANK0948X01</td>
+                  <td><span style="color:#10B981; font-weight:600;">✓ สอดคล้อง (Master)</span></td>
+                </tr>
+                <tr>
+                  <td>2</td>
+                  <td><span style="color:var(--accent-cyan); font-weight:700;">หน้า 2</span></td>
+                  <td>19/01/2025</td>
+                  <td>21:10</td>
+                  <td>SCB</td>
+                  <td>สมชาย ใจดี</td>
+                  <td style="font-family:var(--font-mono); font-weight:700;">120,000.00</td>
+                  <td>กิตติพงษ์ วัฒนา</td>
+                  <td>KBANK</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td style="font-family:var(--font-mono); font-size:10px;">SCB1120M02</td>
+                  <td><span style="color:#10B981; font-weight:600;">✓ สอดคล้อง (Master)</span></td>
+                </tr>
+                <tr class="row-failed">
+                  <td>3</td>
+                  <td><span style="color:#C53030; font-weight:700;">หน้า 3</span></td>
+                  <td>20/01/2025</td>
+                  <td>14:05</td>
+                  <td>KTB</td>
+                  <td>สมชาย ใจดี</td>
+                  <td style="font-family:var(--font-mono); font-weight:700;">75,000.00</td>
+                  <td>บริษัท ABC จำกัด</td>
+                  <td>TTB</td>
+                  <td>รัชโยธิน</td>
+                  <td>อุปกรณ์อาหารสัตว์</td>
+                  <td style="font-family:var(--font-mono); font-size:10px;">KTB1405T03</td>
+                  <td><span style="color:#DC2626; font-weight:700;">⚠️ สลิปซ้ำ (Duplicate #03)</span></td>
+                </tr>
+                <tr>
+                  <td>4</td>
+                  <td><span style="color:var(--accent-cyan); font-weight:700;">หน้า 4</span></td>
+                  <td>21/01/2025</td>
+                  <td>09:15</td>
+                  <td>TTB</td>
+                  <td>สุภารัตน์ ดีพร้อม</td>
+                  <td style="font-family:var(--font-mono); font-weight:700;">60,000.00</td>
+                  <td>สมชาย ใจดี</td>
+                  <td>KBANK</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td style="font-family:var(--font-mono); font-size:10px;">TTB0915K04</td>
+                  <td><span style="color:#10B981; font-weight:600;">✓ สอดคล้อง (Master)</span></td>
+                </tr>
+              </tbody>
+              <tfoot>
+                <tr style="background:#F1F5F9; font-weight:700;">
+                  <td colspan="6" style="text-align:right; padding-right:12px;">ยอดรวมคดีความสุทธิ (เฉพาะสลิปต้นฉบับ):</td>
+                  <td><span class="double-underline" style="color:#0F172A;">1,450,000.00</span></td>
+                  <td colspan="3" style="text-align:right;">สลิปซ้ำถูกคัดออก:</td>
+                  <td><span style="color:#DC2626;">12 รายการ</span></td>
+                  <td colspan="2"></td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================================================================
+       SCRIPTS
+       ====================================================================== -->
+  <script>
+    // Live Clock
+    function updateClock() {
+      const now = new Date();
+      const hrs = String(now.getHours()).padStart(2, '0');
+      const mins = String(now.getMinutes()).padStart(2, '0');
+      const secs = String(now.getSeconds()).padStart(2, '0');
+      document.getElementById('liveClock').innerText = `${hrs}:${mins}:${secs}`;
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+
+    // Forensic PDF Document Viewer Engine (แสดงช่องเอกสารเป็นไฟล์ PDF ส่งศาลมาตรฐาน 100%)
+    let currentPage = 1;
+    const totalPages = 12;
+
+    function renderPdfStage(pageNum) {
+      currentPage = pageNum;
+      updatePageDisplay();
+
+      const paper = document.getElementById('a4Paper');
+      if (!paper) return;
+
+      const card1Active = activeAddonCards[1];
+      const card2Active = activeAddonCards[2];
+      const card3Active = activeAddonCards[3];
+      const card4Active = activeAddonCards[4];
+      const hasAnyAddon = card1Active || card2Active || card3Active || card4Active;
+
+      // Update mode buttons and pills
+      if (document.getElementById('btnModeCover')) document.getElementById('btnModeCover').classList.toggle('active', pageNum === 1);
+      if (document.getElementById('btnModeIndex')) document.getElementById('btnModeIndex').classList.toggle('active', pageNum === 2);
+      if (document.getElementById('btnModeChat')) document.getElementById('btnModeChat').classList.toggle('active', pageNum === 3);
+      if (document.getElementById('btnModeSlip')) document.getElementById('btnModeSlip').classList.toggle('active', pageNum === 4);
+
+      const modePill = document.getElementById('stageModePill');
+      if (modePill) {
+        if (pageNum === 1) modePill.innerText = "PDF/A • หน้าปกรับรอง";
+        else if (pageNum === 2) modePill.innerText = "PDF/A • ตารางสารบัญ 13 ช่อง";
+        else if (pageNum === 3) modePill.innerText = "PDF/A • แผ่นหลักฐานแชท (จ.๑)";
+        else if (pageNum === 4) modePill.innerText = "PDF/A • แผ่นหลักฐานสลิป (จ.๒)";
+        else modePill.innerText = `PDF/A • แผ่นหลักฐานที่ ${pageNum}`;
+      }
+
+      // PAGE 1: OFFICIAL FORENSIC COVER PAGE (PDF)
+      if (pageNum === 1) {
+        paper.innerHTML = `
+          <div style="height: 100%; display: flex; flex-direction: column; justify-content: space-between; font-family: var(--font-sans); color: #0F172A;">
+            
+            <!-- Official Header -->
+            <div>
+              <div style="display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px solid #0F172A; padding-bottom: 10px;">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                  <div style="width: 38px; height: 38px; background: #0F172A; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #FFF;">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                      <path d="M12 2L4 5.5V11.5C4 16.5 7.4 21.1 12 22.5C16.6 21.1 20 16.5 20 11.5V5.5L12 2Z" fill="rgba(255,255,255,0.15)" stroke="#38BDF8" stroke-width="1.8"/>
+                      <path d="M9 12L11 14L15 9.5" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                  </div>
+                  <div>
+                    <div style="font-size: 13px; font-weight: 800; color: #0F172A; letter-spacing: 0.5px;">สารบบพยานหลักฐานอิเล็กทรอนิกส์ส่งศาล</div>
+                    <div style="font-size: 9.5px; color: #475569; font-weight: 600;">DIGITAL EVIDENCE FORENSIC DOSSIER • ISO/IEC 27037 STANDARD</div>
+                  </div>
+                </div>
+                <div style="text-align: right;">
+                  <div style="font-size: 9px; color: #64748B;">เลขสารบบคดีอิเล็กทรอนิกส์:</div>
+                  <div style="font-size: 12px; font-weight: 700; font-family: var(--font-mono); color: #0284C7;">CRIM-2568/EV-09482</div>
+                </div>
+              </div>
+
+              <!-- Standard Forensic Certification Badge -->
+              <div style="margin-top: 12px; background: #F0FDF4; border: 1px solid #86EFAC; border-radius: 6px; padding: 9px 12px; display: flex; align-items: center; justify-content: space-between;">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                  <span style="font-size: 16px;">🛡️</span>
+                  <div>
+                    <div style="font-size: 11.5px; font-weight: 700; color: #166534;">ผ่านระบบมาตรฐานหลักฐานดิจิทัล (Digital Forensic Standard Certified)</div>
+                    <div style="font-size: 9.5px; color: #15803D;">พยานหลักฐานได้รับการจัดลำดับ สแกนระดับพิกเซล และรักษาสภาพความบริสุทธิ์ของต้นฉบับ 100%</div>
+                  </div>
+                </div>
+                <span style="font-size: 9px; font-weight: 700; background: #22C55E; color: #FFF; padding: 2px 7px; border-radius: 999px;">มาตรฐานศาล</span>
+              </div>
+
+              <!-- Dossier Scope & Flexible Intake Standard -->
+              <div style="margin-top: 10px; background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 6px; padding: 10px 12px;">
+                <div style="font-size: 10.5px; font-weight: 700; color: #1E293B; margin-bottom: 4px;">📂 ขอบเขตสารบบพยานหลักฐานในสำนวน (Flexible Dossier Intake):</div>
+                <div style="font-size: 9.5px; color: #334155; line-height: 1.45;">
+                  • <b>บทสนทนาแชท (Chat Evidence):</b> รวมภาพบทสนทนาทั้งหมดทุกหน้า ไม่จำกัดจำนวนหน้าตามที่นำเข้าจริง<br>
+                  • <b>สลิปการเงิน (Slip Evidence):</b> รวมภาพสลิปธุรกรรมทั้งหมดที่ส่งเข้ามาในคดีความ<br>
+                  <span style="color: #64748B; font-size: 9px;">(เกณฑ์มาตรฐาน: สำนวนจะรวบรวมไฟล์ตามที่ลูกค้าส่งเข้ามาจริง ไม่จำเป็นต้องมีครบ 2 หมวดหมู่ มีแต่แชทส่งแต่แชท มีแต่สลิปส่งแต่สลิป)</span>
+                </div>
+              </div>
+
+              <!-- Dynamic Enrichment Section: Writes into cover only when cards 1-4 are pressed -->
+              <div style="margin-top: 11px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+                  <span style="font-size: 10.5px; font-weight: 700; color: #0F172A;">📝 บันทึกสรุปสาระสำคัญแห่งคดี &amp; เอกสารพ่วงท้าย (Add-on Appendices):</span>
+                  <span style="font-size: 9px; color: ${hasAnyAddon ? '#0284C7' : '#94A3B8'}; font-weight: 600;">
+                    ${hasAnyAddon ? '● มีบันทึกเพิ่มเติมตามการ์ดที่เลือก' : '○ หน้าปกมาตรฐานคงเดิม'}
+                  </span>
+                </div>
+
+                ${!hasAnyAddon ? `
+                  <div style="background: #F8FAFC; border: 1px dashed #CBD5E1; border-radius: 6px; padding: 12px 14px; text-align: center; color: #64748B;">
+                    <div style="font-size: 11px; font-weight: 600; color: #475569;">[ หน้าปกมาตรฐานแห่งคดี — Clean Minimalist Mode ]</div>
+                    <div style="font-size: 9.5px; margin-top: 3px; color: #64748B; line-height: 1.4;">
+                      หน้าปกมาตรฐานจะไม่ระบุการสรุปยอดเงิน บัญชีเป้าหมาย หรือการตัดซ้ำลงไป เพื่อรักษาความเป็นกลางของสำนวนพยานหลักฐานดิจิทัล<br>
+                      <b style="color: #0284C7;">(เมื่อกดเลือกการ์ด 1 - 4 ในลำดับที่ 10 แผงขวา ระบบจะเขียนบันทึกสรุปและพ่วงไฟล์ชุดนั้นเพิ่มลงในหน้าปกนี้ให้อัตโนมัติ)</b>
+                    </div>
+                  </div>
+                ` : `
+                  <div style="display: flex; flex-direction: column; gap: 6px;">
+                    ${card1Active ? `
+                      <div style="background: #EFF6FF; border: 1px solid #BFDBFE; border-left: 3.5px solid #3B82F6; border-radius: 5px; padding: 6px 10px; font-size: 10px;">
+                        <div style="font-weight: 700; color: #1E40AF; display: flex; justify-content: space-between;">
+                          <span>📊 [การ์ด 1] ยอดรวมบัญชี และ จำนวนสลิป</span>
+                          <span style="font-family: var(--font-mono);">฿ 1,450,000.00 (16 สลิป)</span>
+                        </div>
+                        <div style="color: #1D4ED8; font-size: 9px; margin-top: 1px;">
+                          ✓ พ่วงเอกสาร: <b>ตารางสารบัญคดี 13 ช่อง (รวมทุกบัญชีในสำนวน)</b> เพิ่มเติม 1 ชุด
+                        </div>
+                      </div>
+                    ` : ''}
+
+                    ${card2Active ? `
+                      <div style="background: #FAF5FF; border: 1px solid #E9D5FF; border-left: 3.5px solid #A855F7; border-radius: 5px; padding: 6px 10px; font-size: 10px;">
+                        <div style="font-weight: 700; color: #6B21A8; display: flex; justify-content: space-between;">
+                          <span>🎯 [การ์ด 2] ยอดรวมเป้าหมาย และ สลิปเป้าหมาย (Only)</span>
+                          <span style="font-family: var(--font-mono);">฿ 980,000.00 (4 เป้า / 10 สลิป)</span>
+                        </div>
+                        <div style="color: #7E22CE; font-size: 9px; margin-top: 1px;">
+                          ✓ พ่วงเอกสาร: <b>ตารางสารบัญ 13 ช่องเฉพาะบุคคลเป้าหมาย (แยก 1 คน/1 เล่ม)</b> เพิ่มเติม 1 ชุด
+                        </div>
+                      </div>
+                    ` : ''}
+
+                    ${card3Active ? `
+                      <div style="background: #ECFDF5; border: 1px solid #A7F3D0; border-left: 3.5px solid #10B981; border-radius: 5px; padding: 6px 10px; font-size: 10px;">
+                        <div style="font-weight: 700; color: #065F46; display: flex; justify-content: space-between;">
+                          <span>🔗 [การ์ด 3] จำนวนหน้าที่สัมพันธ์กัน (Consistent Corroboration)</span>
+                          <span style="font-family: var(--font-mono);">24 หน้าคู่แชท-สลิป</span>
+                        </div>
+                        <div style="color: #047857; font-size: 9px; margin-top: 1px;">
+                          ✓ พ่วงเอกสาร: <b>สำนวนเฉพาะรายละเอียดที่สัมพันธ์กันระหว่างแชทกับสลิป</b> เพิ่มเติม 1 ชุด
+                        </div>
+                      </div>
+                    ` : ''}
+
+                    ${card4Active ? `
+                      <div style="background: #FFF7ED; border: 1px solid #FED7AA; border-left: 3.5px solid #F97316; border-radius: 5px; padding: 6px 10px; font-size: 10px;">
+                        <div style="font-weight: 700; color: #9A3412; display: flex; justify-content: space-between;">
+                          <span>🛡️ [การ์ด 4] ระบบตรวจหาการซ้ำซ้อน (Deduplication &amp; NET_Detail)</span>
+                          <span style="font-family: var(--font-mono);">พบ 28 จุด / ตัดซ้ำ 12 จุด</span>
+                        </div>
+                        <div style="color: #C2410C; font-size: 9px; margin-top: 1px;">
+                          ✓ พ่วงเอกสาร: <b>รายงานการตรวจจับและคัดกรองสลิปซ้ำ 3 มิติ (Deduplication Audit Matrix)</b> เพิ่มเติม 1 ชุด
+                        </div>
+                      </div>
+                    ` : ''}
+                  </div>
+                `}
+              </div>
+            </div>
+
+            <!-- Bottom Hash & Signature Seal -->
+            <div style="border-top: 1px solid #E2E8F0; padding-top: 8px; margin-top: 8px;">
+              <div style="display: flex; justify-content: space-between; align-items: center; font-size: 8.5px; color: #64748B;">
+                <div>
+                  <b>Digital Chain of Custody:</b> SHA-256 Validated<br>
+                  <span style="font-family: var(--font-mono); color: #0F172A; font-size: 8px;">e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855</span>
+                </div>
+                <div style="text-align: right;">
+                  <b>รับรองเมื่อ:</b> 10 มี.ค. 2568 14:27 น.<br>
+                  <b>สถานะ:</b> บันทึกรับรองฉบับทางการส่งศาล
+                </div>
+              </div>
+            </div>
+
+          </div>
+        `;
+      } 
+      // PAGE 2: 13-COLUMN COURT LEDGER TABLE (PDF INDEX)
+      else if (pageNum === 2) {
+        paper.innerHTML = `
+          <div style="height: 100%; display: flex; flex-direction: column; justify-content: space-between; font-family: var(--font-sans); color: #0F172A;">
+            <div>
+              <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #0F172A; padding-bottom: 8px; margin-bottom: 8px;">
+                <div style="font-size: 12.5px; font-weight: 700; color: #0F172A;">🧾 สารบัญคดีและตารางธุรกรรมการเงิน 13 คอลัมน์ (Index &amp; Ledger)</div>
+                <div style="font-size: 9px; font-family: var(--font-mono); color: #0284C7;">หน้า 2 (สารบัญ)</div>
+              </div>
+
+              <div style="border: 1px solid #CBD5E1; border-radius: 4px; overflow: hidden;">
+                <table style="width: 100%; border-collapse: collapse; font-size: 8.5px; text-align: center;">
+                  <thead>
+                    <tr style="background: #0F172A; color: #FFFFFF;">
+                      <th style="padding: 5px 3px; border: 1px solid #CBD5E1;">ลำดับ</th>
+                      <th style="padding: 5px 3px; border: 1px solid #CBD5E1;">วัน-เวลา</th>
+                      <th style="padding: 5px 3px; border: 1px solid #CBD5E1;">เลขที่อ้างอิง</th>
+                      <th style="padding: 5px 3px; border: 1px solid #CBD5E1;">ผู้โอนเงิน</th>
+                      <th style="padding: 5px 3px; border: 1px solid #CBD5E1;">ผู้รับเงิน</th>
+                      <th style="padding: 5px 3px; border: 1px solid #CBD5E1;">ยอดเงิน (฿)</th>
+                      <th style="padding: 5px 3px; border: 1px solid #CBD5E1;">สถานะสลิป</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr style="background: #FFFFFF;">
+                      <td style="padding: 5px 3px; border: 1px solid #E2E8F0;">01</td>
+                      <td style="padding: 5px 3px; border: 1px solid #E2E8F0; font-family: var(--font-mono);">19/01/68 20:53</td>
+                      <td style="padding: 5px 3px; border: 1px solid #E2E8F0; font-family: var(--font-mono); color: #0284C7;">KBANK0948X01</td>
+                      <td style="padding: 5px 3px; border: 1px solid #E2E8F0;">นายสมชาย ใจดี</td>
+                      <td style="padding: 5px 3px; border: 1px solid #E2E8F0;">น.ส.สุภารัตน์ ดีพร้อม</td>
+                      <td style="padding: 5px 3px; border: 1px solid #E2E8F0; font-weight: 700; color: #059669; font-family: var(--font-mono);">50,000.00</td>
+                      <td style="padding: 5px 3px; border: 1px solid #E2E8F0; color: #059669; font-weight: 600;">✓ ต้นฉบับจริง</td>
+                    </tr>
+                    <tr style="background: #F8FAFC;">
+                      <td style="padding: 5px 3px; border: 1px solid #E2E8F0;">02</td>
+                      <td style="padding: 5px 3px; border: 1px solid #E2E8F0; font-family: var(--font-mono);">19/01/68 21:12</td>
+                      <td style="padding: 5px 3px; border: 1px solid #E2E8F0; font-family: var(--font-mono); color: #0284C7;">BBL449102X02</td>
+                      <td style="padding: 5px 3px; border: 1px solid #E2E8F0;">นายสมชาย ใจดี</td>
+                      <td style="padding: 5px 3px; border: 1px solid #E2E8F0;">นายกิตติพงษ์ วัฒนา</td>
+                      <td style="padding: 5px 3px; border: 1px solid #E2E8F0; font-weight: 700; color: #059669; font-family: var(--font-mono);">120,000.00</td>
+                      <td style="padding: 5px 3px; border: 1px solid #E2E8F0; color: #059669; font-weight: 600;">✓ ต้นฉบับจริง</td>
+                    </tr>
+                    <tr style="background: #FFFFFF;">
+                      <td style="padding: 5px 3px; border: 1px solid #E2E8F0;">03</td>
+                      <td style="padding: 5px 3px; border: 1px solid #E2E8F0; font-family: var(--font-mono);">20/01/68 10:15</td>
+                      <td style="padding: 5px 3px; border: 1px solid #E2E8F0; font-family: var(--font-mono); color: #0284C7;">SCB883190X03</td>
+                      <td style="padding: 5px 3px; border: 1px solid #E2E8F0;">นายสมชาย ใจดี</td>
+                      <td style="padding: 5px 3px; border: 1px solid #E2E8F0;">บริษัท ABC จำกัด</td>
+                      <td style="padding: 5px 3px; border: 1px solid #E2E8F0; font-weight: 700; color: #059669; font-family: var(--font-mono);">100,000.00</td>
+                      <td style="padding: 5px 3px; border: 1px solid #E2E8F0; color: #059669; font-weight: 600;">✓ ต้นฉบับจริง</td>
+                    </tr>
+                    <tr style="background: #FFF1F2;">
+                      <td style="padding: 5px 3px; border: 1px solid #E2E8F0; color: #E11D48;">--</td>
+                      <td style="padding: 5px 3px; border: 1px solid #E2E8F0; font-family: var(--font-mono); color: #E11D48;">19/01/68 20:53</td>
+                      <td style="padding: 5px 3px; border: 1px solid #E2E8F0; font-family: var(--font-mono); color: #E11D48;">KBANK0948X01</td>
+                      <td style="padding: 5px 3px; border: 1px solid #E2E8F0; color: #E11D48;">นายสมชาย ใจดี</td>
+                      <td style="padding: 5px 3px; border: 1px solid #E2E8F0; color: #E11D48;">น.ส.สุภารัตน์ ดีพร้อม</td>
+                      <td style="padding: 5px 3px; border: 1px solid #E2E8F0; color: #E11D48; font-family: var(--font-mono);">[50,000.00]</td>
+                      <td style="padding: 5px 3px; border: 1px solid #E2E8F0; color: #E11D48; font-weight: 700;">✕ ตัดสลิปซ้ำ (หน้า 8)</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div style="font-size: 8.5px; color: #64748B; margin-top: 6px;">
+                * สรุป: สลิปแท้จริง 16 รายการ (ยอดสุทธิ ฿1,450,000.00) / คัดสลิปซ้ำออก 12 รายการ ยอดเงินไม่นับซ้ำ 100%
+              </div>
+            </div>
+
+            <div style="border-top: 1px solid #CBD5E1; padding-top: 6px; font-size: 8.5px; color: #64748B; text-align: center;">
+              "ตารางสารบัญจัดทำตามมาตรฐานนิติวิทยาศาสตร์ ใช้สำหรับอ้างอิงพยานเอกสารในชั้นพนักงานสอบสวนและชั้นศาล"
+            </div>
+          </div>
+        `;
+      }
+      // PAGE 3: CHAT EVIDENCE EXHIBIT (PDF EXHIBIT จ.๑)
+      else if (pageNum === 3) {
+        paper.innerHTML = `
+          <div style="height: 100%; display: flex; flex-direction: column; justify-content: space-between; font-family: var(--font-sans); color: #0F172A;">
+            <div>
+              <!-- Exhibit Plate Header -->
+              <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #0F172A; padding-bottom: 6px; margin-bottom: 8px;">
+                <div style="font-size: 12px; font-weight: 800; color: #0F172A;">เอกสารหมาย จ.๑ (แผ่นที่ ๑) • บทสนทนาแชท (Chat Evidence)</div>
+                <div style="font-size: 9px; font-family: var(--font-mono); color: #0284C7;">CRIM-2568/EV-09482</div>
+              </div>
+
+              <!-- High-Contrast Clean Chat Print Sheet -->
+              <div style="border: 1px solid #CBD5E1; border-radius: 4px; padding: 12px 14px; background: #FAFBFD;">
+                <div style="text-align: center; font-size: 9px; color: #64748B; margin-bottom: 8px; font-weight: 600;">[ บันทึกบทสนทนาประจำวันที่ 19 มกราคม 2568 ]</div>
+                
+                <div style="display: flex; flex-direction: column; gap: 8px; font-size: 10.5px;">
+                  <div style="background: #FFFFFF; border: 1px solid #E2E8F0; padding: 6px 10px; border-radius: 4px;">
+                    <b style="color: #0284C7;">[20:53] นายสมชาย ใจดี:</b> ถึงแล้ว โอนเงินเรียบร้อยแล้วครับ
+                  </div>
+                  <div style="background: #F0FDF4; border: 1px solid #BBF7D0; padding: 6px 10px; border-radius: 4px;">
+                    <b style="color: #15803D;">[20:54] น.ส.สุภารัตน์ ดีพร้อม:</b> รับทราบค่ะ เดี๋ยวเช็คยอดในบัญชีให้ค่ะ
+                  </div>
+                  <div style="background: #FFFFFF; border: 1px solid #E2E8F0; padding: 6px 10px; border-radius: 4px;">
+                    <b style="color: #0284C7;">[20:55] นายสมชาย ใจดี:</b> ส่งสลิปยอด 50,000 บาทให้แล้วตามที่คุยกัน
+                  </div>
+                </div>
+
+                <div style="margin-top: 12px; background: #F1F5F9; border-left: 3px solid #0284C7; padding: 6px 10px; font-size: 9px; color: #334155;">
+                  <b>การตรวจพิสูจน์ (Corroboration Match):</b> ข้อความเวลา 20:55 สอดคล้องกับ Master Slip รหัส KBANK0948X01 (จ.๒) ตรงกัน 100%
+                </div>
+              </div>
+            </div>
+
+            <div style="border-top: 1px solid #CBD5E1; padding-top: 6px; font-size: 8px; color: #64748B; text-align: center;">
+              "พยานเอกสารดิจิทัลผ่านการสกัดข้อความระดับพิกเซล ไม่มีการตัดต่อหรือดัดแปลงเนื้อหาใดๆ"
+            </div>
+          </div>
+        `;
+      }
+      // PAGE 4+: FINANCIAL SLIP EXHIBIT (PDF EXHIBIT จ.๒)
+      else {
+        paper.innerHTML = `
+          <div style="height: 100%; display: flex; flex-direction: column; justify-content: space-between; font-family: var(--font-sans); color: #0F172A;">
+            <div>
+              <!-- Exhibit Plate Header -->
+              <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #0F172A; padding-bottom: 6px; margin-bottom: 8px;">
+                <div style="font-size: 12px; font-weight: 800; color: #0F172A;">เอกสารหมาย จ.๒ (แผ่นที่ ${pageNum - 2}) • สลิปการเงิน (Slip Evidence)</div>
+                <div style="font-size: 9px; font-family: var(--font-mono); color: #0284C7;">MASTER SLIP #0${pageNum - 3 || 1}</div>
+              </div>
+
+              <!-- High-Contrast Clean Master Slip Voucher -->
+              <div style="border: 1px solid #CBD5E1; border-radius: 6px; padding: 14px 16px; background: #FFFFFF; box-shadow: 0 2px 6px rgba(0,0,0,0.04);">
+                <div style="text-align: center; border-bottom: 1px dashed #CBD5E1; padding-bottom: 10px; margin-bottom: 10px;">
+                  <div style="font-size: 11px; color: #64748B;">จำนวนเงินที่โอน (Transfer Amount)</div>
+                  <div style="font-size: 24px; font-weight: 800; color: #059669; font-family: var(--font-mono);">฿ 50,000.00</div>
+                  <div style="font-size: 9.5px; color: #10B981; font-weight: 700; margin-top: 2px;">✓ ผ่านการพิสูจน์สลิปแท้จริง (Unique Master Slip)</div>
+                </div>
+
+                <div style="font-size: 10.5px; display: flex; flex-direction: column; gap: 7px; color: #1E293B;">
+                  <div style="display: flex; justify-content: space-between;"><span style="color: #64748B;">วัน-เวลาโอน:</span><b style="font-family: var(--font-mono);">19 มกราคม 2568 - 20:53:12 น.</b></div>
+                  <div style="display: flex; justify-content: space-between;"><span style="color: #64748B;">ผู้โอนเงิน:</span><b>นายสมชาย ใจดี (ธ.กสิกรไทย)</b></div>
+                  <div style="display: flex; justify-content: space-between;"><span style="color: #64748B;">ผู้รับเงิน:</span><b>น.ส.สุภารัตน์ ดีพร้อม (ธ.กรุงเทพ)</b></div>
+                  <div style="display: flex; justify-content: space-between;"><span style="color: #64748B;">เลขที่อ้างอิง:</span><b style="font-family: var(--font-mono); color: #0284C7;">KBANK0948X01</b></div>
+                  <div style="display: flex; justify-content: space-between;"><span style="color: #64748B;">บันทึกช่วยจำ:</span><span>ค่าดูแลศูนย์พักพิงแมว</span></div>
+                </div>
+
+                <div style="margin-top: 12px; background: #F1F5F9; border-radius: 4px; padding: 6px 10px; font-size: 9.5px; color: #334155; display: flex; justify-content: space-between;">
+                  <span>🔍 พบในสำนวน: <b>3 จุด</b></span>
+                  <span style="color: #DC2626; font-weight: 700;">(ตัดสลิปซ้ำออก 2 จุด — ยอดไม่เบิ้ล 100%)</span>
+                </div>
+              </div>
+            </div>
+
+            <div style="border-top: 1px solid #CBD5E1; padding-top: 6px; font-size: 8px; color: #64748B; text-align: center;">
+              "พยานเอกสารดิจิทัลผ่านการรับรองตาม พ.ร.บ.ธุรกรรมทางอิเล็กทรอนิกส์ และมาตรฐาน ISO/IEC 27037"
+            </div>
+          </div>
+        `;
+      }
+    }
+
+    // Mode Switch Handler (Synchronized with PDF Page Navigation)
+    function switchMode(mode) {
+      if (mode === 'COVER') {
+        renderPdfStage(1);
+      } else if (mode === 'INDEX') {
+        renderPdfStage(2);
+      } else if (mode === 'CHAT') {
+        renderPdfStage(3);
+      } else if (mode === 'SLIP') {
+        renderPdfStage(4);
+      }
+    }
+
+    // Workflow Stepper Handler
+    let currentStep = 1;
+    function setStep(stepNum) {
+      currentStep = stepNum;
+      document.querySelectorAll('.step-item').forEach((el, idx) => {
+        el.classList.toggle('active', idx + 1 === stepNum);
+      });
+      showToast(`📍 เปลี่ยนสู่ขั้นตอนที่ ${stepNum}: ${['นำเข้าข้อมูล', 'ตรวจสอบและประมวลผล', 'สรุปสาระสำคัญ', 'ส่งออกเอกสาร'][stepNum - 1]}`);
+    }
+
+    // Page Navigation
+    function prevPage() {
+      if (currentPage > 1) {
+        renderPdfStage(currentPage - 1);
+      }
+    }
+
+    function nextPage() {
+      if (currentPage < totalPages) {
+        renderPdfStage(currentPage + 1);
+      }
+    }
+
+    function updatePageDisplay() {
+      const pageSimple = document.getElementById('pageSimpleIndicator');
+      const zoomCounter = document.getElementById('zoomPageCounter');
+      if (pageSimple) pageSimple.innerText = `หน้า ${currentPage} / ${totalPages}`;
+      if (zoomCounter) zoomCounter.innerText = `${currentPage} / ${totalPages}`;
+    }
+
+    // Zoom Handling
+    let currentZoom = 100;
+    function applyZoom(zoomVal) {
+      currentZoom = parseInt(zoomVal, 10);
+      const paper = document.getElementById('a4Paper');
+      paper.style.transform = `scale(${currentZoom / 100})`;
+      document.getElementById('zoomSelect').value = String(currentZoom);
+    }
+
+    function zoomChange(delta) {
+      currentZoom = Math.min(Math.max(currentZoom + delta, 50), 175);
+      applyZoom(currentZoom);
+    }
+
+    function fitToScreen() {
+      const viewport = document.querySelector('.canvas-viewport');
+      const paper = document.getElementById('a4Paper');
+      if (!viewport || !paper) return;
+      const scaleH = (viewport.clientHeight - 30) / 678;
+      const scaleW = (viewport.clientWidth - 30) / 480;
+      const fitScale = Math.min(scaleH, scaleW, 1.0);
+      currentZoom = Math.round(fitScale * 100);
+      paper.style.transform = `scale(${fitScale})`;
+      document.getElementById('zoomSelect').value = String(currentZoom);
+    }
+
+    window.addEventListener('resize', fitToScreen);
+    window.addEventListener('DOMContentLoaded', () => {
+      fitToScreen();
+      renderPdfStage(1);
+    });
+
+    // Dynamic Target Persons State (Populated dynamically by OCR & Chat Entity Extractor)
+    // Focuses strictly on Target Persons under investigation (Persons of Interest) and their actions!
+    let detectedPersons = [
+      { id: 1, name: "นายสมชาย ใจดี", role: "ผู้ต้องสงสัย / สั่งการโอนเงิน", action: "โอนออก 5 รายการ • สั่งการในแชท 7 จุด", amount: "฿ 720,000.00", chatCount: 7, slipCount: 5, checked: true },
+      { id: 2, name: "น.ส.สุภารัตน์ ดีพร้อม", role: "บัญชีปลายทางรับเงิน", action: "รับเงินโอน 3 รายการ • ส่งสลิปยืนยัน 5 จุด", amount: "฿ 450,000.00", chatCount: 5, slipCount: 3, checked: false },
+      { id: 3, name: "นายกิตติพงษ์ วัฒนา", role: "บัญชีรับโอนช่วงต่อ (บัญชีม้า)", action: "รับโอนเงิน 2 รายการ • คุยทวงถาม 3 จุด", amount: "฿ 180,000.00", chatCount: 3, slipCount: 2, checked: false },
+      { id: 4, name: "บริษัท ABC จำกัด", role: "นิติบุคคลคู่กรณี", action: "รับโอนค่าอุปกรณ์ 2 ครั้ง", amount: "฿ 100,000.00", chatCount: 1, slipCount: 2, checked: false }
+    ];
+
+    function renderDetectedPersons(list = detectedPersons) {
+      const container = document.getElementById('targetListContainer');
+      const counterLabel = document.getElementById('targetCountBadge');
+      if (counterLabel) counterLabel.innerText = `Auto-Detect (${list.length})`;
+
+      if (!list || list.length === 0) {
+        container.innerHTML = `
+          <div style="padding: 16px 12px; text-align: center; color: var(--text-dim); font-size: 11.5px; border: 1px dashed rgba(255,255,255,0.15); border-radius: var(--radius-sm); background: rgba(255,255,255,0.02);">
+            🔍 ยังไม่พบข้อมูลการกระทำของบุคคลเป้าหมาย<br>
+            <span style="font-size: 10px; color: var(--text-muted); margin-top: 4px; display: inline-block;">
+              (ระบบจะสกัดการกระทำและยอดเงินจากสลิปและแชทอัตโนมัติ)
+            </span>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = list.map(p => `
+        <div class="glass-card target-card ${p.checked ? 'selected' : ''}" onclick="toggleTargetCheck(${p.id})">
+          <div class="target-card-top">
+            <div class="target-left">
+              <input type="checkbox" class="target-checkbox" id="chkTarget${p.id}" ${p.checked ? 'checked' : ''} onclick="event.stopPropagation(); toggleTargetCheck(${p.id})">
+              <div class="target-name">${p.name}</div>
+            </div>
+            <span class="target-amount-badge">${p.amount}</span>
+          </div>
+          <div class="target-action-desc">
+            <span>⚡</span>
+            <span>${p.action}</span>
+          </div>
+          <div class="target-card-bottom">
+            <div class="target-badges-group">
+              <span class="badge-breakdown badge-chat-ev" title="พบในแชท ${p.chatCount} ครั้ง">💬 แชท ${p.chatCount}</span>
+              <span class="badge-breakdown badge-slip-ev" title="พบในสลิป ${p.slipCount} ใบ">📄 สลิป ${p.slipCount}</span>
+            </div>
+            <button class="btn-target-details" onclick="event.stopPropagation(); viewTargetActions(${p.id})">
+              <span>รายละเอียด &gt;</span>
+            </button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function viewTargetActions(targetId) {
+      const p = detectedPersons.find(item => item.id === targetId);
+      if (!p) return;
+      alert(`👤 รายละเอียดการกระทำของบุคคลเป้าหมาย: ${p.name}\n\n• บทบาท: ${p.role}\n• พฤติการณ์การกระทำ: ${p.action}\n• ยอดเงินรวมที่เกี่ยวข้อง: ${p.amount}\n• ความถี่หลักฐาน: 💬 แชท ${p.chatCount} จุด | 📄 สลิป ${p.slipCount} ใบ\n\n(สอดคล้องกับ System Flow ข้อ 7: รายชื่อเป้าหมาย เปลี่ยนเป็น รายละเอียด)`);
+    }
+
+    renderDetectedPersons();
+
+    // Target Filtering
+    function filterTargets(val) {
+      const clean = val.replace(/^(นาย|นาง|นางสาว|น\.ส\.|คุณ)\s*/g, '').trim().toLowerCase();
+      if (!clean) {
+        renderDetectedPersons(detectedPersons);
+        return;
+      }
+      const filtered = detectedPersons.filter(p => p.name.toLowerCase().includes(clean));
+      renderDetectedPersons(filtered);
+    }
+
+    function toggleTargetCheck(targetId) {
+      const person = detectedPersons.find(p => p.id === targetId);
+      if (person) {
+        person.checked = !person.checked;
+        const chk = document.getElementById(`chkTarget${targetId}`);
+        if (chk) chk.checked = person.checked;
+      }
+    }
+
+    function promptAddTarget() {
+      const name = prompt('กรอกชื่อ-นามสกุล บุคคลเป้าหมายใหม่:');
+      if (name && name.trim()) {
+        const newId = detectedPersons.length ? Math.max(...detectedPersons.map(p => p.id)) + 1 : 1;
+        detectedPersons.push({
+          id: newId,
+          name: name.trim(),
+          role: "ระบุเป้าหมายเพิ่มเติม",
+          chatCount: 0,
+          slipCount: 0,
+          checked: true
+        });
+        renderDetectedPersons();
+      }
+    }
+
+    // Modal Control
+    function openSummaryModal(tab) {
+      document.getElementById('summaryModal').classList.add('active');
+      if (tab) switchModalTab(tab);
+    }
+
+    function closeSummaryModal() {
+      document.getElementById('summaryModal').classList.remove('active');
+    }
+
+    function switchModalTab(tabName) {
+      const tabs = ['master', 'duplicate', 'ledger'];
+      tabs.forEach(t => {
+        const btn = document.getElementById(`tabBtn${t.charAt(0).toUpperCase() + t.slice(1)}`);
+        const pane = document.getElementById(`pane${t.charAt(0).toUpperCase() + t.slice(1)}`);
+        if (btn) btn.classList.toggle('active', t === tabName);
+        if (pane) pane.classList.toggle('active', t === tabName);
+      });
+    }
+
+    function togglePassVisibility() {
+      const input = document.getElementById('pdfPasswordInput');
+      input.type = input.type === 'password' ? 'text' : 'password';
+    }
+
+    // File Upload / Removal
+    function handleUpload(files) {
+      if (!files || files.length === 0) return;
+      const chip = document.getElementById('fileChip');
+      chip.style.display = 'flex';
+      chip.querySelector('span:last-child').innerText = `📄 ${files[0].name} (${(files[0].size / 1024 / 1024).toFixed(1)} MB)`;
+    }
+
+    function removeFile() {
+      document.getElementById('fileChip').style.display = 'none';
+    }
+
+    function handleToggleConsistent(isChecked) {
+      console.log(`[Consistent Toggle] Only corroborated: ${isChecked}`);
+    }
+
+    function syncData() {
+      alert('🔄 ซิงค์ข้อมูลกับฐานข้อมูลกลางและอัปเดตสลิปล่าสุดเรียบร้อยแล้ว');
+    }
+
+    function startProcessing() {
+      setStep(2);
+      alert('⚙️ เริ่มกระบวนการประมวลผล สแกน OCR พิกเซล และสไลซ์หน้าเอกสารสำหรับศาล...');
+    }
+
+    // Step 10: 4D Summary Cards Interactive Toggle & Status Management
+    let activeAddonCards = { 1: false, 2: false, 3: false, 4: false };
+
+    function toggleSummaryCard(cardId) {
+      activeAddonCards[cardId] = !activeAddonCards[cardId];
+      const isActive = activeAddonCards[cardId];
+
+      const card = document.getElementById(`cardSummary${cardId}`);
+      const ledText = document.getElementById(`cardLedText${cardId}`);
+      const badge = document.getElementById(`cardBadge${cardId}`);
+
+      if (card) card.classList.toggle('card-active', isActive);
+      if (ledText) ledText.innerText = isActive ? '✓ แนบแล้ว' : '● พร้อม';
+      if (badge) badge.innerText = isActive ? '✓ แนบพ่วงไฟล์แล้ว' : 'คลิกเพื่อแนบ';
+
+      // Re-render PDF stage live if currently viewing Cover Page (page 1)
+      if (currentPage === 1) {
+        renderPdfStage(1);
+      }
+
+      const cardDetails = {
+        1: { title: "การ์ด 1: ยอดรวมบัญชี & จำนวนสลิป", file: "ตารางสารบัญ 13 ช่อง (รวมทุกบัญชี)" },
+        2: { title: "การ์ด 2: ยอดรวมเป้าหมาย & สลิปเป้าหมาย", file: "ตารางสารบัญ 13 ช่องเฉพาะเป้าหมาย (1 เป้า/1 คน)" },
+        3: { title: "การ์ด 3: แชท-สลิปที่สัมพันธ์กัน (Consistent)", file: "สำนวนเฉพาะจุดที่แชทสัมพันธ์กับสลิป" },
+        4: { title: "การ์ด 4: ตรวจจับสลิปซ้ำ (NET_Detail)", file: "รายงานสแกนตรวจหาและตัดสลิปซ้ำ 3 มิติ" }
+      };
+
+      const item = cardDetails[cardId];
+      if (isActive) {
+        showToast(`✅ [${item.title}]\n• สถานะไฟ LED: ทำงาน (Active)\n• บันทึกลงหน้าปกเรียบร้อย\n• พ่วงชุดไฟล์: "${item.file}" เพิ่มอีก 1 ชุด`);
+      } else {
+        showToast(`⚪ [${item.title}]\n• สถานะไฟ LED: พร้อมแนบ (Standby)\n• ถอดชุดไฟล์พ่วงและลบข้อมูลออกจากหน้าปกแล้ว`);
+      }
+    }
+
+    // Elegant Glassmorphism Toast Notification
+    function showToast(msg) {
+      let toast = document.getElementById('appToast');
+      if (!toast) {
+        toast = document.createElement('div');
+        toast.id = 'appToast';
+        toast.style.cssText = `
+          position: fixed;
+          bottom: 46px;
+          right: 24px;
+          background: rgba(13, 23, 42, 0.92);
+          backdrop-filter: blur(16px);
+          -webkit-backdrop-filter: blur(16px);
+          border: 1px solid rgba(56, 189, 248, 0.4);
+          box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6), 0 0 16px rgba(0, 161, 228, 0.35);
+          color: #FFFFFF;
+          padding: 12px 18px;
+          border-radius: 10px;
+          font-size: 11.5px;
+          line-height: 1.5;
+          z-index: 9999;
+          white-space: pre-line;
+          pointer-events: none;
+          opacity: 0;
+          transform: translateY(12px);
+          transition: all 220ms cubic-bezier(0.16, 1, 0.3, 1);
+        `;
+        document.body.appendChild(toast);
+      }
+      toast.innerText = msg;
+      toast.style.opacity = '1';
+      toast.style.transform = 'translateY(0)';
+      
+      clearTimeout(window.__toastTimer);
+      window.__toastTimer = setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateY(12px)';
+      }, 3600);
+    }
+
+    // Court PDF Package Exporter (รองรับมาตรฐานการส่งไฟล์ PDF และชุดไฟล์พ่วงจากการ์ด)
+    function exportCourtPdf() {
+      const pw = document.getElementById('pdfPasswordInput').value;
+      const card1 = activeAddonCards[1];
+      const card2 = activeAddonCards[2];
+      const card3 = activeAddonCards[3];
+      const card4 = activeAddonCards[4];
+
+      const activeCount = [card1, card2, card3, card4].filter(Boolean).length;
+
+      let packageFiles = [
+        "1. 📄 [ชุดมาตรฐานหลัก] แฟ้มพยานหลักฐานดิจิทัล (Digital_Evidence_Master.pdf)\n" +
+        "   - ภาพแชททั้งหมด และ/หรือ ภาพสลิปทั้งหมดตามที่นำเข้าจริง ไม่จำกัดจำนวนหน้า\n" +
+        "   - หน้าปกมาตรฐานหลักฐานดิจิทัล ผ่านการรับรองระบบ (พร้อมเขียนบันทึกตามการ์ดที่กด)"
+      ];
+
+      let idx = 2;
+      if (card1) {
+        packageFiles.push(`${idx++}. 📎 [ชุดพ่วงการ์ด 1] ตารางสารบัญคดี_13_ช่อง_ยอดรวมทุกบัญชี.pdf / .xlsx`);
+      }
+      if (card2) {
+        packageFiles.push(`${idx++}. 📎 [ชุดพ่วงการ์ด 2] ตารางสารบัญคดี_13_ช่อง_เฉพาะบุคคลเป้าหมาย (แยก 1 คน/1 เล่ม).pdf / .xlsx`);
+      }
+      if (card3) {
+        packageFiles.push(`${idx++}. 📎 [ชุดพ่วงการ์ด 3] สำนวนคัดเฉพาะรายละเอียดที่สัมพันธ์กันระหว่างแชทกับสลิป_Consistent.pdf`);
+      }
+      if (card4) {
+        packageFiles.push(`${idx++}. 📎 [ชุดพ่วงการ์ด 4] รายงานระบบสแกนตรวจหาและตัดสลิปซ้ำ_Deduplication_Audit.pdf`);
+      }
+
+      alert(
+        `🏛️ ยืนยันการส่งออกสำนวนพยานหลักฐานสำหรับศาล (Court Export Package)\n` +
+        `------------------------------------------------------------\n` +
+        `🔒 การเข้ารหัส: ${pw ? 'เปิดใช้งาน (AES-256)' : 'ไม่มีรหัสผ่าน'}\n` +
+        `📑 รูปแบบมาตรฐาน: รวมภาพแชท/สลิปครบถ้วน พร้อมหน้าปกรับรอง\n` +
+        `⚡ การ์ดเสริมที่เลือกพ่วง: ${activeCount} / 4 รายการ\n\n` +
+        `📦 สารบบไฟล์ในแฟ้มส่งมอบ (Dossier Package):\n\n` +
+        packageFiles.join('\n\n') +
+        `\n\n------------------------------------------------------------\n` +
+        `✅ ตรวจสอบหน้าปก: ${activeCount > 0 ? 'เขียนบันทึกสรุปตามการ์ดลงในหน้าปกแล้ว' : 'หน้าปกมาตรฐาน Clean Mode (ไม่ระบุสรุป)'}\n` +
+        `ระบบพร้อมจัดพิมพ์และดาวน์โหลดแพ็กเกจส่งศาลทันที!`
+      );
+      setStep(4);
+    }
+  </script>
+
+</body>
+</html>

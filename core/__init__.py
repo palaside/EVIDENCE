@@ -1,0 +1,3 @@
+"""
+Digital Evidence Core Package
+"""

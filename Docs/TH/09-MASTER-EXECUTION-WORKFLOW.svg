@@ -1,0 +1,194 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="2100" height="1550" viewBox="0 0 2100 1550">
+  <defs>
+    <style>
+      .bg { fill: #f8fafc; }
+      .title { font-family: Sarabun, Tahoma, Arial, sans-serif; font-size: 46px; font-weight: 800; fill: #0f172a; }
+      .subtitle { font-family: Sarabun, Tahoma, Arial, sans-serif; font-size: 22px; fill: #475569; }
+      .section { font-family: Sarabun, Tahoma, Arial, sans-serif; font-size: 26px; font-weight: 800; fill: #0f172a; }
+      .node-title { font-family: Sarabun, Tahoma, Arial, sans-serif; font-size: 21px; font-weight: 800; fill: #0f172a; }
+      .node-body { font-family: Sarabun, Tahoma, Arial, sans-serif; font-size: 17px; fill: #334155; }
+      .small { font-family: Sarabun, Tahoma, Arial, sans-serif; font-size: 15px; fill: #475569; }
+      .skill { font-family: Sarabun, Tahoma, Arial, sans-serif; font-size: 16px; font-weight: 800; fill: #075985; }
+      .oktext { font-family: Sarabun, Tahoma, Arial, sans-serif; font-size: 16px; font-weight: 800; fill: #166534; }
+      .warntext { font-family: Sarabun, Tahoma, Arial, sans-serif; font-size: 16px; font-weight: 800; fill: #991b1b; }
+      .panel { fill: #ffffff; stroke: #e2e8f0; stroke-width: 2; }
+      .start { fill: #dcfce7; stroke: #16a34a; stroke-width: 3; }
+      .process { fill: #e0f2fe; stroke: #0284c7; stroke-width: 3; }
+      .decision { fill: #fef3c7; stroke: #d97706; stroke-width: 3; }
+      .review { fill: #ede9fe; stroke: #7c3aed; stroke-width: 3; }
+      .blocker { fill: #fee2e2; stroke: #dc2626; stroke-width: 3; }
+      .artifact { fill: #f1f5f9; stroke: #64748b; stroke-width: 2; }
+      .line { stroke: #334155; stroke-width: 4; fill: none; marker-end: url(#arrow); }
+      .softline { stroke: #64748b; stroke-width: 3; fill: none; marker-end: url(#arrow-soft); stroke-dasharray: 9 8; }
+    </style>
+    <marker id="arrow" markerWidth="14" markerHeight="14" refX="11" refY="5" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L12,5 L0,10 Z" fill="#334155"/>
+    </marker>
+    <marker id="arrow-soft" markerWidth="14" markerHeight="14" refX="11" refY="5" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L12,5 L0,10 Z" fill="#64748b"/>
+    </marker>
+    <filter id="shadow" x="-8%" y="-8%" width="116%" height="124%">
+      <feDropShadow dx="0" dy="8" stdDeviation="7" flood-color="#0f172a" flood-opacity="0.10"/>
+    </filter>
+  </defs>
+
+  <rect class="bg" width="2100" height="1550"/>
+  <text class="title" x="70" y="78">Master Execution Workflow</text>
+  <text class="subtitle" x="70" y="118">Process Flowchart with Decision Logic + Skill Invocation Points สำหรับ DIGITAL_EVIDENCE</text>
+
+  <rect class="panel" x="55" y="155" width="1990" height="1180" rx="24" filter="url(#shadow)"/>
+  <rect class="panel" x="55" y="1370" width="1990" height="125" rx="24" filter="url(#shadow)"/>
+
+  <!-- Header columns -->
+  <text class="section" x="95" y="205">A. Entry &amp; Context</text>
+  <text class="section" x="575" y="205">B. Decision Logic</text>
+  <text class="section" x="1060" y="205">C. Execution Path</text>
+  <text class="section" x="1580" y="205">D. Review, Gate, Save</text>
+
+  <!-- A Entry -->
+  <rect class="start" x="95" y="245" width="360" height="90" rx="18"/>
+  <text class="node-title" x="125" y="280">START: รับคำสั่ง</text>
+  <text class="node-body" x="125" y="308">รับโจทย์จากผู้ใช้ + ตรวจ scope</text>
+
+  <rect class="process" x="95" y="380" width="360" height="118" rx="18"/>
+  <text class="node-title" x="125" y="416">Context Hydration</text>
+  <text class="skill" x="125" y="446">🛠️ understand + memory</text>
+  <text class="node-body" x="125" y="474">scan โปรเจกต์, อ่าน behavior/mistakes</text>
+
+  <rect class="blocker" x="95" y="540" width="360" height="110" rx="18"/>
+  <text class="node-title" x="125" y="576">Runtime Warning</text>
+  <text class="node-body" x="125" y="604">py.exe ใช้งานไม่ได้ในรอบตรวจ</text>
+  <text class="node-body" x="125" y="630">ใช้ python.exe เป็นทางสำรองได้</text>
+
+  <!-- B decisions -->
+  <polygon class="decision" points="705,250 875,320 705,390 535,320"/>
+  <text class="node-title" x="642" y="313">งานสร้างระบบ?</text>
+  <text class="node-body" x="650" y="340">Create / Build / Generate</text>
+
+  <polygon class="decision" points="705,455 875,525 705,595 535,525"/>
+  <text class="node-title" x="635" y="518">งานหลักฐาน?</text>
+  <text class="node-body" x="638" y="545">Slip / Chat / Dashboard</text>
+
+  <polygon class="decision" points="705,660 875,730 705,800 535,730"/>
+  <text class="node-title" x="640" y="723">งานอัตโนมัติ?</text>
+  <text class="node-body" x="642" y="750">Watcher / Schedule / Inbox</text>
+
+  <rect class="process" x="535" y="875" width="340" height="115" rx="18"/>
+  <text class="node-title" x="565" y="913">Non-Project Task</text>
+  <text class="node-body" x="565" y="943">ตอบ/แก้เอกสาร/วิเคราะห์เฉพาะจุด</text>
+  <text class="skill" x="565" y="970">🛠️ เลือกสกิลเฉพาะงานเท่าที่จำเป็น</text>
+
+  <!-- C execution paths -->
+  <rect class="process" x="1015" y="245" width="420" height="140" rx="18"/>
+  <text class="node-title" x="1045" y="280">Path 1: Vibe SDLC 8 Steps</text>
+  <text class="skill" x="1045" y="310">🛠️ sdlc</text>
+  <text class="node-body" x="1045" y="338">0 Idea → 1 Specify → 2 Plan → 3 Tasks</text>
+  <text class="node-body" x="1045" y="364">4 Implement → 5 Test → 6 Deploy → 7 Operate</text>
+
+  <rect class="blocker" x="1015" y="410" width="420" height="80" rx="18"/>
+  <text class="node-title" x="1045" y="443">Mapping Gap</text>
+  <text class="node-body" x="1045" y="470">ยังไม่พบ sdlc-skills.yaml เป็น SSOT</text>
+
+  <rect class="process" x="1015" y="540" width="420" height="145" rx="18"/>
+  <text class="node-title" x="1045" y="575">Path 2A: Slip Pipeline</text>
+  <text class="skill" x="1045" y="605">🛠️ OCR_Slip / Typhoon_OCR / Summary_Table</text>
+  <text class="node-body" x="1045" y="633">QR → OCR → Vision → Normalize → Dedup</text>
+  <text class="node-body" x="1045" y="660">Excel/JSON/PDF artifacts</text>
+
+  <rect class="process" x="1015" y="720" width="420" height="145" rx="18"/>
+  <text class="node-title" x="1045" y="755">Path 2B: Chat Pipeline</text>
+  <text class="skill" x="1045" y="785">🛠️ List_names / Dicut_Chat / Search_Slip</text>
+  <text class="node-body" x="1045" y="813">Group → Slice → Stitch → PDF → Index</text>
+  <text class="node-body" x="1045" y="840">Cover/Index แยกเล่ม + Hash Cert</text>
+
+  <rect class="process" x="1015" y="900" width="420" height="125" rx="18"/>
+  <text class="node-title" x="1045" y="935">Path 2C: Dashboard</text>
+  <text class="skill" x="1045" y="965">🛠️ dashboard/read-only state</text>
+  <text class="node-body" x="1045" y="993">อ่าน Folder_Out/*.json → ค้นหา → เปิด PDF</text>
+
+  <rect class="process" x="1015" y="1065" width="420" height="120" rx="18"/>
+  <text class="node-title" x="1045" y="1100">Path 3: Automation</text>
+  <text class="skill" x="1045" y="1130">🛠️ hotfolder-agent / tick / watcher</text>
+  <text class="node-body" x="1045" y="1158">งานซ้ำตามเวลา/ไฟล์เข้า ให้ผูก hotfolder ก่อน</text>
+
+  <!-- D review gate save -->
+  <rect class="review" x="1560" y="245" width="400" height="110" rx="18"/>
+  <text class="node-title" x="1590" y="280">Fast Review Loop</text>
+  <text class="skill" x="1590" y="310">🛠️ Code_Review</text>
+  <text class="node-body" x="1590" y="338">เรียกทุก loop สำคัญก่อนรวมผล</text>
+
+  <rect class="review" x="1560" y="400" width="400" height="110" rx="18"/>
+  <text class="node-title" x="1590" y="435">Production Review</text>
+  <text class="skill" x="1590" y="465">🛠️ Code_Review_Quality</text>
+  <text class="node-body" x="1590" y="493">เรียกหลัง Code_Review ก่อน production</text>
+
+  <rect class="review" x="1560" y="555" width="400" height="125" rx="18"/>
+  <text class="node-title" x="1590" y="590">Pre-Delivery Gate</text>
+  <text class="skill" x="1590" y="620">🛠️ pre_delivery_quality_gate.py</text>
+  <text class="oktext" x="1590" y="648">รอบล่าสุด: ALL GREEN 10/10</text>
+
+  <polygon class="decision" points="1760,735 1940,805 1760,875 1580,805"/>
+  <text class="node-title" x="1705" y="798">Gate ผ่าน?</text>
+  <text class="node-body" x="1695" y="825">ALL GREEN เท่านั้น</text>
+
+  <rect class="process" x="1560" y="930" width="400" height="110" rx="18"/>
+  <text class="node-title" x="1590" y="965">Auto Gap-Closing</text>
+  <text class="node-body" x="1590" y="995">ถ้า fail ต้องแก้ที่ต้นตอ แล้ววน Review</text>
+  <text class="node-body" x="1590" y="1022">ห้ามส่งมอบงานตกเกณฑ์</text>
+
+  <rect class="artifact" x="1560" y="1085" width="400" height="100" rx="18"/>
+  <text class="node-title" x="1590" y="1120">Deliver Artifacts</text>
+  <text class="node-body" x="1590" y="1150">ส่งมอบพร้อม path/หลักฐานผลรันจริง</text>
+
+  <rect class="blocker" x="1560" y="1225" width="400" height="80" rx="18"/>
+  <text class="node-title" x="1590" y="1258">Save Hook Blocker</text>
+  <text class="node-body" x="1590" y="1285">ไม่พบ tools/save-state.py ใน workspace</text>
+
+  <!-- Arrows main -->
+  <path class="line" d="M275 335 L275 380"/>
+  <path class="line" d="M455 439 C495 439 495 320 535 320"/>
+  <path class="line" d="M705 390 L705 455"/>
+  <path class="line" d="M705 595 L705 660"/>
+  <path class="line" d="M705 800 L705 875"/>
+
+  <path class="line" d="M875 320 C930 320 955 315 1015 315"/>
+  <text class="small" x="900" y="300">YES</text>
+  <path class="line" d="M875 525 C930 525 955 610 1015 610"/>
+  <text class="small" x="900" y="542">YES: Slip</text>
+  <path class="softline" d="M875 525 C930 525 955 790 1015 790"/>
+  <text class="small" x="900" y="735">YES: Chat</text>
+  <path class="softline" d="M875 525 C930 525 955 960 1015 960"/>
+  <text class="small" x="900" y="920">YES: Dashboard</text>
+  <path class="line" d="M875 730 C930 730 955 1125 1015 1125"/>
+  <text class="small" x="900" y="1110">YES</text>
+
+  <path class="line" d="M1435 315 C1490 315 1510 300 1560 300"/>
+  <path class="line" d="M1760 355 L1760 400"/>
+  <path class="line" d="M1760 510 L1760 555"/>
+  <path class="line" d="M1760 680 L1760 735"/>
+  <path class="line" d="M1760 875 L1760 930"/>
+  <text class="small" x="1785" y="910">NO</text>
+  <path class="line" d="M1940 805 C1995 805 1995 1135 1960 1135"/>
+  <text class="small" x="1955" y="790">YES</text>
+  <path class="line" d="M1760 1040 L1760 1085"/>
+  <path class="line" d="M1760 1185 L1760 1225"/>
+
+  <!-- Loopback -->
+  <path class="softline" d="M1560 985 C1485 985 1510 300 1435 300"/>
+  <text class="small" x="1455" y="950">วนแก้ที่ต้นตอ</text>
+
+  <!-- Bottom legend -->
+  <text class="section" x="95" y="1418">Legend</text>
+  <rect class="start" x="220" y="1394" width="28" height="24" rx="5"/>
+  <text class="small" x="260" y="1412">เริ่ม/ผ่าน</text>
+  <rect class="process" x="370" y="1394" width="28" height="24" rx="5"/>
+  <text class="small" x="410" y="1412">Process</text>
+  <rect class="decision" x="520" y="1394" width="28" height="24" rx="5"/>
+  <text class="small" x="560" y="1412">Decision</text>
+  <rect class="review" x="690" y="1394" width="28" height="24" rx="5"/>
+  <text class="small" x="730" y="1412">Review/Gate</text>
+  <rect class="blocker" x="890" y="1394" width="28" height="24" rx="5"/>
+  <text class="small" x="930" y="1412">Blocker/ต้องแก้</text>
+  <text class="skill" x="1160" y="1412">🛠️ = Skill Invocation Point</text>
+  <text class="small" x="95" y="1462">หลักการสำคัญ: Inspect Before Act → Skill ตามจังหวะ → Review → Gate → Auto-fix loop → ส่งมอบเฉพาะเมื่อผ่านหลักฐานจริง</text>
+</svg>

@@ -1,0 +1,165 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="2200" height="1500" viewBox="0 0 2200 1500">
+  <defs>
+    <style>
+      .bg { fill: #f8fafc; }
+      .title { font-family: Sarabun, Tahoma, Arial, sans-serif; font-size: 48px; font-weight: 800; fill: #0f172a; }
+      .subtitle { font-family: Sarabun, Tahoma, Arial, sans-serif; font-size: 23px; fill: #475569; }
+      .section { font-family: Sarabun, Tahoma, Arial, sans-serif; font-size: 26px; font-weight: 800; fill: #0f172a; }
+      .node-title { font-family: Sarabun, Tahoma, Arial, sans-serif; font-size: 23px; font-weight: 800; fill: #0f172a; }
+      .node-body { font-family: Sarabun, Tahoma, Arial, sans-serif; font-size: 18px; fill: #334155; }
+      .small { font-family: Sarabun, Tahoma, Arial, sans-serif; font-size: 16px; fill: #475569; }
+      .label { font-family: Sarabun, Tahoma, Arial, sans-serif; font-size: 17px; font-weight: 800; fill: #0f172a; }
+      .panel { fill: #ffffff; stroke: #e2e8f0; stroke-width: 2; }
+      .upload { fill: #dbeafe; stroke: #2563eb; stroke-width: 3; }
+      .process { fill: #e0f2fe; stroke: #0284c7; stroke-width: 3; }
+      .decision { fill: #fef3c7; stroke: #d97706; stroke-width: 3; }
+      .chat { fill: #dcfce7; stroke: #16a34a; stroke-width: 3; }
+      .slip { fill: #ede9fe; stroke: #7c3aed; stroke-width: 3; }
+      .review { fill: #fff7ed; stroke: #ea580c; stroke-width: 3; }
+      .error { fill: #fee2e2; stroke: #dc2626; stroke-width: 3; }
+      .output { fill: #f1f5f9; stroke: #64748b; stroke-width: 3; }
+      .line { stroke: #334155; stroke-width: 4; fill: none; marker-end: url(#arrow); }
+      .softline { stroke: #64748b; stroke-width: 3; fill: none; marker-end: url(#arrowSoft); stroke-dasharray: 9 8; }
+    </style>
+    <marker id="arrow" markerWidth="14" markerHeight="14" refX="11" refY="5" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L12,5 L0,10 Z" fill="#334155"/>
+    </marker>
+    <marker id="arrowSoft" markerWidth="14" markerHeight="14" refX="11" refY="5" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L12,5 L0,10 Z" fill="#64748b"/>
+    </marker>
+    <filter id="shadow" x="-8%" y="-8%" width="116%" height="124%">
+      <feDropShadow dx="0" dy="8" stdDeviation="7" flood-color="#0f172a" flood-opacity="0.10"/>
+    </filter>
+  </defs>
+
+  <rect class="bg" width="2200" height="1500"/>
+  <text class="title" x="70" y="78">User Upload → Detect → Preview → Process Flow</text>
+  <text class="subtitle" x="70" y="118">ลำดับขั้นตอนใช้งานจริง: อัปโหลดรูปเข้า “กล่องอัปโหลด” แล้วระบบนับไฟล์ แยกประเภท แสดงพรีวิว และประมวลผลต่อ</text>
+
+  <rect class="panel" x="55" y="155" width="2090" height="1170" rx="26" filter="url(#shadow)"/>
+  <rect class="panel" x="55" y="1360" width="2090" height="95" rx="22" filter="url(#shadow)"/>
+
+  <text class="section" x="100" y="210">1. รับไฟล์</text>
+  <text class="section" x="595" y="210">2. วิเคราะห์เบื้องต้น</text>
+  <text class="section" x="1090" y="210">3. แยกเส้นทางตามชนิดภาพ</text>
+  <text class="section" x="1650" y="210">4. ส่งออก / ตรวจคุณภาพ</text>
+
+  <!-- 1 Upload -->
+  <rect class="upload" x="95" y="260" width="390" height="128" rx="20"/>
+  <text class="node-title" x="130" y="300">กล่องอัปโหลดรูป</text>
+  <text class="node-body" x="130" y="332">ลากรูป/โฟลเดอร์มาวาง หรือกดเลือกไฟล์</text>
+  <text class="node-body" x="130" y="362">รองรับ: JPG / PNG / PDF / โฟลเดอร์ภาพ</text>
+
+  <rect class="process" x="95" y="445" width="390" height="118" rx="20"/>
+  <text class="node-title" x="130" y="485">ตรวจไฟล์ที่รับเข้า</text>
+  <text class="node-body" x="130" y="517">แยกไฟล์เสีย / ไฟล์ซ้ำ / ไฟล์ไม่ใช่ภาพ</text>
+  <text class="node-body" x="130" y="545">ทำ checksum และเตรียม queue</text>
+
+  <rect class="output" x="95" y="620" width="390" height="118" rx="20"/>
+  <text class="node-title" x="130" y="660">แสดงจำนวนทันที</text>
+  <text class="node-body" x="130" y="692">เช่น ทั้งหมด 120 รูป / ใช้ได้ 118 รูป</text>
+  <text class="node-body" x="130" y="720">ซ้ำ 1 / เสีย 1 / รอจำแนก 118</text>
+
+  <!-- 2 Analyze -->
+  <rect class="process" x="570" y="260" width="400" height="118" rx="20"/>
+  <text class="node-title" x="605" y="300">สร้าง Thumbnail + Metadata</text>
+  <text class="node-body" x="605" y="332">อ่านขนาดภาพ เวลาไฟล์ ชื่อไฟล์</text>
+  <text class="node-body" x="605" y="360">สร้าง preview thumbnail ให้ UI</text>
+
+  <rect class="process" x="570" y="435" width="400" height="128" rx="20"/>
+  <text class="node-title" x="605" y="475">Image Classifier</text>
+  <text class="node-body" x="605" y="507">ตรวจ layout สี ข้อความ QR/Badge</text>
+  <text class="node-body" x="605" y="535">จำแนกเป็น: Chat / Slip / Unknown</text>
+
+  <polygon class="decision" points="770,625 970,710 770,795 570,710"/>
+  <text class="node-title" x="690" y="702">เป็นภาพอะไร?</text>
+  <text class="node-body" x="675" y="732">Chat / Slip / Unknown</text>
+
+  <!-- 3 Branches -->
+  <rect class="chat" x="1060" y="250" width="430" height="138" rx="20"/>
+  <text class="node-title" x="1095" y="290">ถ้าเป็นภาพแชท</text>
+  <text class="node-body" x="1095" y="322">แสดง “หน้ารีวิวแชท”</text>
+  <text class="node-body" x="1095" y="350">พรีวิวภาพแชทตามลำดับหน้า</text>
+  <text class="node-body" x="1095" y="378">ให้ตรวจก่อนรวมเล่ม</text>
+
+  <rect class="chat" x="1060" y="430" width="430" height="142" rx="20"/>
+  <text class="node-title" x="1095" y="470">ประมวลผลแชท</text>
+  <text class="node-body" x="1095" y="502">จัดกลุ่มชื่อไฟล์ → เรียงหน้า</text>
+  <text class="node-body" x="1095" y="530">ตัด/เย็บ/จัดหน้า PDF</text>
+  <text class="node-body" x="1095" y="558">ค้นหาสลิปที่ฝังในแชท</text>
+
+  <rect class="slip" x="1060" y="635" width="430" height="138" rx="20"/>
+  <text class="node-title" x="1095" y="675">ถ้าเป็นสลิป</text>
+  <text class="node-body" x="1095" y="707">แสดง “หน้ารีวิวสลิป”</text>
+  <text class="node-body" x="1095" y="735">พรีวิวสลิป + กรอบจับข้อมูล</text>
+  <text class="node-body" x="1095" y="763">รอ OCR/QR/ตรวจยอด</text>
+
+  <rect class="slip" x="1060" y="815" width="430" height="142" rx="20"/>
+  <text class="node-title" x="1095" y="855">ประมวลผลสลิป</text>
+  <text class="node-body" x="1095" y="887">อ่าน QR → OCR → Vision fallback</text>
+  <text class="node-body" x="1095" y="915">ดึงวันที่ เวลา ยอด ชื่อ ธนาคาร</text>
+  <text class="node-body" x="1095" y="943">ห้ามเดาข้อมูลที่ภาพไม่ยืนยัน</text>
+
+  <rect class="review" x="1060" y="1020" width="430" height="132" rx="20"/>
+  <text class="node-title" x="1095" y="1060">ถ้าไม่แน่ใจ / Unknown</text>
+  <text class="node-body" x="1095" y="1092">ส่งเข้า “กล่องรอตรวจเอง”</text>
+  <text class="node-body" x="1095" y="1120">ผู้ใช้เลือก: แชท / สลิป / ทิ้ง</text>
+
+  <!-- 4 Output -->
+  <rect class="output" x="1640" y="270" width="420" height="125" rx="20"/>
+  <text class="node-title" x="1675" y="310">อัปเดต Dashboard สด</text>
+  <text class="node-body" x="1675" y="342">จำนวนแชท / จำนวนสลิป / Unknown</text>
+  <text class="node-body" x="1675" y="370">สถานะ processing / reviewed / exported</text>
+
+  <rect class="output" x="1640" y="455" width="420" height="125" rx="20"/>
+  <text class="node-title" x="1675" y="495">สร้างผลลัพธ์</text>
+  <text class="node-body" x="1675" y="527">Chat PDF / Slip Index / Excel / JSON</text>
+  <text class="node-body" x="1675" y="555">แนบ ref, page, hash, audit note</text>
+
+  <polygon class="decision" points="1850,650 2055,735 1850,820 1645,735"/>
+  <text class="node-title" x="1775" y="727">Quality Gate</text>
+  <text class="node-body" x="1765" y="757">ข้อมูลครบ 100% ไหม?</text>
+
+  <rect class="error" x="1640" y="880" width="420" height="122" rx="20"/>
+  <text class="node-title" x="1675" y="920">ถ้าไม่ผ่าน</text>
+  <text class="node-body" x="1675" y="952">วนกลับไปจุดที่ผิด เช่น OCR / จำแนก / หน้ารีวิว</text>
+  <text class="node-body" x="1675" y="980">ห้ามส่งออกงานตกเกณฑ์</text>
+
+  <rect class="output" x="1640" y="1060" width="420" height="122" rx="20"/>
+  <text class="node-title" x="1675" y="1100">ส่งออกสำเร็จ</text>
+  <text class="node-body" x="1675" y="1132">เปิด Folder_Out / แสดงปุ่มดาวน์โหลด</text>
+  <text class="node-body" x="1675" y="1160">พร้อมรายงานจำนวนและ path ผลลัพธ์</text>
+
+  <!-- Arrows -->
+  <path class="line" d="M290 388 L290 445"/>
+  <path class="line" d="M290 563 L290 620"/>
+  <path class="line" d="M485 679 C525 679 525 319 570 319"/>
+  <path class="line" d="M770 378 L770 435"/>
+  <path class="line" d="M770 563 L770 625"/>
+
+  <path class="line" d="M970 710 C1015 710 1015 319 1060 319"/>
+  <text class="label" x="1000" y="340">Chat</text>
+  <path class="line" d="M1275 388 L1275 430"/>
+  <path class="line" d="M1490 501 C1555 501 1570 333 1640 333"/>
+
+  <path class="line" d="M970 710 C1015 710 1015 704 1060 704"/>
+  <text class="label" x="1000" y="690">Slip</text>
+  <path class="line" d="M1275 773 L1275 815"/>
+  <path class="line" d="M1490 886 C1555 886 1570 518 1640 518"/>
+
+  <path class="line" d="M770 795 C770 1090 960 1086 1060 1086"/>
+  <text class="label" x="845" y="1055">Unknown</text>
+  <path class="softline" d="M1490 1086 C1555 1086 1570 333 1640 333"/>
+
+  <path class="line" d="M1850 395 L1850 455"/>
+  <path class="line" d="M1850 580 L1850 650"/>
+  <path class="line" d="M1850 820 L1850 880"/>
+  <text class="label" x="1878" y="858">ไม่ผ่าน</text>
+  <path class="line" d="M2055 735 C2100 735 2100 1121 2060 1121"/>
+  <text class="label" x="2065" y="720">ผ่าน</text>
+  <path class="softline" d="M1640 941 C1530 941 1550 499 1490 499"/>
+
+  <!-- bottom strip -->
+  <text class="section" x="95" y="1415">ลำดับหลักที่ต้องการ:</text>
+  <text class="node-body" x="350" y="1415">อัปโหลดรูป → ตรวจและนับจำนวน → จำแนก Chat/Slip/Unknown → แสดงหน้ารีวิวตามชนิด → ประมวลผล → Dashboard สด → Quality Gate → ส่งออก</text>
+</svg>

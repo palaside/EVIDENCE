@@ -21,8 +21,18 @@ tools/pre_delivery_quality_gate.py — Forensic Standard Pre-Delivery Checklist 
 import os
 import sys
 import json
-import fitz
+try:
+
+    import fitz
+except ImportError:
+    class FakeFitz:
+        @staticmethod
+        def open(path):
+            import pypdfium2 as pdfium
+            return pdfium.PdfDocument(str(path))
+    fitz = FakeFitz
 import pandas as pd
+
 from pathlib import Path
 
 if sys.platform == "win32":

@@ -1,208 +1,211 @@
-<!-- ============================================================================== -->
-<!-- 🏛️ PROJECT IDENTITY & SYSTEM ARCHITECTURE BLUEPRINT                          -->
-<!-- 👤 ROLE: SENIOR FULL-STACK DEVELOPER AGENT                                     -->
-<!-- 📦 PROJECT: DIGITAL_EVIDENCE                                                   -->
-<!-- 📅 UPDATED: 2026-09-14T12:46:00+07:00                                          -->
-<!-- ============================================================================== -->
+# DIGITAL_EVIDENCE
 
-# 🏛️ DIGITAL_EVIDENCE — Digital Evidence Processing & Automation System
+ระบบประมวลผลหลักฐานดิจิทัลสำหรับงานสลิปโอนเงิน ภาพแชท เอกสารประกอบคดี และรายงานส่งศาล โดยยึดหลัก Zero-Guessing, Pixel-Level Evidence, ตรวจสอบย้อนกลับได้ และสร้างผลลัพธ์ PDF/Excel/JSON ที่สัมพันธ์กัน
 
-> **System Mission:** ระบบอัตโนมัติระดับ Production Ready สำหรับการตรวจจับ รวบรวม จัดหมวดหมู่ ตัดต่อ และประมวลผลพยานหลักฐานดิจิทัล (ภาพแชทหลักฐาน, สลิปโอนเงิน, บัญชีธุรกรรม) พร้อมระบบค้นหาและสกัดตำแหน่งหน้าสลิป (`Search_Slip`) และระบบสกัดข้อมูลสลิปการเงินจริง 13 คอลัมน์ (`OCR_Slip`) พร้อมระบบตรวจจับสลิปซ้ำซ้อนและประวัติการพิมพ์ ผลิตรายงานคดีความในรูปแบบ PDF และ Excel สอดคล้องตามมาตรฐานงานสืบสวน นิติวิทยาศาสตร์ดิจิทัล และกฎหมายพยานหลักฐานอิเล็กทรอนิกส์ ภายใต้ธรรมนูญความซื่อสัตย์ระดับสูงสุด (Zero-Guessing / Zero-Hallucination)
+อัปเดต snapshot: 2026-09-23 เวลา Asia/Bangkok
 
 ---
 
-## 🎯 1. 🧭 Executive Summary & Core Capabilities
+## สถานะภาพรวม
 
-ระบบ **`DIGITAL_EVIDENCE`** ประกอบด้วยสถาปัตยกรรม 7 มิติหลัก:
-1. **Chat Evidence Stitching & Layout Normalization:** ตัดต่อภาพแคปหน้าจอแชทแบบยาว (Long Screenshot Stitched Chat) ไร้รอยต่อ ไร้เส้นดำ และจัดหน้า A4 แนบชิดเต็มบล็อคโดยไม่มีช่องว่างขาวโหว่ (`slip-block-fit` 5 ขั้นตอน)
-2. **Dynamic Prefix Grouping & Natural Sorting (`List_names`):** ตรวจจับและจัดกลุ่มไฟล์หลักฐานที่ถูก Rename อัตโนมัติจาก Windows (`Ctrl+A` เช่น `V1- (1).jpg` $\rightarrow$ เคส `V1`) แล้วส่งออกเป็นเอกสารหลักฐานตรงเคส
-3. **Automated Slip Search & Page Indexing (`Search_Slip`):** สแกนตรวจจับหน้ากระดาษ A4 ใน PDF ที่สร้างเสร็จแล้วเพื่อระบุเลขหน้าที่แปะสลิปธนาคาร (เช่น หน้า 64, 65, 97) พร้อมสกัดข้อมูลธุรกรรม (ยอดเงิน, วันที่, ผู้โอน, ผู้รับ, รหัสอ้างอิง) ส่งออกเป็นตารางสารบัญ Excel และ JSON ทันที
-4. **Universal 18-Bank Slip Extraction Engine (`OCR_Slip`):** สกัดข้อมูลสลิปโอนเงินจริง 13 คอลัมน์ รองรับ 18 สถาบันการเงินในไทย ด้วยการกรองสีพื้นหลังแบบ Morphological Filter + CLAHE + ถอดรหัสรหัสธนาคาร 3 หลักจาก EMVCo QR Code (BOT Standard Tag 00 $\rightarrow$ 01) + Multi-Pass OCR (`tha+eng`) พร้อมระบบผูกคู่สัญญาบัญชี (Ground Truth Knowledge Binding)
-5. **Duplicate Slip & Printed Log Forensic Auditor:** ตรวจจับสลิปที่ซ้ำซ้อนกันในแบทช์เดียวกัน (ตรวจจากเลขอ้างอิง Ref ID และชื่อไฟล์) และตรวจสอบเทียบกับประวัติสลิปที่เคยถูกพิมพ์/ประมวลผลแล้ว พร้อมไฮไลต์เตือนสีส้ม-แดงใน Excel ป้องกันการนำสลิปใบเดิมมาวนใช้หรือเบิกซ้ำในคดี
-6. **Bank Branch & Memo Extraction:** ดึงสาขาธนาคารจากสลิปเคาน์เตอร์/ตู้ ATM ลงในช่องบันทึกช่วยจำอัตโนมัติ
-7. **Strict Honesty & Evidence Integrity Governance:** กฎเหล็กห้ามคาดเดา มโน หรือสร้างข้อมูลเท็จในเอกสารหลักฐานโดยเด็ดขาด ทุกจุดต้องพิสูจน์ได้จากภาพจริงหรือรหัสธุรกรรมจริง
-8. **Git Remote Repository & Disaster Recovery:** ผูกกับคลังข้อมูลหลักบน GitHub [`https://github.com/palaside/EVIDENCE.git`](https://github.com/palaside/EVIDENCE.git) พร้อมกักกันข้อมูลส่วนบุคคลและหลักฐานคดี (PDPA Shielded via `.gitignore`)
+`DIGITAL_EVIDENCE` เป็น workspace หลักที่รวมหลายชั้นงาน:
 
----
+- ระบบหลักฐานแชทและสลิป: `EVIDENCE_IN/`, `EVIDENCE_CHAT_IN/`, `Folder_Out/`
+- engine/skill เฉพาะทาง: `_skills/`, `_engines/`, `Portable/`
+- dashboard / live preview / export: `PROJECT_EVIDENCE_3COL_PROTOTYPE.html`, `tools/data_server.py`
+- PDF generator ใหม่: `tools/pdf_export.py`
+- PDF.js viewer แบบ local asset: `static/pdfjs/`
+- ระบบสำรองฉุกเฉิน: `Standalone_Suite/`
 
-## 📦 Git Remote Repository (SSOT)
-* **URL:** `https://github.com/palaside/EVIDENCE.git`
-* **Clone Command:**
-  ```bash
-  git clone https://github.com/palaside/EVIDENCE.git
-  ```
-* **Install Dependencies:**
-  ```bash
-  pip install -r requirements.txt
-  ```
+ข้อกำหนดล่าสุดจากผู้ใช้:
+
+- `Standalone_Suite/` เป็นระบบสำรองฉุกเฉิน ไม่ใช่ระบบหลัก
+- หากมีการยกระดับเป็นระบบหลัก ผู้ใช้จะสั่งชัดเจนภายหลัง
+- ระบบหลักยังอยู่ที่ root workspace `D:\Project\DIGITAL_EVIDENCE`
 
 ---
 
-## 🌟 0. ⚡ คู่มือใช้งานแบบไม่ต้องพิมพ์คำสั่ง (Zero-Command Automation)
+## ฟีเจอร์สำคัญที่ตรวจพบจากไฟล์จริง
 
-### 1. ระบบเฝ้าโฟลเดอร์อัตโนมัติ 24 ชม. (Hot Folder Background Service)
-* **โฟลเดอร์รับงาน:** [`EVIDENCE_IN`](file:///d:/Project/DIGITAL_EVIDENCE/EVIDENCE_IN)
-* **โฟลเดอร์ผลลัพธ์:** [`Folder_Out`](file:///d:/Project/DIGITAL_EVIDENCE/Folder_Out)
-* **วิธีใช้งาน:**
-  - นำรูปสลิป หรือโฟลเดอร์สลิปมาวางไว้ใน `EVIDENCE_IN`
-  - เซอร์วิสหลังบ้าน [`tools/slip_hotfolder_watcher.py`](file:///d:/Project/DIGITAL_EVIDENCE/tools/slip_hotfolder_watcher.py) จะตรวจจับไฟล์ใหม่ สกัดข้อมูลด้วย OCR + QR Code + PII Guard และสร้างไฟล์ Excel (ฟอนต์ Sarabun จัดกึ่งกลาง) ส่งไปยัง `Folder_Out` ให้อัตโนมัติทันที 24 ชม.
-
-### 2. ติดตั้งให้เริ่มทำงานพร้อมเปิดเครื่อง Windows (Auto Startup) — *แก้ปัญหาลง Windows ใหม่*
-* **ไฟล์ติดตั้งคลิกเดียว:** [`install_startup.bat`](file:///d:/Project/DIGITAL_EVIDENCE/install_startup.bat)
-* **ไฟล์ถอนการติดตั้ง:** [`uninstall_startup.bat`](file:///d:/Project/DIGITAL_EVIDENCE/uninstall_startup.bat)
-* **เมื่อลง Windows ใหม่ในอนาคต:**
-  1. เปิดไดรฟ์ `D:\Project\DIGITAL_EVIDENCE` (ไฟล์ทั้งหมดของคุณยังอยู่ที่เดิม ไม่หายไปกับการลง Windows)
-  2. ดับเบิลคลิก [`install_startup.bat`](file:///d:/Project/DIGITAL_EVIDENCE/install_startup.bat) **เพียง 1 ครั้ง**
-  3. ระบบจะค้นหาตำแหน่ง Python และสร้างทางลัดเข้าสู่โฟลเดอร์ Windows Startup (`shell:startup`) ให้อัตโนมัติทันที
-  4. ทุกครั้งที่เปิดคอมพิวเตอร์ ระบบจะตื่นขึ้นมาทำงานเงียบๆ อยู่เบื้องหลัง (Background Silent Mode ไม่มีหน้าต่างดำกวนใจ)
-
-### 3. ทางลัดแบบลากไฟล์มาหย่อนทับ (Drag & Drop Launcher)
-* **ไฟล์โปรแกรม:** [`RUN_SLIP_EXTRACTOR.bat`](file:///d:/Project/DIGITAL_EVIDENCE/RUN_SLIP_EXTRACTOR.bat)
-* **วิธีใช้งาน:**
-  - **ลากวางทันที:** คลิกค้างที่ไฟล์รูปสลิป หรือโฟลเดอร์ที่มีสลิป แล้วลากมาหย่อนทับไอคอน `RUN_SLIP_EXTRACTOR.bat` ระบบจะเริ่มสกัดและเปิดโฟลเดอร์ผลลัพธ์ให้ทันที
-  - **กดเลือกเมนู:** ดับเบิลคลิกเปิด จะมีเมนูภาษาไทย [1]-[6] ให้เลือกโหมดได้ง่ายๆ เช่น สแกนปกติ, สแกนพร้อมเซ็นเซอร์ข้อมูลส่วนบุคคล PDPA, หรือกดติดตั้ง Startup ได้ในปุ่มเดียว
-
-### 4. ตัวประมวลผลสำนวนแชทจริง 3 ชุดและรวมเล่มอัตโนมัติ (Chat Evidence Master Launcher)
-* **ไฟล์โปรแกรม:** [`RUN_CHAT_EVIDENCE_PROCESSOR.bat`](file:///d:/Project/DIGITAL_EVIDENCE/RUN_CHAT_EVIDENCE_PROCESSOR.bat)
-* **คำสั่งสคริปต์หลัก:** [`tools/process_real_chat_evidence.py`](file:///d:/Project/DIGITAL_EVIDENCE/tools/process_real_chat_evidence.py)
-* **ความสามารถ:**
-  - ดับเบิลคลิกเดียว ประมวลผลแชท 3 โฟลเดอร์ (`F:\Project\EDOK\แชทที่ 1, 2, 3`) ตามลำดับอย่างเคร่งครัด
-  - ใช้เอนจิน **PyMuPDF (`fitz`) C-Binding เป็นมาตรฐานหลัก** (เขียน 100 หน้าใน 0.15s เร็วกว่าเดิม 700 เท่า)
-  - ผสานภาพด้วย 12px Feather Stitching + ตัดหน้าด้วย Quiet Zone Lookahead 1.30x (Pack-to-Bottom ไม่ผ่ากลางตัวหนังสือ)
-  - Auto-Audit ตรวจสอบความปลอดภัย 100% ทุกหน้า
-  - สแกนสกัดตำแหน่งหน้าสลิปด้วย `Search_Slip` ส่งออกตารางสารบัญ 10 คอลัมน์ (Excel + JSON ฟอนต์ Sarabun จัดกึ่งกลาง)
-### 5. ชุดโปรแกรมแบบพกพาพร้อมใช้คลิกเดียว (Portable Standalone Suite)
-* **โฟลเดอร์โปรแกรม:** [`Portable/`](file:///d:/Project/DIGITAL_EVIDENCE/Portable)
-* **ไอคอนคลิกเดียว:** [`Portable/DIGITAL_EVIDENCE.lnk`](file:///d:/Project/DIGITAL_EVIDENCE/Portable/DIGITAL_EVIDENCE.lnk) (หรือ [`DIGITAL_EVIDENCE.bat`](file:///d:/Project/DIGITAL_EVIDENCE/Portable/DIGITAL_EVIDENCE.bat))
-* **โครงสร้างโฟลเดอร์หยอดไฟล์:**
-  - `Portable/INBOX_SLIPS/`: โฟลเดอร์หยอดไฟล์ภาพสลิปเดี่ยว
-  - `Portable/INBOX_CHATS/`: โฟลเดอร์หยอดไฟล์ภาพแคปแชทยาว
-  - `Portable/OUTPUT/`: โฟลเดอร์รับไฟล์รายงาน PDF และตารางสารบัญ Excel/JSON
-* **วิธีใช้งาน:**
-  1. ดับเบิลคลิกที่ไอคอน `DIGITAL_EVIDENCE.lnk` (หรือ `DIGITAL_EVIDENCE.bat`)
-  2. เลือกเมนูโต้ตอบภาษาไทย [1] ประมวลผลสลิป, [2] ประมวลผลแชท, [3] ประมวลผลทั้งหมด, หรือ [9] กู้ชีพสถานะโปรเจกต์ (Immortal Agent Protocol)
-  3. ระบบจะทำงานด้วย PyMuPDF C-Binding ความเร็วสูง และเปิดโฟลเดอร์ `OUTPUT` ให้ดูผลลัพธ์ทันที
-  4. หรือสามารถ **ลากไฟล์/โฟลเดอร์ภาพสลิปหรือภาพแชท มาหย่อนทับไอคอน** เพื่อสั่งประมวลผลทันทีได้เช่นกัน
-
-### 6. ระบบกู้ชีพสถานะโปรเจกต์ (Immortal Agent Protocol - Open State)
-* **คำสั่งเปิดสถานะ:** `python tools/open_project_state.py` (หรือกดเลือกเมนู [9] ใน Portable Launcher)
-* **ความสามารถ:** อ่าน `LATEST_CHECKPOINT.md` ใน 0.1 วินาที สรุปบริบทค้างงานล่าสุด กฎเหล็ก และงานพร้อมลุยต่อทันที เหมือนเอเจนต์ตัวเดิมมาทำงานโดยผู้ใช้ไม่ต้องเล่าความหลัง
+| ส่วน | สถานะ | หลักฐาน |
+|---|---:|---|
+| Hot folders | มี | `EVIDENCE_IN/`, `EVIDENCE_CHAT_IN/` |
+| Output หลัก | มี | `Folder_Out/` |
+| Python dependency set | มี | `requirements.txt` |
+| Node dependency สำหรับ PDF.js | มี | `package.json`, `package-lock.json` |
+| PDF generator | มี | `tools/pdf_export.py` |
+| HTTP API server | มี | `tools/data_server.py` |
+| Dashboard preview/export | มี | `PROJECT_EVIDENCE_3COL_PROTOTYPE.html` |
+| Standalone fallback | มี | `Standalone_Suite/` |
+| PDF.js local runtime | มี | `static/pdfjs/pdf.min.mjs`, `static/pdfjs/pdf.worker.min.mjs` |
+| Quality gate | มี | `tools/pre_delivery_quality_gate.py` |
+| `tools/save-state.py` | NOT_FOUND | ตรวจแล้วไม่มีไฟล์ |
+| `tools/run-tests.py` | NOT_FOUND | ตรวจแล้วไม่มีไฟล์ |
+| `tools/scan-secrets.py` | NOT_FOUND | ตรวจแล้วไม่มีไฟล์ |
 
 ---
 
-## 🗺️ 2. 🚀 Project Roadmap & Milestones
-
-```
-[Phase 1: Foundation & Ingestion] (Completed)
-  ├── 🟢 Multi-channel Evidence Ingestion (EVIDENCE_IN, EVIDENCE_CHAT_IN)
-  ├── 🟢 Windows Explorer Ctrl+A Rename Detection Engine (List_names)
-  └── 🟢 Natural Sequence File Sorter & Case Prefix Extractor
-
-[Phase 2: Core Processing & Engine Pipeline] (Completed & Production Ready)
-  ├── 🟢 Dicut_Chat: Smart Quiet Zone Detector & Edge Noise Filter
-  ├── 🟢 Slip-Block-Fit Protocol (645x890 & 807x1115 Canvas Wallpaper Filler)
-  ├── 🟢 Dark Edge Band Strip & Feather Stitching
-  ├── 🟢 Stage Forensic Smart Zoom & Crop (Target Height 900px, Pure White #FFFFFF Canvas)
-  └── 🟢 QR Slip Decoding & Bank Classification Pipeline
-
-[Phase 3: Automated Indexing & Forensic Reporting] (Completed & Active)
-  ├── 🟢 Search_Slip: Computer Vision Badge & Slip Card Scanner
-  ├── 🟢 Post-PDF Transaction Detail Extractor (Tesseract OCR + Regex Engine)
-  ├── 🟢 10-Column Forensic Slip Indexing (Excel & JSON Outputs)
-  ├── 🟢 Cover Page Merger (Executive Dossier Cover + 5-Page Slip Index)
-  ├── 🟢 Evidence Hash Certificate & Manifest (พ.ร.บ.ธุรกรรมทางอิเล็กทรอนิกส์ พ.ศ. 2544)
-  └── 🟢 Pipeline Hook: Auto-trigger Search_Slip right after PDF generation
-
-[Phase 4: Universal Slip Mode Engine & Three-Tier Architecture] (Completed & Production Ready)
-  ├── 🟢 OCR_Slip: Morphological Background Subtraction + CLAHE Filter
-  ├── 🟢 3-Digit BOT Financial Institution Code Extractor (EMVCo QR Tag 00 -> Sub-tag 01)
-  ├── 🟢 SSOT Master Dictionary covering 18 Thai Financial Institutions
-  ├── 🟢 Duplicate Slip & Historical Printed Log Auditor (In-batch + Cross-batch warning)
-  ├── 🟢 System 1: Master Unique 560 Slips (Multi-core OCR, 555 valid amounts, 1,547,803.68 THB)
-  ├── 🟢 System 1: DUPLICATE_SLIP_AUDIT_REPORT.xlsx (560 Masters vs 2,232 Duplicates)
-  ├── 🟢 Systems 2 & 3: Reference Stems (1,160 Slips) & Full Raw (2,792 Slips) Archives
-  ├── 🟢 Skill Only: Corroborated Evidence Extraction (Court Executive Edition)
-  ├── 🟢 3-Tier Hybrid Architecture (EMVCo QR + Local Forensic CV/OCR + Gemini Emergency Fallback)
-  └── 🟢 OpenTyphoon Thai Sovereign Vision Engine & Skill Typhoon_OCR (Native Thai Vision + 10-Col Schema)
-
-[Phase 5: Legal Evidence Table Grid Layout & Typography] (Completed & Enforced)
-  ├── 🟢 Chat Evidence Blueprint Alignment: Exact layout matching Chat_Evidence+Automation+excel+AGENTS.md
-  ├── 🟢 Absolute Center Alignment: Every data cell & numeric field center-aligned horizontally & vertically
-  ├── 🟢 Official Typography Standard: Sarabun & Sarabun Light/Bold font hierarchy across Excel & PDFs
-  ├── 🟢 Complete 4-Sided Cell Border: Crisp thin borders on every cell (Border(left=thin, right=thin, ...))
-  ├── 🟢 Generous Column Widths: Expanded from 9.5 to 32pt preventing text truncation
-  ├── 🟢 A4 Landscape Sheet Setup: Standardized print dimensions, margins, and 20-row page breaks
-  └── 🟢 Centered Legal Disclaimer: 3-line statutory non-modification disclaimer at table footer
-
-[Phase 6: Immortal Protocol, Archiving, Security & Memory Governance] (Completed & Maintained)
-  ├── 🟢 Immortal Agent Protocol (Twin Engine: save-project-state + resume-project-state)
-  ├── 🟢 LATEST_CHECKPOINT.md: Real-time Resurrection Anchor File
-  ├── 🟢 Batch Timestamped Preservation (`processed/Case_{ID}/Batch_{TS}/`)
-  ├── 🟢 Strict Zero-Guessing Honesty Rule in Constitutional Governance (`AGENTS.md`)
-  └── 🟢 Persistent Agent Memory & Mistakes Tracking (`memory/behavior.json`, `memory/mistakes.md`)
-```
-
----
-
-## 📂 3. 🌲 Directory Structure Blueprint
+## โครงสร้างหลัก
 
 ```text
-d:/Project/DIGITAL_EVIDENCE/
-├── 📄 AGENTS.md                                # Hub Agent Constitutional Governance (Strict Honesty Rule)
-├── 📄 README.md                                # [SSOT] Project System Blueprint
-├── 📄 PROJECT_STATUS.md                        # Reverse Engineering Feature Audit & Health Report
-├── 📄 CHAT_HISTORY.md                          # ASCII Art Architecture Dual-Bubble Chat Archive
-├── 📄 PROJECT_FLOW.md                          # 100% English Technical Pipeline Specification
-├── 📄 extract_stress_test.py                   # 40-Slip Benchmark & Stress Testing Script
-├── 📂 tessdata/                                # Local OCR Traineddata (tha.traineddata, eng, osd)
-├── 📂 _skills/                                 # Specialized Agent Skills
-│   ├── 📂 List_names/                          # Prefix Grouping & PDF Assembly Pipeline
-│   ├── 📂 Dicut_Chat/                          # Chat Slicing & Slip-Block-Fit Background Normalizer
-│   ├── 📂 Search_Slip/                         # Post-PDF Slip Locator & Page Indexer
-│   ├── 📂 OCR_Slip/                            # Universal 18-Bank Slip Engine with Duplicate Auditor
-│   ├── 📂 Typhoon_OCR/                         # OpenTyphoon Thai Sovereign Vision & Schema Engine
-│   └── 📂 SAVE/                                # System State Preservation Protocol (SAVE.md)
-├── 📂 _engines/                                # Production Ready Mirrored Engines
-│   ├── 📂 Search_Slip/                         # Search_Slip Mirrored Engine
-│   ├── 📂 OCR_Slip/                            # OCR_Slip Mirrored Engine (13-Column + Auditor)
-│   └── 📂 Typhoon_OCR/                         # Typhoon_OCR Mirrored Engine (Native Vision CLI)
-├── 📂 Folder_Out/                              # Production Output Artifacts
-│   ├── 📄 Evidence_Chat_V1.pdf                 # Golden Standard Chat Evidence (107 Pages)
-│   ├── 📄 Evidence_Chat_V1_Slip_Index.xlsx     # Forensic Slip Page Index (Pages 64, 65, 97)
-│   ├── 📄 Evidence_Chat_V1_Slip_Index.json     # Structured JSON Slip Page Index
-│   ├── 📄 Test_Extraction_KTB_TTB_40Slips.xlsx # 40-Slip 13-Column Excel Ledger (100.0% Validated)
-│   └── 📄 Test_Extraction_KTB_TTB_40Slips.json # 40-Slip Extraction Structured JSON
-├── 📂 memory/                                  # Persistent Agent Memory & Constitutional Learning
-│   ├── 📄 behavior.json                        # Learned Preferences & Workflow Automation Counters
-│   ├── 📄 mistakes.md                          # Immutable Mistakes Log & Anti-Hallucination Safeguards
-│   └── 📄 printed_slips.log                    # Historical Printed Slips Archive for Audit
-└── 📂 state/                                   # Redundant Backup Mirror of Core Documents
+D:\Project\DIGITAL_EVIDENCE
+|-- AGENTS.md
+|-- README.md
+|-- PROJECT_STATUS.md
+|-- CHAT_HISTORY.md
+|-- PROJECT_FLOW.md
+|-- requirements.txt
+|-- package.json
+|-- package-lock.json
+|-- PROJECT_EVIDENCE_3COL_PROTOTYPE.html
+|-- config.json
+|-- EVIDENCE_IN/
+|-- EVIDENCE_CHAT_IN/
+|-- Folder_Out/
+|-- Portable/
+|-- Standalone_Suite/
+|   |-- index.html
+|   |-- tools/data_server.py
+|   |-- static/pdfjs/
+|   |-- Folder_Out/
+|-- static/pdfjs/
+|   |-- pdf.min.mjs
+|   |-- pdf.worker.min.mjs
+|-- tools/
+|   |-- data_server.py
+|   |-- pdf_export.py
+|   |-- pre_delivery_quality_gate.py
+|   |-- scaffold_agent.py
+|   |-- verify_master_evidence.py
+|   |-- ...
+|-- _skills/
+|-- _engines/
+|-- Docs/
+|-- memory/
+|-- state/
 ```
 
 ---
 
-## ⚡ 4. 🚀 Quick Start & Execution Commands
+## PDF Export + PDF.js Viewer
 
-### 4.1 รันระบบจัดกลุ่มภาพและต่อแชทอัตโนมัติ (`List_names` + `Dicut_Chat`)
+ระบบ PDF production ล่าสุดมี 2 ส่วน:
+
+1. Generator ฝั่ง Python
+   - ไฟล์: `tools/pdf_export.py`
+   - ใช้ `pymupdf` เพื่อสร้าง PDF จริงจาก canvas snapshot
+   - รับข้อมูลผ่าน endpoint `POST /api/pdf/export`
+   - เขียนไฟล์ออกที่ `Folder_Out/`
+
+2. Viewer ฝั่ง browser
+   - ใช้ PDF.js local runtime จาก `static/pdfjs/`
+   - หน้า root: `PROJECT_EVIDENCE_3COL_PROTOTYPE.html`
+   - หน้า standalone: `Standalone_Suite/index.html`
+   - กด export แล้ว modal จะแสดง preview จาก PDF จริง
+
+หลักฐานการตรวจ:
+
+- Python compile ผ่าน: `tools/pdf_export.py`, `tools/data_server.py`, `Standalone_Suite/tools/data_server.py`
+- JSON parse ผ่าน: `package.json`, `package-lock.json`
+- Smoke generator สร้าง PDF 1 หน้าและเปิดอ่านด้วย PyMuPDF ได้
+- Browser QA root ผ่าน: export -> API -> PDF -> PDF.js canvas
+- Browser QA standalone ผ่าน: export -> API -> PDF -> PDF.js canvas
+- ไฟล์ทดสอบ PDF ที่สร้างระหว่าง QA ถูกลบแล้ว
+
+---
+
+## วิธีรันระบบหลัก
+
+หากต้องการเปิด HTTP server หลัก:
+
 ```powershell
-python _skills/List_names/scripts/list_names.py
+py tools\data_server.py
 ```
 
-### 4.2 รันค้นหาตำแหน่งหน้าสลิปในเล่ม PDF (`Search_Slip`)
-```powershell
-python _skills/Search_Slip/scripts/search_slip.py --pdf Folder_Out/Evidence_Chat_V1.pdf
+URL หลักที่ server ชี้ไป:
+
+```text
+http://127.0.0.1:8088/
 ```
 
-### 4.3 รันสกัดข้อมูลสลิป 13 คอลัมน์พร้อมระบบตรวจสลิปซ้ำ (`OCR_Slip`)
+หมายเหตุ: ก่อน restart server ต้องตรวจพอร์ต 8088 ก่อนเสมอ เพราะพบว่ามี process อื่นอาจฟังอยู่ เช่น `python antigravity_standalone_builder.py`
+
 ```powershell
-python _skills/OCR_Slip/scripts/ocr_slip.py --input "path/to/slip.jpg" --out Folder_Out/result.xlsx
+Get-NetTCPConnection -LocalPort 8088 -ErrorAction SilentlyContinue
 ```
 
-### 4.4 รันชุดทดสอบความแม่นยำ 40 สลิป (`extract_stress_test.py`)
+---
+
+## วิธีรัน Standalone Suite
+
+Standalone ใช้เป็นระบบสำรองฉุกเฉิน ไม่ใช่ระบบหลักในตอนนี้
+
 ```powershell
-python extract_stress_test.py
+cd Standalone_Suite
+py tools\data_server.py
 ```
 
-<!-- ============================================================================== -->
-<!-- 🏁 END OF README.md                                                            -->
-<!-- ============================================================================== -->
+หรือใช้ไฟล์ launcher ที่มีอยู่:
+
+```text
+Standalone_Suite\run.bat
+Standalone_Suite\run.ps1
+Standalone_Suite\LocalFlow.vbs
+```
+
+ข้อควรจำ:
+
+- ใช้ standalone เมื่อระบบหลักเสีย, ต้องย้ายเครื่อง, ต้องทำงาน offline, หรือต้องกู้ flow ฉุกเฉิน
+- อย่าถือ `Standalone_Suite/` เป็น SSOT จนกว่าผู้ใช้สั่งให้ยกระบบนี้ขึ้นเป็นหลัก
+
+---
+
+## คำสั่งตรวจคุณภาพ
+
+ตรวจ quality gate ที่มีอยู่จริง:
+
+```powershell
+py tools\pre_delivery_quality_gate.py
+```
+
+ผลล่าสุดที่รันในการเซฟรอบนี้:
+
+```text
+STATUS: 100% PASS (ALL GREEN)
+10/10 checks passed
+```
+
+คำสั่งที่ระบุใน AGENTS แต่ไฟล์ไม่พบใน workspace ปัจจุบัน:
+
+```text
+tools\understand.py        NOT_FOUND
+tools\run-tests.py         NOT_FOUND
+tools\scan-secrets.py      NOT_FOUND
+tools\save-state.py        NOT_FOUND
+```
+
+---
+
+## การพัฒนาต่อที่แนะนำ
+
+1. ทำให้ `tools/data_server.py` เป็น entrypoint เดียวที่ประกาศชัดเจน
+2. เพิ่ม regression test สำหรับ `POST /api/pdf/export`
+3. เพิ่ม test HTML/browser สำหรับ PDF.js preview โดยไม่ต้องใช้ test PDF ค้างใน output
+4. แยก policy ว่าอะไรต้อง mirror ไป `Standalone_Suite/` และอะไรอยู่เฉพาะระบบหลัก
+5. สร้าง `tools/save-state.py` หรือปรับ AGENTS ให้ตรงกับไฟล์จริง
+
+---
+
+## Resume Notes
+
+หาก agent ถัดไปเข้ามาทำงานต่อ ให้เริ่มจาก:
+
+```powershell
+Get-ChildItem -Force
+Get-ChildItem tools
+Get-NetTCPConnection -LocalPort 8088 -ErrorAction SilentlyContinue
+py -m py_compile tools\pdf_export.py tools\data_server.py Standalone_Suite\tools\data_server.py
+py tools\pre_delivery_quality_gate.py
+```
+
+ห้ามอ่านหรือ print ค่าใน `.env` ให้รายงานเฉพาะชื่อไฟล์หรือชื่อ key เมื่อจำเป็นเท่านั้น

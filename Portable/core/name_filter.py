@@ -16,6 +16,8 @@ import numpy as np
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple, Any
 
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+
 # Ensure stdout uses utf-8 on Windows
 if sys.platform == "win32":
     try:
@@ -199,6 +201,7 @@ def filter_slips_by_name(
     output_dir: str = "Folder_Out",
     generate_excel: bool = True,
     generate_pdf: bool = True,
+    sample: bool = False,
 ) -> Dict[str, Any]:
     """
     Scans slips cache, extracts matching transactions, computes financial ledger,
@@ -301,9 +304,10 @@ def filter_slips_by_name(
         print(f"   ✅ Saved Excel Ledger: {excel_path}")
         
     if generate_pdf and matched_records:
-        pdf_filename = f"Evidence_Target_{clean_target_filename}.pdf"
+        pdf_prefix = "SAMPLE_" if sample else ""
+        pdf_filename = f"{pdf_prefix}Evidence_Target_{clean_target_filename}.pdf"
         pdf_path = out_dir / pdf_filename
-        export_target_pdf(matched_records, target_full_display, str(pdf_path), str(excel_path) if excel_path else None)
+        export_target_pdf(matched_records, target_full_display, str(pdf_path), str(excel_path) if excel_path else None, sample=sample)
         print(f"   ✅ Saved PDF Dossier: {pdf_path}")
         
     return {
@@ -462,19 +466,89 @@ def export_target_excel(records: List[Dict[str, Any]], target_name: str, out_pat
     wb.save(out_path)
 
 
-def export_target_pdf(records: List[Dict[str, Any]], target_name: str, out_pdf_path: str, excel_path: Optional[str] = None):
+def _get_target_fonts():
+    f_extralight = r"C:\Windows\Fonts\Sarabun-ExtraLight.ttf"
+    f_thin = r"C:\Windows\Fonts\Sarabun-Thin.ttf"
+    f_reg = r"C:\Windows\Fonts\Sarabun-Regular.ttf"
+    f_bold = r"C:\Windows\Fonts\Sarabun-Bold.ttf"
+    f_light = r"C:\Windows\Fonts\Sarabun-Light.ttf"
+    fallback = r"C:\Windows\Fonts\tahoma.ttf"
+
+    from PIL import ImageFont
+
+    def _f(path, size):
+        if os.path.exists(path):
+            try:
+                return ImageFont.truetype(path, size)
+            except Exception:
+                pass
+        if os.path.exists(fallback):
+            try:
+                return ImageFont.truetype(fallback, size)
+            except Exception:
+                pass
+        return ImageFont.load_default()
+
+    return {
+        "header_lbl": _f(f_extralight, 17),
+        "header_val": _f(f_thin, 17),
+        "header_bold": _f(f_bold, 18),
+        "footer": _f(f_extralight, 16),
+        "table_hdr": _f(f_bold, 13),
+        "table_body": _f(f_light, 12),
+        "table_small": _f(f_light, 11),
+        "thin_path": f_thin if os.path.exists(f_thin) else f_light,
+        "light_path": f_light if os.path.exists(f_light) else fallback,
+    }
+
+
+def _get_target_logo(target_h=75):
+    from PIL import Image
+    cur = Path(__file__).resolve().parent
+    candidates = [
+        cur / "EVIDENCE.png",
+        cur.parent / "EVIDENCE.png",
+        Path(r"C:\Users\EVE\OneDrive\เดสก์ท็อป\EVIDENCE.png"),
+        Path(r"C:\Users\EVE\OneDrive\เดสก์ท็อป\EVIDENCE.jpg"),
+        cur / "_engines" / "Dicut_Chat" / "assets" / "EVIDENCE.png",
+        cur.parent / "_engines" / "Dicut_Chat" / "assets" / "EVIDENCE.png",
+    ]
+    for p in candidates:
+        if p.exists() and p.is_file():
+            try:
+                raw = Image.open(str(p))
+                scale = target_h / float(raw.height)
+                target_w = int(raw.width * scale)
+                return raw.resize((target_w, target_h), Image.Resampling.LANCZOS)
+            except Exception:
+                pass
+    return None
+
+
+DISCLAIMER_LINES = [
+    '"DIGITAL EVIDENCE เป็นเพียงเครื่องมืออำนวยความสะดวกให้กับผู้ว่าจ้าง โดยไม่ได้ดัดแปลง แก้ไข เพิ่ม-ลบ เนื้อหา',
+    'จากต้นฉบับใดๆ และไม่มีส่วนเกี่ยวข้องใดๆ กับเนื้อหาในเอกสาร เป็นเพียงเครื่องมือที่ทำงานเกี่ยวกับระบบไฟล์',
+    'เอกสารแบบอิเล็กทรอนิกส์ เท่านั้น"'
+]
+
+
+def export_target_pdf(records: List[Dict[str, Any]], target_name: str, out_pdf_path: str, excel_path: Optional[str] = None, sample: bool = False):
     """
     Assembles a dedicated court-ready PDF dossier containing all slips of the target person,
-    using PyMuPDF C-Binding and Stage Forensic Smart Zoom & Crop standard (Pure White Canvas #FFFFFF).
+    strictly adhering to the Official Reference Standard:
+    1. Header Evidence Ribbon (MODE : TARGET EVIDENCE, CORROBORATED details, PAGE stamp, EVIDENCE Logo)
+    2. Slip-Block-Fit Protocol (645x890 block canvas centered at (322.5, 445))
+    3. Footer Legal Disclaimer (3 lines Sarabun Light centered)
+    4. Optional 10-Column Landscape Summary Statement Table appended at end
+    If sample is True, outputs strictly 1 real page preview + PNG companion.
     """
-    import fitz
-    from PIL import Image
-    import cv2
-    import tempfile
-    
-    # Import forensic_smart_zoom_crop dynamically
+    from PIL import Image, ImageDraw
+
+    # Try import forensic_smart_zoom_crop if available
+    smart_crop_func = None
     try:
         from process_chat import forensic_smart_zoom_crop
+        smart_crop_func = forensic_smart_zoom_crop
     except ImportError:
         cur = Path(__file__).resolve().parent
         for _ in range(4):
@@ -487,72 +561,235 @@ def export_target_pdf(records: List[Dict[str, Any]], target_name: str, out_pdf_p
                 sys.path.insert(0, str(candidate_core))
                 break
             cur = cur.parent
-        from process_chat import forensic_smart_zoom_crop
+        try:
+            from process_chat import forensic_smart_zoom_crop
+            smart_crop_func = forensic_smart_zoom_crop
+        except ImportError:
+            smart_crop_func = None
 
-    doc = fitz.open()
-    A4_W = 595.276
-    A4_H = 841.890
-    TARGET_SLIP_H = 900
+    # SSOT Evidence Theme integration
+    try:
+        from core.evidence_theme import (
+            load_evidence_fonts,
+            load_evidence_logo,
+            apply_header_ribbon,
+            apply_footer_disclaimer,
+            extract_pure_slip_card,
+            fit_slip_block,
+            DISCLAIMER_LINES,
+        )
+    except ImportError:
+        try:
+            from evidence_theme import (
+                load_evidence_fonts,
+                load_evidence_logo,
+                apply_header_ribbon,
+                apply_footer_disclaimer,
+                extract_pure_slip_card,
+                fit_slip_block,
+                DISCLAIMER_LINES,
+            )
+        except ImportError:
+            sys.path.insert(0, str(Path(__file__).resolve().parent))
+            sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "core"))
+            from evidence_theme import (
+                load_evidence_fonts,
+                load_evidence_logo,
+                apply_header_ribbon,
+                apply_footer_disclaimer,
+                extract_pure_slip_card,
+                fit_slip_block,
+                DISCLAIMER_LINES,
+            )
 
-    with tempfile.TemporaryDirectory() as tmp_dir:
-        for idx, r in enumerate(records, 1):
-            img_path = r["file_path"]
-            if not os.path.exists(img_path):
-                continue
+    fonts = load_evidence_fonts()
+    logo_img = load_evidence_logo(target_h=75)
 
+    pw, ph = 993, 1406
+    TW, TH = 645, 890
+
+    if sample:
+        records_to_process = records
+        summary_chunks = []
+        total_pages = 1
+    else:
+        records_to_process = records
+        # Calculate total pages: slip pages + landscape table pages (20 rows per page)
+        rows_per_page = 20
+        summary_chunks = [records[i:i + rows_per_page] for i in range(0, len(records), rows_per_page)]
+        total_pages = len(records) + len(summary_chunks)
+
+    rendered_pages = []
+
+    # --- Part 1: Individual Slip Pages (slip-block-fit 645x890) ---
+    for idx, r in enumerate(records_to_process, 1):
+        img_path = r.get("file_path", "")
+        
+        # Intelligent Path Resolution: check original path or local workspace Done/
+        if not os.path.exists(img_path):
+            fname = Path(img_path).name
+            candidates = [
+                PROJECT_ROOT / "Done" / fname,
+                PROJECT_ROOT / "raw_images" / fname,
+                Path("Done") / fname,
+            ]
+            for c in candidates:
+                if c.exists():
+                    img_path = str(c)
+                    break
+        else:
+            # Check if file has read permission, fallback to local Done/ if locked
             try:
-                # Read with Unicode support
-                data = np.fromfile(img_path, dtype=np.uint8)
-                raw_bgr = cv2.imdecode(data, cv2.IMREAD_COLOR)
-                if raw_bgr is None:
-                    continue
+                with open(img_path, "rb") as _:
+                    pass
+            except Exception:
+                fname = Path(img_path).name
+                local_done = PROJECT_ROOT / "Done" / fname
+                if local_done.exists():
+                    img_path = str(local_done)
 
-                # Stage Forensic Smart Zoom & Crop: Strips outer A4 containers and mobile dark bars 100%
-                cropped_bgr = forensic_smart_zoom_crop(raw_bgr)
-                
-                # Save temp clean slip
-                temp_slip_path = os.path.join(tmp_dir, f"target_slip_{idx}.png")
-                cv2.imwrite(temp_slip_path, cropped_bgr)
+        if not os.path.exists(img_path):
+            continue
 
-                h, w = cropped_bgr.shape[:2]
-                aspect = w / h
-                scaled_h = TARGET_SLIP_H
-                scaled_w = int(scaled_h * aspect)
+        try:
+            # Read image cleanly via PIL and apply pure slip card isolation
+            raw_pil = Image.open(img_path).convert("RGB")
+            slip_pil = extract_pure_slip_card(raw_pil)
 
-                fit_w = A4_W - 40
-                fit_h = A4_H - 100
-                
-                scale = min(fit_w / scaled_w, fit_h / scaled_h)
-                final_w = scaled_w * scale
-                final_h = scaled_h * scale
+            # slip-block-fit via SSOT Theme (Full-block proportional fill, aspect ratio locked)
+            block_canvas = fit_slip_block(slip_pil, target_w=TW, target_h=TH)
 
-                x0 = (A4_W - final_w) / 2.0
-                y0 = (A4_H - final_h) / 2.0
-                rect = fitz.Rect(x0, y0, x0 + final_w, y0 + final_h)
+            # Assemble A4 Portrait
+            a4 = Image.new("RGB", (pw, ph), "white")
+            paste_x = (pw - TW) // 2
+            paste_y = 120 + ((1200 - TH) // 2)
+            a4.paste(block_canvas, (paste_x, paste_y))
 
-                page = doc.new_page(width=A4_W, height=A4_H)
-                
-                header_text = (
-                    f"MODE : TARGET EVIDENCE | บุคคลเป้าหมาย: {target_name} | "
-                    f"ลำดับที่ {idx}/{len(records)} | บทบาท: {r['match_role']} | ยอด: {r['amount']} บาท"
-                )
-                page.insert_text((20, 25), header_text, fontsize=8, color=(0.1, 0.2, 0.35))
-                page.draw_line(fitz.Point(20, 32), fitz.Point(A4_W - 20, 32), color=(0.1, 0.2, 0.35), width=0.5)
+            # Header Evidence Ribbon via Central SSOT Theme
+            role_th = "ผู้รับเงิน" if r.get("match_role") == "RECEIVER" else ("ผู้โอนเงิน" if r.get("match_role") == "SENDER" else r.get("match_role", "-"))
+            amt_str = f"{r.get('amount', '0.00')} บาท"
+            dt_raw = f"{r.get('date', '')} {r.get('time', '')}".strip()
+            corrob_str = f"บุคคลเป้าหมาย: {target_name} | ลำดับที่ {idx:02d}/{len(records)} | บทบาท: {role_th} | ยอดเงิน: {amt_str}"
+            if dt_raw:
+                corrob_str += f" ({dt_raw})"
 
-                page.insert_image(rect, filename=temp_slip_path)
+            page_str = f"{idx} / {total_pages}"
+            apply_header_ribbon(
+                canvas=a4,
+                mode="TARGET EVIDENCE",
+                corroborated=corrob_str,
+                page_str=page_str,
+                fonts=fonts,
+                logo_img=logo_img,
+                is_landscape=False
+            )
 
-                footer_text = (
-                    f"พยานเอกสารดิจิทัล ลำดับที่ {idx} | ไฟล์ภาพ: {r['filename']} | "
-                    f"ผู้โอน: {r['sender_name']} -> ผู้รับ: {r['receiver_name']}"
-                )
-                page.draw_line(fitz.Point(20, A4_H - 32), fitz.Point(A4_W - 20, A4_H - 32), color=(0.7, 0.7, 0.7), width=0.5)
-                page.insert_text((20, A4_H - 20), footer_text, fontsize=7, color=(0.4, 0.4, 0.4))
+            # Footer Disclaimer via Central SSOT Theme
+            apply_footer_disclaimer(
+                canvas=a4,
+                fonts=fonts,
+                is_landscape=False
+            )
 
-            except Exception as e:
-                print(f"   ⚠️ Error assembling slip {img_path}: {e}")
+            rendered_pages.append(a4)
+            if sample:
+                break
 
-    doc.save(out_pdf_path, deflate=True, garbage=4)
-    doc.close()
+        except Exception as e:
+            print(f"   ⚠️ Error assembling target slip {img_path}: {e}")
+
+    # --- Part 2: Landscape Summary Statement Table Pages ---
+    lw, lh = 1406, 993
+    col_w = [52, 105, 75, 125, 180, 110, 180, 125, 125, 125]
+    headers_land = ["ลำดับ", "วันที่", "เวลา", "ธนาคารผู้โอน", "ชื่อผู้โอน", "จำนวนเงิน", "ชื่อผู้รับ", "ธนาคารผู้รับ", "บันทึกช่วยจำ", "หมายเหตุ (Ref)"]
+    row_h = 32
+
+    for c_idx, chunk in enumerate(summary_chunks):
+        land_canvas = Image.new("RGB", (lw, lh), "white")
+        draw_l = ImageDraw.Draw(land_canvas)
+
+        # Header Evidence Ribbon via SSOT Theme
+        start_row_num = (c_idx * rows_per_page) + 1
+        end_row_num = start_row_num + len(chunk) - 1
+        corrob_land = f"ตารางสรุปรายการธุรกรรมบุคคลเป้าหมาย: {target_name} (ลำดับที่ {start_row_num} - {end_row_num})"
+        dossier_p_num = len(rendered_pages) + 1
+        page_str = f"{dossier_p_num} / {total_pages}"
+
+        apply_header_ribbon(
+            canvas=land_canvas,
+            mode="STATEMENT / TARGET SUMMARY TABLE",
+            corroborated=corrob_land,
+            page_str=page_str,
+            fonts=fonts,
+            logo_img=logo_img,
+            is_landscape=True
+        )
+
+        # Table Grid
+        start_x = 102
+        start_y = 115
+        cur_x = start_x
+        for i, (h_title, cw) in enumerate(zip(headers_land, col_w)):
+            draw_l.rectangle([cur_x, start_y, cur_x + cw, start_y + row_h], fill="#1E3A8A", outline="#CBD5E1")
+            bbox = draw_l.textbbox((0, 0), h_title, font=fonts["table_hdr"])
+            tw = bbox[2] - bbox[0]
+            th = bbox[3] - bbox[1]
+            draw_l.text((cur_x + (cw - tw) // 2, start_y + (row_h - th) // 2), h_title, fill="#FFFFFF", font=fonts["table_hdr"])
+            cur_x += cw
+
+        for r_idx, item in enumerate(chunk):
+            y_top = start_y + ((r_idx + 1) * row_h)
+            cur_x = start_x
+            row_bg = "#F8FAFC" if (r_idx % 2 == 1) else "#FFFFFF"
+
+            row_vals = [
+                f"{start_row_num + r_idx:02d}",
+                str(item.get("date", "-")),
+                str(item.get("time", "-")),
+                str(item.get("sender_bank", "-")),
+                str(item.get("sender_name", "-")),
+                f"{item.get('amount', '0.00')} บาท",
+                str(item.get("receiver_name", "-")),
+                str(item.get("receiver_bank", "-")),
+                str(item.get("memo", "-") or "-"),
+                str(item.get("filename", item.get("remarks", "-")))
+            ]
+
+            for i, (val, cw) in enumerate(zip(row_vals, col_w)):
+                draw_l.rectangle([cur_x, y_top, cur_x + cw, y_top + row_h], fill=row_bg, outline="#E2E8F0")
+                font_use = fonts["table_small"] if (len(val) > 22 or i == 9) else fonts["table_body"]
+                disp = val if len(val) <= 18 else (val[:8] + ".." + val[-7:]) if i == 9 else val
+                bbox = draw_l.textbbox((0, 0), disp, font=font_use)
+                tw = bbox[2] - bbox[0]
+                th = bbox[3] - bbox[1]
+                tx = max(cur_x + 2, cur_x + (cw - tw) // 2)
+                ty = y_top + (row_h - th) // 2
+                draw_l.text((tx, ty), disp, fill="#0F172A", font=font_use)
+                cur_x += cw
+
+        # Footer Disclaimer via SSOT Theme
+        apply_footer_disclaimer(
+            canvas=land_canvas,
+            fonts=fonts,
+            is_landscape=True
+        )
+
+        rendered_pages.append(land_canvas)
+
+    if rendered_pages:
+        rendered_pages[0].save(
+            out_pdf_path,
+            "PDF",
+            resolution=150.0,
+            save_all=True,
+            append_images=rendered_pages[1:]
+        )
+        print(f"   [OK] Generated Target PDF Dossier with Reference Standard: {out_pdf_path} ({len(rendered_pages)} pages)")
+        if sample:
+            png_preview = out_pdf_path.replace(".pdf", ".png")
+            rendered_pages[0].save(png_preview, "PNG")
+            print(f"   [OK] Generated 1-Page Real Sample Preview Image: {png_preview}")
+
 
 
 def main():
@@ -563,6 +800,8 @@ def main():
     parser.add_argument("--role", type=str, default="any", choices=["any", "sender", "receiver"], help="Role filter")
     parser.add_argument("--cache", type=str, default="Folder_Out/slips_ocr_cache.json", help="Path to slips OCR cache")
     parser.add_argument("--out", type=str, default="Folder_Out", help="Output directory")
+    parser.add_argument("--sample", action="store_true", help="Generate exactly 1 real page sample preview")
+    parser.add_argument("--all", action="store_true", help="Generate full complete dossier (all pages)")
     
     args = parser.parse_args()
     
@@ -581,13 +820,26 @@ def main():
             return
         target_name = user_input
         
+    # Check sample vs all prompt if not explicitly specified via CLI flag
+    is_sample = args.sample
+    if not args.sample and not args.all:
+        if sys.stdin and sys.stdin.isatty():
+            choice = input("\nต้องการสร้าง 'ตัวอย่าง (1 หน้าจริง)' หรือ 'ทั้งหมด' (sample/all) [default: sample]: ").strip().lower()
+            if choice in ("all", "ท", "ทั้งหมด"):
+                is_sample = False
+            else:
+                is_sample = True
+        else:
+            is_sample = False
+
     res = filter_slips_by_name(
         target_name=target_name,
         target_first=target_first,
         target_last=target_last,
         role=args.role,
         cache_path=args.cache,
-        output_dir=args.out
+        output_dir=args.out,
+        sample=is_sample,
     )
     print("\n✅ การประมวลผลเสร็จสิ้นสมบูรณ์!")
 

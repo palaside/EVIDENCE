@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DIGITAL_EVIDENCE · Rev02 Dark Gray + Real PDF Review</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap">
+<style>
+:root{
+  --bg:#080A0D; --panel:#111418; --surface:#1B2026; --elev:#252B32;
+  --gray:#747D87; --silver:#C9D1D9; --hover:#929AA3; --border:#343B44; --line:rgba(255,255,255,.09);
+  --text:#F3F4F6; --mut:#9AA3AD; --dim:#6B7280;
+  --ok:#16A34A; --warn:#F59E0B; --err:#DC2626;
+  --r-lg:16px; --r-md:12px; --r-sm:8px;
+  --ease:cubic-bezier(.22,.61,.21,1);
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;overflow:hidden;color:var(--text);font-family:Sarabun,system-ui,"Noto Sans Thai",sans-serif;font-size:13.5px;line-height:1.55}
+body{background:
+  radial-gradient(900px 500px at 12% -10%,rgba(146,154,163,.14),transparent 60%),
+  radial-gradient(1000px 600px at 88% 8%,rgba(116,125,135,.12),transparent 60%),
+  radial-gradient(1400px 900px at 50% 110%,rgba(37,43,50,.55),transparent 65%),
+  var(--bg)}
+body::after{content:"";position:fixed;inset:0;pointer-events:none;background:radial-gradient(120% 90% at 50% 40%,transparent 55%,rgba(0,0,0,.5));z-index:0}
+.app-shell{position:relative;z-index:1;width:100vw;height:100dvh;display:grid;grid-template-rows:auto minmax(0,1fr);overflow:hidden}
+/* ---------- header ---------- */
+header{display:flex;align-items:center;gap:14px;padding:10px 18px;background:rgba(17,20,24,.72);border-bottom:1px solid var(--line);backdrop-filter:blur(26px) saturate(170%);-webkit-backdrop-filter:blur(26px) saturate(170%)}
+.brand{display:flex;align-items:center;gap:12px;min-width:0}
+.mark{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;font-weight:800;letter-spacing:.02em;background:linear-gradient(145deg,#252B32,#111418);border:1px solid rgba(255,255,255,.16);box-shadow:inset 0 1px 0 rgba(255,255,255,.22),0 6px 18px rgba(0,0,0,.5);position:relative}
+.mark::after{content:"";position:absolute;inset:-1px;border-radius:13px;padding:1px;background:linear-gradient(135deg,rgba(201,209,217,.5),transparent 40%,transparent 60%,rgba(116,125,135,.4));-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none}
+.brand h1{font-size:15px;margin:0;letter-spacing:.06em}
+.brand small{display:block;color:var(--mut);font-size:11.5px;letter-spacing:.04em}
+.seg{display:flex;background:#0B0E12;border:1px solid var(--line);border-radius:99px;padding:3px;gap:3px}
+.seg button{border:0;background:transparent;color:var(--mut);border-radius:99px;padding:7px 18px;font-family:inherit;font-size:12.5px;font-weight:700;letter-spacing:.08em;cursor:pointer;transition:all .25s var(--ease)}
+.seg button.active{background:linear-gradient(180deg,#E6EBF0,#9AA3AD);color:#0B0E12;box-shadow:0 4px 14px rgba(201,209,217,.25)}
+.status{display:flex;align-items:center;gap:8px;font-family:"JetBrains Mono",monospace;font-size:11.5px;border:1px solid var(--line);background:rgba(0,0,0,.35);border-radius:99px;padding:6px 12px;color:var(--mut);white-space:nowrap}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--dim);box-shadow:0 0 0 4px rgba(107,114,128,.15)}
+.dot.ok{background:var(--ok);box-shadow:0 0 0 4px rgba(22,163,74,.18)}
+.dot.err{background:var(--err);box-shadow:0 0 0 4px rgba(220,38,38,.18)}
+.timer{font-family:"JetBrains Mono",monospace;font-size:11.5px;color:var(--mut)}
+.spacer{flex:1}
+.btn{display:inline-flex;align-items:center;gap:8px;background:var(--surface);color:var(--text);border:1px solid var(--border);border-radius:10px;padding:9px 14px;cursor:pointer;font-family:inherit;font-size:13px;font-weight:600;transition:all .25s var(--ease)}
+.btn:hover{border-color:var(--hover);background:var(--elev);transform:translateY(-1px)}
+.btn:focus-visible{outline:2px solid var(--silver);outline-offset:2px}
+.btn.primary{background:linear-gradient(180deg,#E6EBF0,#AEB6BF);color:#0B0E12;border-color:transparent;box-shadow:0 8px 22px rgba(201,209,217,.22)}
+.btn.primary:hover{filter:brightness(1.06)}
+.btn.ghost{background:transparent}
+.btn:disabled{opacity:.45;cursor:not-allowed;transform:none}
+/* ---------- layout ---------- */
+.workspace{min-height:0;display:grid;grid-template-columns:minmax(300px,28fr) minmax(0,44fr) minmax(300px,28fr);gap:14px;padding:14px;overflow:hidden}
+.panel{min-height:0;overflow:auto;background:linear-gradient(180deg,rgba(255,255,255,.075),rgba(255,255,255,.03));border:1px solid rgba(255,255,255,.12);border-radius:var(--r-lg);padding:18px;box-shadow:0 15px 44px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.14);backdrop-filter:blur(26px) saturate(170%);-webkit-backdrop-filter:blur(26px) saturate(170%);scrollbar-width:thin;scrollbar-color:var(--border) transparent}
+.panel::-webkit-scrollbar{width:8px}.panel::-webkit-scrollbar-thumb{background:var(--border);border-radius:8px}
+.eyebrow{font-size:10.5px;letter-spacing:.22em;color:var(--mut);font-weight:700;margin:0}
+.panel>h2{font-size:16px;margin:2px 0 4px;letter-spacing:.02em}
+.rule{height:1px;background:linear-gradient(90deg,rgba(255,255,255,.16),transparent);margin:10px 0 14px}
+.sec-t{font-size:12px;color:var(--silver);font-weight:700;letter-spacing:.06em;margin:16px 0 8px;display:flex;align-items:center;gap:8px}
+.sec-t::after{content:"";flex:1;height:1px;background:var(--line)}
+.card{background:rgba(0,0,0,.28);border:1px solid var(--line);border-radius:var(--r-md);padding:12px;transition:border-color .25s var(--ease),transform .25s var(--ease)}
+.card:hover{border-color:rgba(255,255,255,.22)}
+.note{color:var(--mut);font-size:12px}
+.mono{font-family:"JetBrains Mono",monospace}
+.drop{border:1.5px dashed var(--border);border-radius:var(--r-md);padding:16px;text-align:center;color:var(--mut);cursor:pointer;transition:all .25s var(--ease);background:rgba(0,0,0,.2)}
+.drop:hover,.drop.over{border-color:var(--silver);color:var(--text);background:rgba(255,255,255,.05)}
+.drop b{color:var(--text)}
+.frow{display:flex;align-items:center;gap:10px;padding:9px 10px;border:1px solid var(--line);border-radius:10px;margin-top:8px;background:rgba(255,255,255,.03)}
+.frow .ic{width:32px;height:32px;border-radius:8px;display:grid;place-items:center;background:var(--elev);border:1px solid var(--line);flex:none}
+.frow small{color:var(--mut);display:block}
+.chip{margin-left:auto;font-size:11px;border:1px solid var(--line);border-radius:99px;padding:3px 10px;color:var(--mut);white-space:nowrap}
+.chip.ok{border-color:var(--ok);color:var(--ok)}
+.chip.warn{border-color:var(--warn);color:var(--warn)}
+.chip.err{border-color:var(--err);color:var(--err)}
+.search{display:flex;align-items:center;gap:8px;background:#0B0E12;border:1px solid var(--line);border-radius:10px;padding:0 12px}
+.search input{background:transparent;border:0;outline:0;color:var(--text);padding:10px 0;font-family:inherit;width:100%}
+.search input::placeholder{color:var(--dim)}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.tags button{border-radius:99px;padding:5px 12px;font-size:12px}
+.switchrow{display:flex;align-items:center;gap:10px}
+.sw{position:relative;width:40px;height:22px;flex:none}
+.sw input{opacity:0;width:100%;height:100%;position:absolute;margin:0;cursor:pointer}
+.sl{position:absolute;inset:0;background:#0B0E12;border:1px solid var(--border);border-radius:99px;transition:.25s var(--ease)}
+.sl::after{content:"";position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:var(--mut);transition:.25s var(--ease)}
+.sw input:checked+.sl{background:rgba(22,163,74,.25);border-color:var(--ok)}
+.sw input:checked+.sl::after{left:20px;background:var(--ok)}
+.prog{height:8px;border-radius:99px;background:#0B0E12;border:1px solid var(--line);overflow:hidden;margin-top:8px}
+.prog i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--gray),var(--silver));border-radius:99px;transition:width .4s var(--ease)}
+input[type=text],input:not([type]),select{width:100%;background:#0B0E12;border:1px solid var(--line);border-radius:10px;color:var(--text);padding:10px 12px;font-family:inherit}
+input:focus-visible,select:focus-visible{outline:2px solid var(--silver);outline-offset:1px;border-color:var(--silver)}
+/* ---------- center ---------- */
+.pdf-wrap{display:flex;flex-direction:column;gap:10px;overflow:hidden}
+.toolbar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;background:rgba(0,0,0,.3);border:1px solid var(--line);border-radius:12px;padding:8px}
+.tgroup{display:flex;align-items:center;gap:6px}
+.tsep{width:1px;height:22px;background:var(--line)}
+.tbtn{min-width:36px;text-align:center}
+#pg{font-size:12px;background:#0B0E12;border:1px solid var(--line);border-radius:8px;padding:7px 12px}
+#goto{width:76px;text-align:center}
+.stage{flex:1;min-height:0;overflow:auto;display:flex;justify-content:center;align-items:flex-start;padding:22px;background:radial-gradient(circle at 50% 0%,rgba(255,255,255,.06),transparent 55%),#05070A;border:1px solid var(--line);border-radius:12px;background-image:radial-gradient(rgba(255,255,255,.07) 1px,transparent 1px);background-size:22px 22px}
+.page{width:min(100%,640px);background:#fff;border-radius:6px;overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,.65),0 0 0 1px rgba(255,255,255,.12);flex:none}
+.page embed,.page iframe{width:100%;height:min(72dvh,860px);border:0;display:block;background:#fff}
+.empty{margin:auto;text-align:center;color:var(--mut);max-width:420px}
+.empty .big{width:64px;height:64px;border-radius:20px;margin:0 auto 12px;display:grid;place-items:center;font-size:28px;background:rgba(255,255,255,.06);border:1px solid var(--line)}
+/* ---------- right ---------- */
+.kpi{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.kpi .k{background:rgba(0,0,0,.28);border:1px solid var(--line);border-radius:12px;padding:12px;position:relative;overflow:hidden;transition:transform .25s var(--ease),border-color .25s var(--ease)}
+.kpi .k:hover{transform:translateY(-2px);border-color:rgba(255,255,255,.22)}
+.kpi .k::before{content:"";position:absolute;left:0;top:10px;bottom:10px;width:3px;border-radius:3px;background:var(--gray)}
+.kpi b{font-size:21px;display:block;font-family:"JetBrains Mono",monospace;letter-spacing:-.02em}
+.kpi span{font-size:11.5px;color:var(--mut)}
+.tbl{width:100%;border-collapse:collapse;font-size:12px}
+.tbl th{position:sticky;top:0;background:var(--elev);z-index:1}
+.tbl th,.tbl td{border:1px solid var(--line);padding:7px 9px;text-align:left}
+.tbl tbody tr{transition:background .2s}
+.tbl tbody tr:hover{background:rgba(255,255,255,.05)}
+.bar{height:6px;border-radius:99px;background:#0B0E12;border:1px solid var(--line);overflow:hidden}
+.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--gray),var(--silver))}
+.actions{display:grid;gap:8px}
+@supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){.panel,header{background:#111418}}
+:focus-visible{outline:2px solid var(--silver);outline-offset:2px}
+@media (max-width:1239px){.workspace{grid-template-columns:minmax(260px,30fr) minmax(0,70fr)}.col-r{grid-column:1/-1;grid-template-columns:1fr 1fr}}
+@media (max-width:1023px){.workspace{grid-template-columns:1fr;overflow:auto}.stage{min-height:62vh}.timer{display:none}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="app-shell">
+<header>
+  <div class="brand"><div class="mark">DE</div><div><h1>DIGITAL_EVIDENCE</h1><small>หลักฐานดิจิทัล · Rev02 Dark Gray</small></div></div>
+  <div class="seg"><button id="mChat" class="active">CHAT</button><button id="mSlip">SLIP</button></div>
+  <span class="status"><span class="dot" id="dot"></span><span id="sysStatus">UNKNOWN — ยังไม่เชื่อม OUTPUT</span></span>
+  <span class="timer mono" id="timer">00:00</span>
+  <span class="spacer"></span>
+  <button class="btn ghost" id="syncBtn">⟳ SYNC</button>
+  <button class="btn primary" id="sumBtn">สรุปทั้งหมด</button>
+</header>
+<div class="workspace">
+  <section class="panel">
+    <p class="eyebrow">LEFT · CONTROLS</p><h2>อัปโหลด &amp; ค้นหา</h2><div class="rule"></div>
+    <div class="sec-t">Upload &amp; File Queue</div>
+    <div class="drop" id="drop"><b>ลากไฟล์มาวาง</b> หรือคลิกเพื่อเลือก<br><span class="note">JPG · PNG · PDF — ชื่อ/ขนาด/สถานะแสดงที่นี่</span></div>
+    <input type="file" id="up" accept=".jpg,.jpeg,.png,.pdf" multiple hidden>
+    <div id="queue"><div class="note" style="margin-top:8px">ยังไม่มีไฟล์ในคิว</div></div>
+    <div class="sec-t">Search &amp; Target</div>
+    <div class="search"><span>⌕</span><input id="q" placeholder="ค้น Ref / ชื่อ / วันที่ / ธนาคาร…"></div>
+    <div class="tags" id="tags"></div>
+    <div id="hits" class="note" style="margin-top:8px">ยังไม่อัปไฟล์ — 0 รายการ</div>
+    <div class="sec-t">Corroboration</div>
+    <div class="card switchrow"><span class="sw"><input type="checkbox" id="corr"><span class="sl"></span></span><div>กรองเฉพาะสลิป-แชทสอดคล้อง<div class="note">สถานะ switch นี้ไม่ใช่หลักฐานยืนยัน</div></div></div>
+    <button class="btn primary" id="acceptBtn" style="width:100%;justify-content:center;padding:12px;margin-top:12px">✓ Accept — เริ่มประมวลผล</button>
+    <div class="sec-t">Processing · กด Accept ก่อน แล้ว Generate เมื่อ 100%</div>
+    <div class="card">
+      <label class="note" style="display:block;margin-bottom:6px"><input type="checkbox" id="mask" style="width:auto"> --mask-pii (PDPA)</label>
+      <button class="btn primary" id="genBtn" style="width:100%;justify-content:center;padding:12px" disabled>⚡ Generate — แสดงผลกลาง</button>
+      <div style="display:flex;justify-content:space-between;align-items:baseline;margin-top:10px"><span class="note">ความคืบหน้า</span><b class="mono" id="pct">0%</b></div>
+      <div class="prog"><i id="pbar"></i></div><div class="note mono" id="pstat" style="margin-top:6px">idle · อัปไฟล์ด้านบนก่อน</div>
+      <pre id="joblog" class="mono" style="max-height:180px;overflow:auto;background:#05070A;border:1px solid var(--line);border-radius:8px;padding:8px;font-size:11px;white-space:pre-wrap"></pre>
+    </div>
+  </section>
+  <section class="panel pdf-wrap">
+    <p class="eyebrow">CENTER · REVIEW</p><h2>ผลประมวลผล <span class="note">— จากงานที่ Accept</span></h2><div class="rule"></div>
+    <div class="toolbar">
+      <div class="tgroup"><button class="btn tbtn tabbtn active" id="tabPdf">PDF</button><button class="btn tbtn tabbtn" id="tabRes">ผลลัพธ์</button></div>
+      <div class="tsep"></div>
+      <div class="tgroup"><button class="btn tbtn" id="prev">‹</button><span id="pg" class="mono">1 / ?</span><button class="btn tbtn" id="next">›</button><input id="goto" placeholder="หน้า"></div>
+      <div class="tsep"></div>
+      <div class="tgroup"><button class="btn" id="fit">Fit</button><button class="btn" id="full">⛶ Full</button></div>
+      <div class="tsep"></div>
+      <div class="tgroup"><button class="btn primary" id="print">🖨 พิมพ์ต้นฉบับ</button><button class="btn" id="dl">⤓ ดาวน์โหลด</button></div>
+    </div>
+    <div class="stage" id="stage">
+      <div class="empty" id="empty"><div class="big">◧</div><b>ยังไม่มีผลงาน</b><div class="note">อัปไฟล์ → กด Accept → ครบ 100% → กด Generate<br>ผลงานจะแสดงตรงนี้ · PDF ที่อัปดูได้ที่แท็บ PDF</div></div>
+      <div class="page" id="pagebox" hidden><embed id="pdf" src="" type="application/pdf"></div>
+      <div class="card scrollx" id="resbox" hidden style="width:min(100%,720px);max-height:100%;overflow:auto"><table class="tbl" id="restbl"><thead><tr><th>#</th><th>ไฟล์</th><th>ธนาคาร</th><th>ยอด</th><th>Ref</th><th>สถานะ</th></tr></thead><tbody><tr><td colspan="6" class="note">กด Generate หลังงานครบ 100%</td></tr></tbody></table></div>
+    </div>
+    <div class="note mono" id="pdfmsg">ready</div>
+  </section>
+  <section class="panel col-r">
+    <p class="eyebrow">RIGHT · SUMMARY</p><h2>สรุป &amp; ส่งออก</h2><div class="rule"></div>
+    <div class="kpi">
+      <div class="k"><span>หลักฐาน</span><b id="kEv">–</b></div>
+      <div class="k"><span>สลิปสอดคล้อง</span><b id="kMt">–</b></div>
+      <div class="k"><span>รายชื่อ</span><b id="kNm">–</b></div>
+      <div class="k"><span>แถวสรุป</span><b id="kRw">–</b></div>
+    </div>
+    <div class="sec-t">Evidence PDFs · จากไฟล์ที่อัป</div>
+    <div class="card scrollx" style="max-height:220px;overflow:auto"><table class="tbl" id="pdftbl"><thead><tr><th>ไฟล์ที่อัป (PDF)</th><th>เปิด</th></tr></thead><tbody><tr><td colspan="2" class="note">อัปไฟล์ PDF ก่อน — จะแสดงตรงนี้</td></tr></tbody></table></div>
+    <div class="sec-t">Master Slips · ผลรันนี้</div>
+    <div class="card"><div class="note">ต้นฉบับ vs ซ้ำ (จาก Auditor ผลรันนี้)</div><div style="display:flex;justify-content:space-between;font-size:12px;margin-top:6px"><span>unique</span><span class="mono" id="msN">–</span></div><div class="bar"><i id="msBar" style="width:0"></i></div></div>
+    <div class="sec-t">Document Actions</div>
+    <div class="actions"><button class="btn primary" id="print2">🖨 พิมพ์ PDF ต้นฉบับ</button><button class="btn" id="dl2">⤓ ดาวน์โหลด PDF ต้นฉบับ</button><div class="note">SFX / รหัสผ่าน: placeholder ยังไม่ต่อสร้างไฟล์จริง</div></div>
+  </section>
+</div>
+</div>
+<script>
+const $=id=>document.getElementById(id);
+let mode='CHAT',page=1,t0=null,tick=null;
+$('mChat').onclick=()=>{mode='CHAT';$('mChat').classList.add('active');$('mSlip').classList.remove('active')};
+$('mSlip').onclick=()=>{mode='SLIP';$('mSlip').classList.add('active');$('mChat').classList.remove('active')};
+function setStatus(s,cls){$('sysStatus').textContent=s;$('dot').className='dot '+(cls||'')}
+const drop=$('drop'),up=$('up');
+drop.onclick=()=>up.click();
+['dragover','dragenter'].forEach(e=>drop.addEventListener(e,ev=>{ev.preventDefault();drop.classList.add('over')}));
+['dragleave','drop'].forEach(e=>drop.addEventListener(e,ev=>{ev.preventDefault();drop.classList.remove('over')}));
+drop.addEventListener('drop',ev=>{up.files=ev.dataTransfer.files;renderQ()});
+up.onchange=renderQ;
+function renderQ(){const f=[...up.files];if(!f.length){$('queue').innerHTML='<div class="note" style="margin-top:8px">ยังไม่มีไฟล์ในคิว</div>';return}
+$('queue').innerHTML=f.map(x=>'<div class="frow"><div class="ic">'+(x.name.toLowerCase().endsWith('.pdf')?'▤':'◧')+'</div><div><b>'+x.name+'</b><small class="mono">'+x.size+' B · รอตรวจ</small></div><span class="chip">queued</span></div>').join('')}
+async function api(path,opts){const r=await fetch(path,opts);const j=await r.json();if(!r.ok||j.ok===false)throw new Error(j.error||('HTTP '+r.status));return j}
+function setBar(pct){pct=Math.max(0,Math.min(100,pct|0));$('pbar').style.width=pct+'%';$('pct').textContent=pct+'%'}
+let pollTimer=null;
+function fillResult(rows,total,xlsx){const n=total!=null?total:(Array.isArray(rows)?rows.length:0);
+$('kRw').textContent=n;$('kEv').textContent=n;$('kMt').textContent='ดู audit';$('kNm').textContent=new Set((rows||[]).flatMap(o=>[o.receiverName,o.receiver_name,o.senderName,o.sender_name,o.counterparty].filter(Boolean))).size||'–';
+$('hits').textContent='ผลรันนี้ '+n+' แถว'+(xlsx?' · '+xlsx:'')+' — พิมพ์เพื่อกรอง';$('hits').dataset.raw=JSON.stringify((rows||[]).slice(0,300));
+const names=[...new Set((rows||[]).flatMap(o=>[o.receiverName,o.receiver_name,o.senderName,o.sender_name,o.counterparty].filter(Boolean)))].slice(0,6);
+$('tags').innerHTML=names.map(x=>'<button class="btn" data-t="'+String(x).replace(/"/g,'&quot;')+'">'+x+'</button>').join('')||'<span class="note">0 — ไม่มีชื่อในผลรันนี้</span>';
+document.querySelectorAll('#tags button').forEach(b=>b.onclick=()=>{$('q').value=b.dataset.t;$('q').dispatchEvent(new Event('input'))});}
+function zeroState(){$('kEv').textContent='0';$('kMt').textContent='0';$('kNm').textContent='0';$('kRw').textContent='0';
+$('tags').innerHTML='<span class="note">0 — อัปไฟล์แล้วกด Generate</span>';$('hits').textContent='ยังไม่อัปไฟล์ — 0 รายการ';delete $('hits').dataset.raw;
+$('pdftbl').querySelector('tbody').innerHTML='<tr><td colspan="2" class="note">อัปไฟล์ PDF ก่อน — จะแสดงตรงนี้</td></tr>';
+$('msN').textContent='0';$('msBar').style.width='0';setBar(0);$('pstat').textContent='idle · อัปไฟล์ด้านบนก่อน';setStatus('UNKNOWN — ยังไม่อัปไฟล์','');doneJob=null;$('genBtn').disabled=true;$('acceptBtn').disabled=false;
+$('resbox').hidden=true;$('pagebox').hidden=true;$('empty').hidden=false}
+function readAsB64(f){return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(String(r.result).split(',')[1]);r.onerror=rej;r.readAsDataURL(f)})}
+let doneJob=null;
+function showTab(which){const isPdf=which==='pdf';$('tabPdf').classList.toggle('active',isPdf);$('tabRes').classList.toggle('active',!isPdf);
+$('pagebox').hidden=isPdf?$('pagebox').hidden:true;$('resbox').hidden=isPdf;
+if(!isPdf){$('empty').hidden=true}else if(!$('pagebox').hidden||!$('resbox').hidden){$('empty').hidden=true}}
+$('tabPdf').onclick=()=>showTab('pdf');$('tabRes').onclick=()=>showTab('res');
+$('acceptBtn').onclick=async()=>{const files=[...up.files];if(!files.length){$('pstat').textContent='เลือกไฟล์ก่อน (ลากวาง/คลิก)';return}
+if(files.length>60){$('pstat').textContent='เกิน 60 ไฟล์';return}
+$('acceptBtn').disabled=true;$('genBtn').disabled=true;doneJob=null;setStatus('UPLOADING '+files.length+' ไฟล์…','');setBar(2);$('pstat').textContent='upload…';$('joblog').textContent='';
+try{const up_=await api('/api/upload',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({files:await Promise.all(files.map(async f=>({name:f.name,data_b64:await readAsB64(f)})))})});
+setBar(6);$('pstat').textContent='uploaded '+up_.files.length+' ไฟล์ · เริ่ม OCR…';
+const pdfs=files.filter(f=>f.name.toLowerCase().endsWith('.pdf'));
+if(pdfs.length){$('pdftbl').querySelector('tbody').innerHTML=pdfs.map(f=>'<tr><td class="mono" style="font-size:11px">'+f.name+'</td><td><button class="btn" data-local="'+f.name+'">เปิด</button></td></tr>').join('');
+const urlByName={};pdfs.forEach(f=>urlByName[f.name]=URL.createObjectURL(f));
+document.querySelectorAll('#pdftbl button').forEach(b=>b.onclick=()=>{const u=urlByName[b.dataset.local];$('empty').hidden=true;$('resbox').hidden=true;$('pagebox').hidden=false;$('pdf').src=u+'#page='+page;$('pdfmsg').textContent='ต้นฉบับ (ไฟล์ที่อัป): '+b.dataset.local;$('pg').textContent=page+' / ?';window._pdf=u;window._pdfName=b.dataset.local;showTab('pdf')});}
+const j=await api('/api/run/upload-slip',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({uploadId:up_.uploadId,maskPii:$('mask').checked})});
+setStatus('JOB '+j.job.id+' · running','ok');pollJob(j.job.id);
+}catch(e){setStatus('ERROR — '+e.message,'err');$('pstat').textContent='failed: '+e.message;setBar(0);$('acceptBtn').disabled=false}};
+$('genBtn').onclick=async()=>{if(!doneJob){$('pstat').textContent='งานยังไม่ครบ 100% — กด Accept ก่อน';return}
+try{const r=await api('/api/result',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({job:doneJob})});
+fillResult(r.rows,r.total,r.xlsx);renderCenter(r.rows);showTab('res');$('pdfmsg').textContent='ผลงาน '+r.total+' แถว · '+r.xlsx;$('pstat').textContent='generated · '+r.total+' แถว · '+r.xlsx;
+}catch(e){$('pstat').textContent='โหลดผลไม่ได้: '+e.message}};
+function renderCenter(rows){const tb=$('restbl').querySelector('tbody');if(!rows||!rows.length){tb.innerHTML='<tr><td colspan="6" class="note">0 แถว</td></tr>';return}
+tb.innerHTML=rows.slice(0,300).map((o,i)=>'<tr><td>'+(i+1)+'</td><td style="font-size:11px">'+(o.filename||o.fileName||'-')+'</td><td>'+(o.receiver_bank||o.receiverBank||o.sender_bank||'-')+'</td><td class="mono" style="text-align:right">'+(o.amount||'-')+'</td><td class="mono" style="font-size:11px">'+(o.remarks||o.transRef||o.ref_id||'-')+'</td><td>'+(o.warn||o.auditStatus||'ok')+'</td></tr>').join('')}
+async function pollJob(id){clearInterval(pollTimer);const poll=async()=>{try{const j=await api('/api/jobs/'+id);const b=j.job;
+setBar(b.percent||0);$('pstat').textContent=b.label+' · '+b.status+(b.exit!=null?' · exit='+b.exit:'');$('joblog').textContent=b.log_tail||'';$('joblog').scrollTop=1e9;
+if(b.status==='done'){clearInterval(pollTimer);setStatus('DONE · 100% · กด Generate เพื่อแสดงผลกลาง','ok');setBar(100);doneJob=id;$('genBtn').disabled=false;$('acceptBtn').disabled=false;
+$('pstat').textContent='done · ครบ 100% — กด Generate';try{const r=await api('/api/result',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({job:id})});fillResult(r.rows,r.total,r.xlsx)}catch(e){$('pstat').textContent='done แต่โหลดสรุปขวาไม่ได้: '+e.message}}
+else if(b.status==='failed'||b.status==='rejected'){clearInterval(pollTimer);setStatus('FAILED','err');$('acceptBtn').disabled=false;$('genBtn').disabled=true}
+}catch(e){$('pstat').textContent='poll error: '+e.message;clearInterval(pollTimer);$('genBtn').disabled=false}};pollTimer=setInterval(poll,2000);poll()}
+function loadPdf(p){$('empty').hidden=true;$('pagebox').hidden=false;$('pdf').src=p+'#page='+page;$('pdfmsg').textContent='ต้นฉบับ: '+p+' · หน้า '+page;$('pg').textContent=page+' / ?';window._pdf=p}
+$('prev').onclick=()=>{page=Math.max(1,page-1);if(window._pdf)loadPdf(window._pdf)};
+$('next').onclick=()=>{page++;if(window._pdf)loadPdf(window._pdf)};
+$('goto').onchange=e=>{page=+e.target.value||1;if(window._pdf)loadPdf(window._pdf)};
+$('fit').onclick=()=>{const pg=document.querySelector('.page');pg.style.width=pg.style.width==='100%'?'':'100%'};
+$('full').onclick=()=>{const s=$('stage');s.requestFullscreen&&s.requestFullscreen()};
+function printOrig(){if(!window._pdf){$('pdfmsg').textContent='เลือก PDF จากตารางขวาก่อน';return}window.open(window._pdf,'_blank')}
+function dlOrig(){if(!window._pdf){$('pdfmsg').textContent='เลือก PDF จากตารางขวาก่อน';return}const a=document.createElement('a');a.href=window._pdf;a.download='';a.click()}
+['print','print2'].forEach(i=>$(i).onclick=printOrig);['dl','dl2'].forEach(i=>$(i).onclick=dlOrig);
+$('syncBtn').onclick=()=>{$('pstat').textContent='หน้านี้ไม่ดึงของเก่า — อัปไฟล์แล้วกด Generate';setStatus('IDLE — รออัปไฟล์','')};$('sumBtn').onclick=()=>{document.querySelector('.col-r').scrollIntoView({behavior:'smooth'})};
+$('q').oninput=e=>{const raw=$('hits').dataset.raw;if(!raw){$('hits').textContent='ยังไม่อัปไฟล์ — 0 รายการ';return}const rows=JSON.parse(raw);const q=e.target.value.toLowerCase();const f=rows.filter(r=>JSON.stringify(r).toLowerCase().includes(q));$('hits').textContent='พบ '+f.length+' / '+rows.length+' แถว (ผลรันนี้)'};
+zeroState();
+</script>
+</body>
+</html>

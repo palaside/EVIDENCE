@@ -51,3 +51,12 @@ stage_crop_result.png
 test_pipeline_crop_output.png
 *.png
 
+# Whitelist Essential UI Assets & Samples
+!LOGO.png
+!EVIDENCE.png
+!Untitled-1.png
+!SAMPLE_Evidence_Chat_Master.png
+!SAMPLE_Evidence_Slips_95_Fit_Summary.png
+!SAMPLE_Evidence_Target_POI.png
+
+

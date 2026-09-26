@@ -1,0 +1,982 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>หลักฐานดิจิทัล — DIGITAL EVIDENCE</title>
+  <meta name="description" content="ระบบหลักฐานดิจิทัลสำหรับศาล — หั่นหน้าแชทและสลิปอัตโนมัติ">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:       #EAECEF;
+      --surface:  #FFFFFF;
+      --surf2:    #F8F9FA;
+      --border:   #D1D5DB;
+      --border-b: #BFDBFE;
+      --gray:     #374151;
+      --gray-lt:  #6B7280;
+      --blue:     #1E3A5F;
+      --blue-acc: #3B82F6;
+      --blue-dk:  #1D4ED8;
+      --blue-lt:  #EFF6FF;
+      --text:     #111827;
+      --text-sub: #374151;
+      --text-mt:  #6B7280;
+      --green:    #059669;
+      --green-bg: #D1FAE5;
+      --orange:   #D97706;
+      --orange-bg:#FEF3C7;
+      --fail-bg:  #FEE2E2;
+      --fail-txt: #DC2626;
+      --ok-bg:    #D1FAE5;
+      --ok-txt:   #065F46;
+      --font:     'Sarabun', sans-serif;
+      --mono:     'JetBrains Mono', monospace;
+      --d1: 120ms; --d2: 220ms; --d3: 380ms;
+      --ease: cubic-bezier(.4,0,.2,1);
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { width: 100vw; height: 100vh; overflow: hidden; font-family: var(--font); font-size: 13px; color: var(--text); background: var(--bg); -webkit-font-smoothing: antialiased; }
+
+    /* ===================== ANIMATIONS ===================== */
+    @keyframes fadeUp   { from{opacity:0;transform:translateY(5px)} to{opacity:1;transform:none} }
+    @keyframes scaleIn  { from{opacity:0;transform:scale(.97)} to{opacity:1;transform:none} }
+    @keyframes pulse    { 0%,100%{opacity:1} 50%{opacity:.5} }
+    @keyframes ticker   { 0%{opacity:0;transform:translateY(3px)} 100%{opacity:1;transform:none} }
+
+    /* ===================== LAYOUT ===================== */
+    .shell     { display:flex; flex-direction:column; height:100vh; }
+    .app-hdr   { display:flex; align-items:center; padding:0 18px; height:80px; background:var(--surface); border-bottom:1px solid var(--border); flex-shrink:0; gap:14px; }
+    .app-main  { flex:1; display:flex; flex-direction:column; overflow:hidden; }
+    .stage-bar { height:38px; display:flex; align-items:center; justify-content:space-between; background:var(--surface); border-bottom:1px solid var(--border); padding:0 14px; flex-shrink:0; }
+    .cols      { flex:1; display:flex; gap:8px; padding:8px; overflow:hidden; }
+
+    /* ===================== HEADER ===================== */
+    /* Shield Logo */
+    .logo-wrap {
+      width:54px; height:54px; flex-shrink:0;
+      border-radius:50%;
+      background:linear-gradient(145deg,#1E3A5F,#0F2040);
+      display:flex; align-items:center; justify-content:center;
+      box-shadow:0 3px 10px rgba(30,58,95,.35);
+      border:2.5px solid #2D5A8E;
+    }
+    .logo-inner { font-size:26px; line-height:1; }
+    .brand-block {}
+    .brand-th { font-size:16px; font-weight:700; color:var(--blue); letter-spacing:.02em; line-height:1.1; }
+    .brand-en { font-size:11px; font-weight:400; color:var(--gray-lt); letter-spacing:.12em; margin-top:1px; }
+
+    /* Header Center */
+    .hdr-mid { flex:1; display:flex; align-items:center; justify-content:center; gap:10px; }
+    .mode-tab {
+      padding:6px 22px; border-radius:4px; font-size:12px; font-weight:700;
+      cursor:pointer; border:1px solid var(--border); background:var(--surf2);
+      color:var(--gray-lt); transition:all var(--d1) var(--ease);
+    }
+    .mode-tab.active {
+      background:var(--blue); color:#fff;
+      border-color:var(--blue);
+      box-shadow:0 2px 8px rgba(30,58,95,.3);
+    }
+    .mode-tab:hover:not(.active) { background:var(--blue-lt); border-color:var(--blue-acc); color:var(--blue-dk); }
+
+    /* Header Right */
+    .hdr-right { display:flex; align-items:center; gap:8px; }
+    .pill {
+      display:flex; align-items:center; gap:5px;
+      padding:4px 12px; border-radius:99px; font-size:11px;
+      border:1px solid; font-weight:400;
+    }
+    .pill.green { background:var(--green-bg); border-color:#6EE7B7; color:#065F46; }
+    .pill.blue  { background:var(--blue-lt); border-color:var(--border-b); color:var(--blue-dk); font-family:var(--mono); font-size:10px; }
+    .dot-pulse { width:7px; height:7px; border-radius:50%; background:currentColor; animation:pulse 2s infinite; }
+    .btn-sm {
+      padding:5px 13px; border-radius:4px; font-family:var(--font); font-size:12px;
+      font-weight:600; cursor:pointer; border:1px solid; transition:all var(--d1) var(--ease);
+      display:flex; align-items:center; gap:5px;
+    }
+    .btn-sm.ghost { background:var(--surface); border-color:var(--border); color:var(--gray); }
+    .btn-sm.ghost:hover { background:var(--blue-lt); border-color:var(--blue-acc); color:var(--blue-dk); }
+    .btn-sm.blue  { background:var(--blue-acc); border-color:var(--blue-dk); color:#fff; }
+    .btn-sm.blue:hover { background:var(--blue-dk); }
+
+    /* ===================== STAGE BAR ===================== */
+    .stage-left { display:flex; align-items:center; gap:8px; }
+    .stage-dot  { width:8px; height:8px; border-radius:50%; background:var(--blue-acc); animation:pulse 2s infinite; }
+    .stage-ct   { font-family:var(--mono); font-size:12px; font-weight:700; color:var(--blue-dk); }
+    .stage-right { display:flex; gap:6px; }
+    .chip {
+      font-family:var(--mono); font-size:10px; padding:2px 8px;
+      border-radius:4px; border:1px solid;
+    }
+    .chip.blue { background:var(--blue-lt); border-color:var(--border-b); color:var(--blue-dk); }
+    .chip.gray { background:var(--surf2); border-color:var(--border); color:var(--gray); }
+
+    /* ===================== COLUMNS ===================== */
+    /* Left */
+    .col-l { width:270px; flex-shrink:0; display:flex; flex-direction:column; gap:7px; overflow-y:auto; }
+    .col-l::-webkit-scrollbar { width:3px; }
+    .col-l::-webkit-scrollbar-thumb { background:var(--border); border-radius:3px; }
+
+    /* Center */
+    .col-c { flex:1; display:flex; flex-direction:column; gap:7px; overflow:hidden; min-width:460px; }
+
+    /* Right */
+    .col-r { width:200px; flex-shrink:0; display:flex; flex-direction:column; gap:7px; overflow-y:auto; }
+    .col-r::-webkit-scrollbar { width:3px; }
+    .col-r::-webkit-scrollbar-thumb { background:var(--border); border-radius:3px; }
+
+    /* ===================== PANELS ===================== */
+    .panel { background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:11px; transition:border-color var(--d1) var(--ease); animation:fadeUp var(--d2) var(--ease) both; }
+    .panel:hover { border-color:#93C5FD; }
+    .pnl-hdr { display:flex; align-items:center; justify-content:space-between; margin-bottom:9px; }
+    .pnl-title { font-size:11px; font-weight:700; color:var(--blue-dk); letter-spacing:.07em; text-transform:uppercase; }
+    .badge { font-family:var(--mono); font-size:10px; padding:2px 8px; border-radius:99px; border:1px solid; }
+    .badge.blue { background:var(--blue-lt); border-color:var(--border-b); color:var(--blue-dk); }
+    .badge.gray { background:var(--surf2); border-color:var(--border); color:var(--gray); }
+    .badge.green { background:var(--green-bg); border-color:#6EE7B7; color:#065F46; font-weight:700; }
+    .badge.orange { background:var(--orange-bg); border-color:#FCD34D; color:var(--orange); }
+
+    /* Upload zone */
+    .upload-zone {
+      border:2px dashed #93C5FD; border-radius:8px; padding:13px 10px;
+      text-align:center; cursor:pointer; background:var(--blue-lt);
+      transition:all var(--d2) var(--ease);
+    }
+    .upload-zone:hover { border-color:var(--blue-acc); background:#DBEAFE; }
+    .uz-ico { font-size:24px; color:var(--orange); margin-bottom:3px; }
+    .uz-lbl { font-size:11px; font-weight:700; color:var(--text-sub); }
+    .uz-hint { font-size:10px; color:var(--blue-acc); font-family:var(--mono); margin-top:2px; font-weight:300; }
+
+    /* File list */
+    .file-list { display:flex; flex-direction:column; gap:3px; max-height:110px; overflow-y:auto; margin-top:7px; }
+    .file-list::-webkit-scrollbar { width:2px; }
+    .file-list::-webkit-scrollbar-thumb { background:#93C5FD; }
+    .fi {
+      display:flex; align-items:center; justify-content:space-between;
+      padding:5px 7px; border-radius:5px; border:1px solid var(--border);
+      background:var(--surface); cursor:pointer;
+      transition:all var(--d1) var(--ease); animation:fadeUp var(--d2) var(--ease) both;
+    }
+    .fi:hover, .fi.active { border-color:var(--blue-acc); background:var(--blue-lt); }
+    .fi-name { font-size:11px; font-weight:400; color:var(--text); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:150px; }
+    .fi-meta { font-size:10px; color:var(--text-mt); font-family:var(--mono); font-weight:300; }
+    .fi-rm   { font-size:11px; color:var(--text-mt); cursor:pointer; padding:0 3px; transition:color var(--d1); }
+    .fi-rm:hover { color:#DC2626; }
+
+    /* Search */
+    .sw { position:relative; }
+    .sw-ico { position:absolute; left:8px; top:50%; transform:translateY(-50%); font-size:13px; pointer-events:none; }
+    .si {
+      width:100%; padding:7px 10px 7px 28px;
+      border:1px solid var(--border); border-radius:5px;
+      font-family:var(--font); font-size:12px;
+      background:var(--surface); color:var(--text); outline:none;
+      transition:all var(--d1) var(--ease);
+    }
+    .si:focus { border-color:var(--blue-acc); box-shadow:0 0 0 3px rgba(59,130,246,.15); }
+    .dyn { font-size:10px; font-weight:300; color:var(--text-mt); font-style:italic; margin-top:4px; }
+
+    /* Person card */
+    .pc {
+      display:flex; align-items:center; justify-content:space-between;
+      padding:7px 9px; border-radius:5px; border:1px solid var(--border);
+      background:var(--surface); cursor:pointer;
+      transition:all var(--d1) var(--ease); animation:fadeUp var(--d2) var(--ease) both;
+    }
+    .pc:hover { border-color:var(--blue-acc); background:var(--blue-lt); }
+    .pc.active { border-color:var(--blue-acc); background:#DBEAFE; }
+    .pc-dot { width:7px; height:7px; border-radius:50%; background:#10B981; margin-right:7px; flex-shrink:0; }
+    .pc-name { font-size:12px; font-weight:700; color:var(--text); }
+    .pc-meta { font-size:10px; color:var(--text-mt); font-weight:300; }
+    .match-b { font-size:10px; font-family:var(--mono); font-weight:700; color:var(--blue-dk); background:var(--blue-lt); border:1px solid var(--border-b); padding:2px 6px; border-radius:4px; }
+
+    /* Switch */
+    .sw-row { display:flex; align-items:center; justify-content:space-between; }
+    .sw-lbl { font-size:12px; font-weight:400; color:var(--text-sub); }
+    .sw-sub { font-size:10px; color:var(--text-mt); font-weight:300; }
+    .toggle { position:relative; display:inline-block; width:36px; height:20px; }
+    .toggle input { opacity:0; width:0; height:0; }
+    .sldr { position:absolute; cursor:pointer; inset:0; background:#D1D5DB; transition:.2s; border-radius:99px; }
+    .sldr::before { position:absolute; content:""; height:14px; width:14px; left:3px; bottom:3px; background:#fff; transition:.2s; border-radius:50%; box-shadow:0 1px 3px rgba(0,0,0,.2); }
+    input:checked + .sldr { background:var(--blue-acc); }
+    input:checked + .sldr::before { transform:translateX(16px); }
+
+    /* Progress */
+    .prog-wrap { background:#E5E7EB; border-radius:99px; height:4px; overflow:hidden; }
+    .prog-bar  { height:100%; border-radius:99px; background:linear-gradient(90deg,var(--blue-acc),#60A5FA); transition:width var(--d3) var(--ease); }
+    .tmr-box   { background:var(--surf2); border:1px solid var(--border); border-radius:6px; padding:7px 9px; }
+    .tmr-row   { display:flex; align-items:center; justify-content:space-between; margin-bottom:5px; }
+    .tmr-status { font-size:11px; color:var(--text-mt); display:flex; align-items:center; gap:4px; font-weight:300; }
+    .tmr-val   { font-family:var(--mono); font-size:13px; font-weight:700; color:var(--blue-dk); }
+
+    /* Process button */
+    .btn-proc {
+      width:100%; padding:10px; border-radius:7px;
+      background:linear-gradient(135deg,#1D4ED8,#3B82F6);
+      border:none; color:#fff; font-family:var(--font); font-size:13px; font-weight:700;
+      cursor:pointer; transition:all var(--d1) var(--ease);
+      display:flex; align-items:center; justify-content:center; gap:7px;
+      box-shadow:0 3px 10px rgba(29,78,216,.3); letter-spacing:.03em;
+    }
+    .btn-proc:hover { background:linear-gradient(135deg,#1e3a8a,#1D4ED8); transform:translateY(-1px); box-shadow:0 5px 14px rgba(29,78,216,.4); }
+    .btn-proc:active { transform:scale(.98); }
+
+    /* ===================== CENTER A4 ===================== */
+    .a4-workbench {
+      flex:1;
+      display:flex; align-items:center; justify-content:center;
+      background:
+        linear-gradient(rgba(203,213,225,.5) 1px,transparent 1px),
+        linear-gradient(90deg,rgba(203,213,225,.5) 1px,transparent 1px),
+        #DCDFE4;
+      background-size: 20px 20px;
+      border:1px solid var(--border);
+      border-radius:8px; overflow:hidden;
+    }
+    .a4-sheet {
+      width:580px; height:820px;
+      background:#fff; color:#222;
+      box-shadow:0 6px 28px rgba(17,24,39,.2), 0 1px 4px rgba(17,24,39,.1);
+      border-radius:2px;
+      display:flex; flex-direction:column; overflow:hidden;
+      animation:scaleIn var(--d3) var(--ease) both;
+    }
+    .a4-top {
+      height:62px; padding:10px 24px 8px;
+      display:flex; align-items:center; justify-content:space-between;
+      border-bottom:2px solid #BFDBFE; background:#F0F9FF; flex-shrink:0;
+    }
+    .a4-logo { width:34px; height:34px; border-radius:50%; background:linear-gradient(145deg,#1E3A5F,#0F2040); display:flex; align-items:center; justify-content:center; font-size:16px; box-shadow:0 2px 6px rgba(30,58,95,.3); }
+    .a4-info  { flex:1; margin-left:9px; }
+    .a4-mode  { font-size:11px; font-weight:700; color:#1D4ED8; letter-spacing:.06em; font-family:var(--mono); }
+    .a4-sub   { font-size:9px; color:#6B7280; font-weight:300; }
+    .a4-pg    { font-size:12px; font-weight:700; color:#374151; font-family:var(--mono); }
+    .a4-body  { flex:1; overflow:hidden; position:relative; display:flex; align-items:flex-start; justify-content:center; padding:8px 22px; }
+    .a4-canvas { max-width:100%; max-height:100%; object-fit:contain; }
+    .a4-ftr   { height:46px; padding:5px 24px 8px; display:flex; flex-direction:column; align-items:center; justify-content:center; border-top:1px solid #BFDBFE; background:#F0F9FF; flex-shrink:0; }
+    .a4-ftr-txt { font-size:7.5px; color:#9CA3AF; text-align:center; font-style:italic; line-height:1.5; max-width:480px; }
+
+    /* Nav bar */
+    .nav-bar { height:34px; background:var(--surface); border:1px solid var(--border); border-radius:7px; display:flex; align-items:center; justify-content:space-between; padding:0 9px; flex-shrink:0; }
+    .btn-nav { padding:3px 12px; border-radius:4px; font-family:var(--font); font-size:12px; cursor:pointer; border:1px solid var(--border); background:var(--surface); color:var(--text-sub); transition:all var(--d1) var(--ease); display:flex; align-items:center; gap:3px; }
+    .btn-nav:hover { background:var(--blue-lt); border-color:var(--blue-acc); color:var(--blue-dk); }
+    .nav-ct { font-family:var(--mono); font-size:11px; font-weight:700; color:var(--blue-dk); }
+
+    /* ===================== RIGHT COLUMN ===================== */
+    .stat-card {
+      display:flex; align-items:center; justify-content:space-between;
+      background:var(--surface); border:1px solid var(--border); border-radius:8px;
+      padding:9px 11px; transition:all var(--d1) var(--ease);
+      animation:fadeUp var(--d2) var(--ease) both;
+    }
+    .stat-card:hover { border-color:#93C5FD; box-shadow:0 2px 8px rgba(59,130,246,.12); }
+    .stat-lbl { font-size:11px; font-weight:400; color:var(--text-sub); }
+    .stat-sub { font-size:9px; color:var(--text-mt); font-weight:300; }
+    .stat-val { font-family:var(--mono); font-size:12px; font-weight:700; color:var(--blue-dk); background:var(--blue-lt); border:1px solid var(--border-b); padding:3px 7px; border-radius:4px; animation:ticker var(--d1) var(--ease) both; }
+    .stat-val.green { background:var(--green-bg); border-color:#6EE7B7; color:#065F46; }
+    .sum-btn { background:var(--surface); border:1px solid #93C5FD; border-radius:8px; padding:9px 11px; cursor:pointer; text-align:left; transition:all var(--d1) var(--ease); width:100%; }
+    .sum-btn:hover { border-color:var(--blue-acc); background:var(--blue-lt); }
+    .sum-btn-h { display:flex; align-items:center; justify-content:space-between; font-size:11px; font-weight:700; color:var(--blue-dk); }
+    .sum-btn-s { font-size:9px; color:var(--text-mt); font-weight:300; margin-top:2px; }
+    .pw-inp { width:100%; padding:6px 9px; border:1px solid var(--border); border-radius:5px; font-family:var(--mono); font-size:12px; background:var(--surface); color:var(--text); outline:none; transition:all var(--d1) var(--ease); }
+    .pw-inp:focus { border-color:var(--blue-acc); box-shadow:0 0 0 3px rgba(59,130,246,.15); }
+    .form-lbl { font-size:11px; font-weight:400; color:var(--text-sub); margin-bottom:4px; display:block; }
+    .btn-sfx { width:100%; padding:9px; border-radius:7px; background:var(--surface); border:1px solid var(--border); color:var(--text-sub); font-family:var(--font); font-size:12px; font-weight:700; cursor:pointer; transition:all var(--d1) var(--ease); display:flex; align-items:center; justify-content:center; gap:5px; }
+    .btn-sfx:hover { background:var(--surf2); border-color:var(--gray); }
+    .btn-pdf { width:100%; padding:10px; border-radius:7px; background:linear-gradient(135deg,#1D4ED8,#3B82F6); border:1px solid var(--blue-dk); color:#fff; font-family:var(--font); font-size:12px; font-weight:700; cursor:pointer; transition:all var(--d1) var(--ease); display:flex; align-items:center; justify-content:center; gap:6px; box-shadow:0 3px 10px rgba(29,78,216,.3); letter-spacing:.02em; margin-top:auto; }
+    .btn-pdf:hover { background:linear-gradient(135deg,#1e3a8a,#1D4ED8); transform:translateY(-1px); }
+
+    /* ===================== MODAL ===================== */
+    .modal-bd { position:fixed; inset:0; background:rgba(17,24,39,.5); backdrop-filter:blur(5px); z-index:50; display:flex; align-items:center; justify-content:center; padding:20px; opacity:0; pointer-events:none; transition:opacity var(--d2) var(--ease); }
+    .modal-bd.open { opacity:1; pointer-events:all; }
+    .modal-box { width:100%; max-width:1280px; height:86vh; background:var(--surface); border:1px solid var(--border); border-radius:12px; display:flex; flex-direction:column; overflow:hidden; box-shadow:0 20px 60px rgba(17,24,39,.2); animation:scaleIn var(--d2) var(--ease) both; }
+    .modal-hdr { height:50px; padding:0 18px; border-bottom:2px solid var(--border-b); display:flex; align-items:center; justify-content:space-between; background:var(--surf2); flex-shrink:0; }
+    .modal-title { font-size:14px; font-weight:700; color:var(--text); }
+    .modal-sub   { font-size:11px; color:var(--text-mt); font-weight:300; font-family:var(--mono); }
+    .modal-close { width:28px; height:28px; border-radius:50%; border:1px solid var(--border); background:var(--surface); cursor:pointer; font-size:13px; color:var(--text-mt); display:flex; align-items:center; justify-content:center; transition:all var(--d1) var(--ease); }
+    .modal-close:hover { background:#FEE2E2; border-color:#FCA5A5; color:#DC2626; }
+    .modal-search { padding:5px 11px; border:1px solid var(--border); border-radius:5px; font-family:var(--font); font-size:12px; background:var(--surface); color:var(--text); outline:none; transition:all var(--d1) var(--ease); width:200px; }
+    .modal-search:focus { border-color:var(--blue-acc); box-shadow:0 0 0 3px rgba(59,130,246,.15); }
+    .modal-body { flex:1; overflow:auto; }
+    .modal-body::-webkit-scrollbar { width:5px; height:5px; }
+    .modal-body::-webkit-scrollbar-thumb { background:#93C5FD; border-radius:4px; }
+    .ledger { width:100%; border-collapse:collapse; font-size:11px; }
+    .ledger thead { position:sticky; top:0; z-index:10; background:#1D4ED8; }
+    .ledger thead th { padding:9px 11px; font-family:var(--font); font-weight:700; font-size:11px; color:#fff; text-align:left; letter-spacing:.03em; white-space:nowrap; border-right:1px solid rgba(255,255,255,.12); }
+    .ledger tbody tr:nth-child(even) { background:#EFF6FF; }
+    .ledger tbody tr:nth-child(odd)  { background:#fff; }
+    .ledger tbody tr { transition:background var(--d1) var(--ease); }
+    .ledger tbody tr:hover { background:#DBEAFE !important; }
+    .ledger tbody td { padding:7px 11px; font-weight:300; color:var(--text); border-bottom:1px solid var(--border-b); white-space:nowrap; max-width:150px; overflow:hidden; text-overflow:ellipsis; }
+    .ledger tbody tr.row-fail { background:var(--fail-bg) !important; }
+    .ledger tbody tr.row-fail td { color:var(--fail-txt); }
+    .modal-ftr { height:50px; padding:0 18px; border-top:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; background:var(--surf2); flex-shrink:0; }
+    .modal-ftr-txt { font-size:12px; color:var(--text-mt); font-weight:300; }
+    .modal-ftr-txt strong { font-weight:700; color:var(--text); }
+    .pdf-box { max-width:1040px; height:90vh; }
+    .pdf-toolbar { display:flex; align-items:center; gap:10px; }
+    .pdf-stage { flex:1; overflow:auto; background:#111827; padding:18px; display:flex; flex-direction:column; align-items:center; gap:18px; }
+    .pdf-stage canvas { max-width:100%; background:#fff; box-shadow:0 18px 50px rgba(0,0,0,.35); }
+    .pdf-status { font:500 12px var(--mono); color:var(--text-mt); }
+    .pdf-link { color:#1D4ED8; font-weight:700; text-decoration:none; }
+    .pdf-link:hover { text-decoration:underline; }
+
+    /* Scrollbars */
+    ::-webkit-scrollbar { width:4px; height:4px; }
+    ::-webkit-scrollbar-track { background:transparent; }
+    ::-webkit-scrollbar-thumb { background:#93C5FD; border-radius:4px; }
+
+    /* Utils */
+    .flex   { display:flex; }
+    .ai-c   { align-items:center; }
+    .gap-2  { gap:8px; }
+    .trunc  { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .mt-a   { margin-top:auto; }
+  </style>
+</head>
+<body>
+<div class="shell">
+
+  <!-- ================================================================ HEADER -->
+  <header class="app-hdr">
+    <!-- Logo + Brand (left) -->
+    <div class="flex ai-c gap-2">
+      <div class="logo-wrap"><div class="logo-inner">🛡️</div></div>
+      <div class="brand-block">
+        <div class="brand-th">หลักฐานดิจิทัล</div>
+        <div class="brand-en">DIGITAL EVIDENCE</div>
+      </div>
+    </div>
+
+    <!-- Mode Tabs (center) -->
+    <div class="hdr-mid">
+      <button class="mode-tab active" id="tabChat" onclick="setMode('CHAT')">CHAT</button>
+      <button class="mode-tab" id="tabSlip" onclick="setMode('SLIP')">SLIP</button>
+    </div>
+
+    <!-- Status + Actions (right) -->
+    <div class="hdr-right">
+      <div class="pill green">
+        <span class="dot-pulse"></span>
+        <span id="agentHeartbeatStatus">SLICER READY</span>
+      </div>
+      <div class="pill blue">⏱ <span id="topTimerValue">0.00s</span></div>
+      <button class="btn-sm ghost" onclick="openSummaryModal()">📊 ตารางสรุป</button>
+      <button class="btn-sm blue" onclick="syncLiveData()">🔄 Sync</button>
+    </div>
+  </header>
+
+  <!-- ============================================================= MAIN -->
+  <div class="app-main">
+
+    <!-- Full-width stage bar -->
+    <div class="stage-bar">
+      <div class="stage-left">
+        <span class="stage-dot"></span>
+        <span id="pageCounterBadge" class="stage-ct">หน้า 1 / 1 (Court Mode A4)</span>
+      </div>
+      <div class="stage-right">
+        <span id="sliceInfoBadge" class="chip blue">✂️ SLICE: 1:1 FORENSIC</span>
+        <span class="chip gray">PORTRAIT A4</span>
+      </div>
+    </div>
+
+    <!-- 3-Column -->
+    <div class="cols">
+
+      <!-- ============================================ LEFT COLUMN -->
+      <section class="col-l">
+
+        <!-- 1. Upload -->
+        <div class="panel">
+          <div class="pnl-hdr">
+            <span class="pnl-title">1. อัพโหลด & ตรวจพบ</span>
+            <span id="aiModeLabel" class="badge orange">CHAT_SLICER</span>
+          </div>
+          <div class="upload-zone" onclick="document.getElementById('fi').click()">
+            <input type="file" id="fi" multiple accept="image/*,.pdf" style="display:none" onchange="handleMultiUpload(this.files)">
+            <div class="uz-ico">📁</div>
+            <div class="uz-lbl">อัพโหลดภาพแชท / สลิป</div>
+            <div class="uz-hint">⚡ หั่นลงหน้า A4 ศาลทันที</div>
+          </div>
+          <!-- File queue -->
+          <div style="margin-top:8px">
+            <div class="pnl-hdr" style="margin-bottom:5px">
+              <span class="pnl-title" style="font-size:10px">📁 ไฟล์ในคิว</span>
+              <span id="uploadedFilesCountBadge" class="badge gray">0 ไฟล์</span>
+            </div>
+            <div id="uploadedFilesContainer" class="file-list">
+              <div class="dyn" style="text-align:center;padding:6px">ยังไม่มีไฟล์ — คลิกเพื่ออัพโหลด</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2. Search -->
+        <div class="panel">
+          <div class="pnl-hdr">
+            <span class="pnl-title">2. ค้นหา</span>
+            <span class="badge" style="color:#065F46;background:#D1FAE5;border-color:#6EE7B7">Zero-Prefix</span>
+          </div>
+          <div class="sw" style="margin-bottom:5px">
+            <span class="sw-ico">🔍</span>
+            <input type="text" id="targetSearchInput" placeholder="พิมพ์ชื่อ-สกุล หรือ ยศ..." oninput="handleTargetSearch(this.value)" class="si">
+          </div>
+          <div class="dyn">ล้างยศ: นาย, นาง, น.ส., ร.ต., พ.ต.อ., ส.ต.</div>
+        </div>
+
+        <!-- 3. Corroboration -->
+        <div class="panel">
+          <div class="sw-row">
+            <div>
+              <div class="sw-lbl">3. สลิป-แชท สอดคล้องกัน</div>
+              <div class="sw-sub">จับคู่ความเชื่อมโยงแห่งคดี</div>
+            </div>
+            <label class="toggle">
+              <input type="checkbox" id="corroborateToggle" checked onchange="handleConsistencyToggle(this.checked)">
+              <span class="sldr"></span>
+            </label>
+          </div>
+        </div>
+
+        <!-- 4. Target list -->
+        <div class="panel" style="flex:1;min-height:90px">
+          <div class="pnl-hdr">
+            <span class="pnl-title">4. รายชื่อเป้าหมาย</span>
+            <span id="matchedCount" class="badge gray">1 รายชื่อ</span>
+          </div>
+          <div id="targetPersonsContainer" style="display:flex;flex-direction:column;gap:4px;overflow-y:auto">
+            <div class="pc active" onclick="selectPerson('จิณห์นิภา ประสาทเขตการ')">
+              <div class="flex ai-c gap-2">
+                <span class="pc-dot"></span>
+                <div>
+                  <div class="pc-name">จิณห์นิภา ประสาทเขตการ</div>
+                  <div class="pc-meta">กรุงศรีอยุธยา · 95 รายการ</div>
+                </div>
+              </div>
+              <span class="match-b">🎯 MATCH</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 5. Timer + Process -->
+        <div class="panel" style="margin-top:auto">
+          <div class="tmr-box" style="margin-bottom:7px">
+            <div class="tmr-row">
+              <div class="tmr-status">
+                <span id="timerStatusDot" style="width:7px;height:7px;border-radius:50%;background:#10B981;display:inline-block"></span>
+                <span id="timerStatusText">พร้อมประมวลผล</span>
+              </div>
+              <span id="liveTimerCounter" class="tmr-val">00:00.30</span>
+            </div>
+            <div class="prog-wrap">
+              <div id="processProgressBar" class="prog-bar" style="width:100%"></div>
+            </div>
+          </div>
+          <button id="btnProcessEvidence" class="btn-proc" onclick="runProcess()">⚡ สั่งประมวลผล / หั่นสไลซ์ใหม่</button>
+        </div>
+      </section>
+
+      <!-- ============================================ CENTER COLUMN -->
+      <section class="col-c">
+        <!-- A4 Workbench -->
+        <div class="a4-workbench">
+          <div id="a4CourtReportSheet" class="a4-sheet">
+            <!-- A4 Header -->
+            <div class="a4-top">
+              <div class="a4-logo">🛡️</div>
+              <div class="a4-info">
+                <div class="a4-mode" id="a4HeaderMode">MODE : CHAT</div>
+                <div class="a4-sub"  id="a4HeaderSub">CORROBORATED : บทสนทนาต่อเนื่อง</div>
+              </div>
+              <div class="a4-pg" id="a4HeaderPageNum">PAGE : 336</div>
+            </div>
+            <!-- A4 Body -->
+            <div class="a4-body" id="a4BodyZone">
+              <canvas id="activeSliceCanvas" class="a4-canvas"></canvas>
+            </div>
+            <!-- A4 Footer -->
+            <div class="a4-ftr">
+              <div class="a4-ftr-txt">"DIGITAL EVIDENCE เป็นเพียงเครื่องมืออำนวยความสะดวกให้กับผู้จัดทำ โดยไม่ได้ดัดแปลง แก้ไข เพิ่มเติม เนื้อหาจากต้นฉบับใดๆ และไม่มีส่วนเกี่ยวข้องใดๆ กับเนื้อหาในเอกสาร เป็นเพียงเครื่องมือจัดทำผลงานให้กับระบบไฟล์เอกสารแบบใช้คำตระหนักรู้เท่านั้น"</div>
+            </div>
+          </div>
+        </div>
+        <!-- Nav -->
+        <div class="nav-bar">
+          <button class="btn-nav" onclick="changePage(-1)">◀ หน้าก่อนหน้า</button>
+          <div id="pageNavIndicator" class="nav-ct">หน้า 1 จาก 1</div>
+          <button class="btn-nav" onclick="changePage(1)">ถัดไป ▶</button>
+        </div>
+      </section>
+
+      <!-- ============================================ RIGHT COLUMN -->
+      <section class="col-r">
+        <div class="stat-card" style="animation-delay:.05s">
+          <div><div class="stat-lbl">1. สลิป-แชท สอดคล้อง</div><div class="stat-sub">จับคู่ 100%</div></div>
+          <div id="badgeCorroborate" class="stat-val green">95 รายการ</div>
+        </div>
+        <div class="stat-card" style="animation-delay:.10s">
+          <div><div class="stat-lbl">2. รายชื่อตรงกัน</div><div class="stat-sub">เป้าหมายหลัก</div></div>
+          <div id="badgeNames" class="stat-val">1 บุคคล</div>
+        </div>
+        <button class="sum-btn" onclick="openSummaryModal()" style="animation-delay:.15s">
+          <div class="sum-btn-h"><span>3. ตารางสรุป</span><span>📊 ↗</span></div>
+          <div class="sum-btn-s">560 สลิป · ไฮไลต์ซ้ำ/ล้มเหลว</div>
+        </button>
+        <div class="stat-card" style="animation-delay:.20s">
+          <div><div class="stat-lbl">4. สลิปไม่ซ้ำ (Master Slips)</div><div class="stat-sub">2,232 ไฟล์</div></div>
+          <div id="badgeMasterSlips" class="stat-val">561 / 2,232</div>
+        </div>
+        <div class="panel" style="animation-delay:.25s">
+          <label class="form-lbl" for="exportPassword">5. รหัสผ่าน (SFX)</label>
+          <input type="password" id="exportPassword" value="PoliceEvidence2568" class="pw-inp">
+        </div>
+        <button class="btn-sfx" onclick="handleSfxAction()">📦 6. SFX ARCHIVE (.EXE)</button>
+        <button class="btn-pdf" onclick="handlePdfExportAction()">📕 7. EXPORT PDF ส่งศาล</button>
+      </section>
+    </div><!-- /cols -->
+  </div><!-- /app-main -->
+</div><!-- /shell -->
+
+<!-- ============================================================= MODAL -->
+<div id="summaryModalBackdrop" class="modal-bd" onclick="if(event.target===this)closeSummaryModal()">
+  <div class="modal-box">
+    <div class="modal-hdr">
+      <div>
+        <div class="modal-title">📊 ตารางสรุปรายการหลักฐานสลิปการโอนเงิน (13 คอลัมน์สมบูรณ์)</div>
+        <div class="modal-sub">FORENSIC MASTER SLIP DATABASE · <span id="modalRecordCount">561</span> RECORDS</div>
+      </div>
+      <div class="flex ai-c gap-2">
+        <input type="text" id="modalTableSearch" placeholder="ค้นหา..." oninput="filterModalTable(this.value)" class="modal-search">
+        <button class="modal-close" onclick="closeSummaryModal()">✕</button>
+      </div>
+    </div>
+    <div class="modal-body">
+      <table class="ledger">
+        <thead><tr>
+          <th>ลำดับ</th><th>กลุ่ม</th><th>ชื่อไฟล์สลิป</th><th>วันที่</th><th>เวลา</th>
+          <th>ธ.ผู้โอน</th><th>ชื่อผู้โอน</th><th style="text-align:right">จำนวนเงิน (บาท)</th>
+          <th>ชื่อผู้รับโอน</th><th>ธ.ผู้รับ</th><th>รหัสอ้างอิง</th><th>บันทึกช่วยจำ</th>
+          <th style="text-align:center">สถานะ Audit</th>
+        </tr></thead>
+        <tbody id="summaryTableBody"></tbody>
+      </table>
+    </div>
+    <div class="modal-ftr">
+      <div class="modal-ftr-txt" id="modalTableSummaryText">กำลังโหลดข้อมูล...</div>
+      <button class="btn-sm blue" onclick="closeSummaryModal()">ปิดหน้าต่าง</button>
+    </div>
+  </div>
+</div>
+
+<div id="pdfPreviewBackdrop" class="modal-bd" onclick="if(event.target===this)closePdfPreview()">
+  <div class="modal-box pdf-box">
+    <div class="modal-hdr">
+      <div>
+        <div class="modal-title">PDF.js Preview - Court PDF</div>
+        <div class="modal-sub" id="pdfPreviewMeta">No PDF generated yet</div>
+      </div>
+      <div class="pdf-toolbar">
+        <a id="pdfDownloadLink" class="pdf-link" href="#" target="_blank" rel="noopener">Download PDF</a>
+        <button class="modal-close" onclick="closePdfPreview()">x</button>
+      </div>
+    </div>
+    <div id="pdfPreviewCanvasHost" class="pdf-stage">
+      <div class="pdf-status">PDF preview will appear here after export.</div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ========================================================================
+   STATE
+======================================================================== */
+let globalData=null, allSlips=[], allChats=[], fileList=[], activeIdx=0;
+let curImg=null, slices=[], sliceIdx=0, totalSlices=1;
+let curMode = 'CHAT';
+
+function setMode(m){
+  curMode = m;
+  document.getElementById('tabChat').className = 'mode-tab' + (m==='CHAT'?' active':'');
+  document.getElementById('tabSlip').className = 'mode-tab' + (m==='SLIP'?' active':'');
+  document.getElementById('a4HeaderMode').innerText = 'MODE : ' + m;
+  document.getElementById('aiModeLabel').innerText  = m + '_SLICER';
+  drawSample();
+}
+
+/* ========================================================================
+   SYNC
+======================================================================== */
+async function syncLiveData(){
+  try{ const r=await fetch('/api/data'); if(!r.ok) throw 0; globalData=await r.json(); }
+  catch{ try{ globalData=await(await fetch('sandbox/live_evidence_data.json')).json(); }catch(e){console.warn(e);} }
+  if(globalData){
+    allSlips=globalData.slips||[]; allChats=globalData.chatCorrelations||[];
+    setVal('badgeMasterSlips', allSlips.length+' / 2,232');
+    setVal('badgeCorroborate', allChats.length+' รายการ');
+    renderTable(allSlips);
+  }
+}
+function setVal(id,txt){
+  const e=document.getElementById(id); if(!e)return;
+  e.style.animation='none'; void e.offsetWidth;
+  e.textContent=txt; e.style.animation='';
+}
+
+/* ========================================================================
+   SLICER ENGINE
+======================================================================== */
+function sliceToA4(img){
+  slices=[];
+  const W=img.naturalWidth||img.width, H=img.naturalHeight||img.height;
+  const sliceH=Math.round(W*(1115/807));
+  if(H<=sliceH*1.1){
+    const c=mk(807,1115); const ctx=c.getContext('2d');
+    ctx.fillStyle='#FFF'; ctx.fillRect(0,0,807,1115);
+    const sc=Math.min(807/W,1115/H);
+    ctx.drawImage(img,Math.round((807-W*sc)/2),Math.round((1115-H*sc)/2),Math.round(W*sc),Math.round(H*sc));
+    slices.push(c);
+  } else {
+    let y=0;
+    const tc=mk(W,Math.min(100,H)); tc.getContext('2d').drawImage(img,0,0);
+    const pd=tc.getContext('2d').getImageData(10,10,1,1).data;
+    const bg=`rgb(${pd[0]},${pd[1]},${pd[2]})`;
+    while(y<H){
+      const ch=Math.min(sliceH,H-y), c=mk(807,1115);
+      const ctx=c.getContext('2d');
+      ctx.fillStyle=bg||'#F5EDE2'; ctx.fillRect(0,0,807,1115);
+      ctx.drawImage(img,0,y,W,ch,0,0,807,Math.round(ch*(807/W)));
+      slices.push(c); y+=sliceH;
+    }
+  }
+  totalSlices=slices.length; sliceIdx=0; renderSlice();
+}
+function mk(w,h){const c=document.createElement('canvas');c.width=w;c.height=h;return c;}
+
+function renderSlice(){
+  if(!slices.length)return;
+  const tgt=document.getElementById('activeSliceCanvas'), src=slices[sliceIdx];
+  tgt.width=src.width; tgt.height=src.height;
+  tgt.getContext('2d').drawImage(src,0,0);
+  const p=sliceIdx+1;
+  document.getElementById('pageCounterBadge').innerText=`หน้า ${p} / ${totalSlices} (Court Mode A4)`;
+  document.getElementById('pageNavIndicator').innerText=`หน้า ${p} จาก ${totalSlices}`;
+  document.getElementById('a4HeaderPageNum').innerText=`PAGE : ${p}`;
+  document.getElementById('sliceInfoBadge').innerText=`✂️ หั่นสด: หน้า ${p}/${totalSlices}`;
+}
+function changePage(d){ if(totalSlices<=1)return; sliceIdx=Math.max(0,Math.min(totalSlices-1,sliceIdx+d)); renderSlice(); }
+
+/* ========================================================================
+   UPLOAD
+======================================================================== */
+function fmt(b){return b<1024?b+' B':b<1048576?(b/1024).toFixed(1)+' KB':(b/1048576).toFixed(1)+' MB';}
+function handleMultiUpload(files){
+  if(!files||!files.length)return;
+  const nf=Array.from(files).map(f=>({file:f,name:f.name,size:f.size,url:URL.createObjectURL(f)}));
+  fileList=[...fileList,...nf]; activeIdx=fileList.length-1;
+  renderFileList(); loadFile(fileList[activeIdx]);
+}
+function selectUploadedFile(i){ activeIdx=i; renderFileList(); loadFile(fileList[i]); }
+function loadFile(fo){
+  if(!fo?.url)return;
+  const t0=performance.now();
+  document.getElementById('timerStatusText').innerText='⏳ กำลังหั่นภาพ...';
+  document.getElementById('processProgressBar').style.width='15%';
+  const img=new Image();
+  img.onload=()=>{
+    curImg=img; sliceToA4(img);
+    const el=((performance.now()-t0)/1000).toFixed(2);
+    document.getElementById('topTimerValue').innerText=el+'s';
+    document.getElementById('liveTimerCounter').innerText='00:'+el;
+    document.getElementById('timerStatusText').innerText=`✅ หั่นสำเร็จ ${totalSlices} หน้า A4`;
+    document.getElementById('processProgressBar').style.width='100%';
+  };
+  img.src=fo.url;
+}
+function renderFileList(){
+  const c=document.getElementById('uploadedFilesContainer');
+  const b=document.getElementById('uploadedFilesCountBadge');
+  if(!fileList.length){ b.innerText='0 ไฟล์'; c.innerHTML='<div class="dyn" style="text-align:center;padding:6px">ยังไม่มีไฟล์</div>'; return; }
+  b.innerText=fileList.length+' ไฟล์'; c.innerHTML='';
+  fileList.forEach((it,i)=>{
+    const d=document.createElement('div');
+    d.className='fi'+(i===activeIdx?' active':'');
+    d.onclick=()=>selectUploadedFile(i);
+    d.innerHTML=`<div class="flex ai-c gap-2" style="overflow:hidden;flex:1"><span style="font-size:13px;flex-shrink:0">${curMode==='SLIP'?'🧾':'💬'}</span><div style="overflow:hidden"><div class="fi-name trunc" title="${it.name}">${it.name}</div><div class="fi-meta">${fmt(it.size)}</div></div></div><span class="fi-rm" onclick="event.stopPropagation();rmFile(${i})">✕</span>`;
+    c.appendChild(d);
+  });
+}
+function rmFile(i){ if(fileList[i]?.url)URL.revokeObjectURL(fileList[i].url); fileList.splice(i,1); activeIdx=Math.max(0,activeIdx-1); renderFileList(); fileList.length?loadFile(fileList[activeIdx]):drawSample(); }
+
+/* ========================================================================
+   SAMPLE CANVAS — Chat Bubbles matching reference
+======================================================================== */
+function drawSample(){
+  const cv=document.getElementById('activeSliceCanvas');
+  cv.width=807; cv.height=1115;
+  const ctx=cv.getContext('2d');
+
+  if(curMode==='SLIP'){ drawSlipSample(ctx); return; }
+  drawChatSample(ctx);
+}
+
+function drawChatSample(ctx){
+  /* Chat background — warm beige like WhatsApp */
+  ctx.fillStyle='#E8D5B5';
+  ctx.fillRect(0,0,807,1115);
+
+  /* subtle texture */
+  ctx.fillStyle='rgba(255,255,255,0.08)';
+  for(let y=0;y<1115;y+=18){ ctx.fillRect(0,y,807,9); }
+
+  const W=807;
+  let y=30;
+
+  /* helper: right bubble (sender — golden) */
+  function rightBubble(text,sub,time,ry){
+    const bw=Math.min(480,text.length*13+60), bh=sub?72:52;
+    const bx=W-bw-18;
+    ctx.fillStyle='rgba(0,0,0,0.06)';
+    rr(ctx,bx+2,ry+2,bw,bh,14); ctx.fill();
+    ctx.fillStyle='#F2E1C0';
+    rr(ctx,bx,ry,bw,bh,14); ctx.fill();
+    ctx.fillStyle='#1a1a1a'; ctx.font='bold 20px Sarabun';
+    ctx.fillText(text,bx+16,ry+28);
+    if(sub){ ctx.fillStyle='#555'; ctx.font='16px Sarabun'; ctx.fillText(sub,bx+16,ry+52); }
+    ctx.fillStyle='#888'; ctx.font='13px Sarabun'; ctx.textAlign='right';
+    ctx.fillText(time,bx+bw-10,ry+bh-8);
+    ctx.fillStyle='#1D4ED8'; ctx.font='12px Sarabun';
+    ctx.fillText('✓✓',bx+bw-10,ry+bh+10);
+    ctx.textAlign='left';
+    return ry+bh+22;
+  }
+
+  /* helper: left bubble (receiver — white) */
+  function leftBubble(text,time,ry,sub){
+    const bw=Math.min(440,text.length*12+60), bh=sub?70:50;
+    const bx=58;
+    /* avatar */
+    ctx.fillStyle='#9CA3AF';
+    ctx.beginPath(); ctx.arc(28,ry+bh/2,18,0,Math.PI*2); ctx.fill();
+    ctx.fillStyle='#fff'; ctx.font='14px Sarabun'; ctx.textAlign='center';
+    ctx.fillText('👤',28,ry+bh/2+5);
+    ctx.textAlign='left';
+    ctx.fillStyle='rgba(0,0,0,0.05)';
+    rr(ctx,bx+2,ry+2,bw,bh,14); ctx.fill();
+    ctx.fillStyle='#FFFFFF';
+    rr(ctx,bx,ry,bw,bh,14); ctx.fill();
+    ctx.fillStyle='#1a1a1a'; ctx.font='bold 20px Sarabun';
+    ctx.fillText(text,bx+16,ry+28);
+    if(sub){ ctx.fillStyle='#555'; ctx.font='16px Sarabun'; ctx.fillText(sub,bx+16,ry+50); }
+    ctx.fillStyle='#888'; ctx.font='13px Sarabun'; ctx.textAlign='right';
+    ctx.fillText(time,bx+bw-10,ry+bh-8);
+    ctx.textAlign='left';
+    return ry+bh+22;
+  }
+
+  /* date divider */
+  function dateDivider(label,ry){
+    ctx.fillStyle='rgba(0,0,0,0.35)';
+    rr(ctx,W/2-60,ry,120,26,13); ctx.fill();
+    ctx.fillStyle='#fff'; ctx.font='bold 13px Sarabun'; ctx.textAlign='center';
+    ctx.fillText(label,W/2,ry+17);
+    ctx.textAlign='left';
+    return ry+46;
+  }
+
+  /* chat name header */
+  ctx.fillStyle='rgba(0,0,0,0.12)';
+  ctx.fillRect(0,0,807,44);
+  ctx.fillStyle='#ffffff'; ctx.font='bold 20px Sarabun'; ctx.textAlign='center';
+  ctx.fillText('Re tuttikarn 🧡',W/2,28);
+  ctx.textAlign='left';
+  y=60;
+
+  y=dateDivider('วันนี้',y);
+
+  y=rightBubble('คนอื่นโดนหลอกครั้งเดียว มันไม่อยู่ให้',null,'10:58',y);
+  y=rightBubble('มาครั้งสอง แต่นี่เค้ากี่ครั้ง ในห้วงเวลาเดียว',null,'10:58',y);
+
+  /* left — name label */
+  ctx.fillStyle='#1D4ED8'; ctx.font='bold 14px Sarabun';
+  ctx.fillText('จิณห์นิภา',66,y+14);
+  y+=18;
+
+  y=leftBubble('ถ้าตัวรู้สึกแบบนั้นได้จริงๆ...','10:58',y,null);
+  y=leftBubble('ไม่รู้จัก','10:59',y,null);
+
+  y=rightBubble('เทรา ไม่รู้ใจเทรา',null,'11:04',y);
+  y=rightBubble('ตัวคิดว่ามาหลอกตัวใช่ไหม',null,'11:04',y);
+
+  y=leftBubble('ผิดมา','11:05',y,null);
+  y=leftBubble('ไม่มาแน่','11:05',y,null);
+
+  y=rightBubble('ตัวคิดแบบนั้นจริงๆ ใช่ไหม',null,'11:06',y);
+
+  y=leftBubble('รีบนาทมเลยช่วยเหลือศักดิ์มา','11:06',y,'ขอดู');
+
+  y=rightBubble('ตัวคิดว่าความรู้สึกทุกอย่างเอา','11:08',y,'ตัวเองไจง ได้ ใช้แล้วทำให้หลอก');
+
+  y=leftBubble('เค้ารู้ตัวไม่เคยช่วยเหลือตัวเลย','11:10',y,null);
+  leftBubble('เค้าไม่มีปัญญาทำอะไรเลยเลย','11:10',y,null);
+
+  /* reset */
+  ctx.textAlign='left';
+
+  totalSlices=1; sliceIdx=0;
+  document.getElementById('pageCounterBadge').innerText='หน้า 1 / 1 (Court Mode A4)';
+  document.getElementById('pageNavIndicator').innerText='หน้า 1 จาก 1';
+  document.getElementById('a4HeaderPageNum').innerText='PAGE : 336';
+}
+
+function drawSlipSample(ctx){
+  ctx.fillStyle='#E8D5B5'; ctx.fillRect(0,0,807,1115);
+  ctx.fillStyle='#fff'; rr(ctx,80,80,648,700,20); ctx.fill();
+  ctx.shadowColor='rgba(0,0,0,0.12)'; ctx.shadowBlur=20;
+  ctx.fillStyle='#fff'; rr(ctx,80,80,648,700,20); ctx.fill();
+  ctx.shadowBlur=0;
+
+  ctx.fillStyle='#059669'; ctx.font='bold 28px Sarabun'; ctx.textAlign='center';
+  ctx.fillText('✓ โอนเงินสำเร็จ',404,180);
+  ctx.fillStyle='#555'; ctx.font='18px Sarabun';
+  ctx.fillText('26 ก.ค. 68, 10:50 น.',404,214);
+  ctx.fillStyle='#111827'; ctx.font='bold 52px Sarabun';
+  ctx.fillText('5,400.00',404,280);
+  ctx.fillStyle='#6B7280'; ctx.font='16px Sarabun';
+  ctx.fillText('ค่าธรรมเนียม  0.00',404,310);
+
+  ctx.textAlign='left';
+  ctx.fillStyle='#374151'; ctx.font='bold 18px Sarabun';
+  ctx.fillText('นาย ณัฏชัย รักษาวงษ์',120,380);
+  ctx.fillStyle='#6B7280'; ctx.font='15px Sarabun';
+  ctx.fillText('XXX-X-XX558-9   ttb',120,404);
+
+  ctx.fillStyle='#374151'; ctx.font='bold 18px Sarabun';
+  ctx.fillText('น.ส. จิณห์นิภา ประสาทเขตการ',120,460);
+  ctx.fillStyle='#6B7280'; ctx.font='15px Sarabun';
+  ctx.fillText('XXX-X-XX996-5   ttb',120,484);
+
+  ctx.fillStyle='#9CA3AF'; ctx.font='14px Sarabun'; ctx.textAlign='right';
+  ctx.fillText('หมายเหตุ V คืน 27',680,540);
+  ctx.fillStyle='#6B7280'; ctx.textAlign='left';
+  ctx.fillText('อ้างอิง: 20250726100111031',120,575);
+
+  totalSlices=1; sliceIdx=0;
+  document.getElementById('pageCounterBadge').innerText='หน้า 1 / 1 (Court Mode A4)';
+  document.getElementById('pageNavIndicator').innerText='หน้า 1 จาก 1';
+  document.getElementById('a4HeaderPageNum').innerText='PAGE : 1';
+  document.getElementById('a4HeaderMode').innerText='MODE : SLIP';
+}
+
+function rr(ctx,x,y,w,h,r){
+  ctx.beginPath(); ctx.moveTo(x+r,y);
+  ctx.lineTo(x+w-r,y); ctx.quadraticCurveTo(x+w,y,x+w,y+r);
+  ctx.lineTo(x+w,y+h-r); ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);
+  ctx.lineTo(x+r,y+h); ctx.quadraticCurveTo(x,y+h,x,y+h-r);
+  ctx.lineTo(x,y+r); ctx.quadraticCurveTo(x,y,x+r,y); ctx.closePath();
+}
+
+/* ========================================================================
+   CONTROLS
+======================================================================== */
+function runProcess(){
+  if(curImg){ document.getElementById('processProgressBar').style.width='0%'; setTimeout(()=>{ sliceToA4(curImg); document.getElementById('processProgressBar').style.width='100%'; alert(`⚡ หั่นใหม่เรียบร้อย ${totalSlices} หน้า A4!`); },100); }
+  else alert('กรุณาอัพโหลดภาพก่อนครับ');
+}
+function stripPfx(n){ return n.replace(/^(นาย|นาง|นางสาว|น\.ส\.|คุณ|ท่าน|พล\.ต\.อ\.|พ\.ต\.อ\.|พ\.ต\.ท\.|พ\.ต\.ต\.|ร\.ต\.อ\.|ด\.ต\.|จ\.ส\.ต\.|ส\.ต\.อ\.|พล\.อ\.|พ\.อ\.|พ\.ท\.|ร\.อ\.|ดร\.|ศ\.|รศ\.|ผศ\.|นพ\.|พญ\.)\s*/g,'').trim(); }
+function handleTargetSearch(v){
+  const q=stripPfx(v), c=document.getElementById('targetPersonsContainer'); let m=0;
+  c.querySelectorAll('.pc').forEach(el=>{ const ok=!q||el.innerText.includes(q); el.style.display=ok?'flex':'none'; if(ok)m++; });
+  document.getElementById('matchedCount').innerText=m+' รายชื่อ';
+}
+function selectPerson(n){ document.getElementById('targetSearchInput').value=n; handleTargetSearch(n); }
+function handleConsistencyToggle(on){
+  const b=document.getElementById('badgeCorroborate');
+  b.textContent=on?'95 รายการ':'ทั้งหมด'; b.className=on?'stat-val green':'stat-val';
+}
+
+/* ========================================================================
+   TABLE
+======================================================================== */
+function renderTable(slips){
+  const tb=document.getElementById('summaryTableBody'); tb.innerHTML=''; let tot=0;
+  slips.slice(0,560).forEach((s,i)=>{
+    const amt=typeof s.amount==='number'?s.amount:parseFloat(String(s.amount||'0').replace(/,/g,''))||0; tot+=amt;
+    const fail=s.auditStatus&&(s.auditStatus.includes('Fail')||s.auditStatus.includes('ซ้ำ'));
+    const tr=document.createElement('tr'); if(fail)tr.classList.add('row-fail');
+    tr.innerHTML=`<td>${s.no||i+1}</td><td>${s.bankGroup||'-'}</td><td title="${s.fileName||''}">${s.fileName||'-'}</td><td>${s.date||'-'}</td><td>${s.time||'-'}</td><td>${s.senderBank||'-'}</td><td>${s.senderName||'-'}</td><td style="text-align:right;font-weight:700">${amt.toLocaleString('th-TH',{minimumFractionDigits:2})}</td><td style="color:#1D4ED8;font-weight:700">${s.receiverName||'-'}</td><td>${s.receiverBank||'-'}</td><td style="color:#6B7280">${s.transRef||'-'}</td><td>${s.memo||'-'}</td><td style="text-align:center"><span style="padding:2px 8px;border-radius:4px;font-size:10px;font-weight:700;background:${fail?'#FEE2E2':'#D1FAE5'};color:${fail?'#DC2626':'#065F46'}">${s.auditStatus||'Pixel-Verified'}</span></td>`;
+    tb.appendChild(tr);
+  });
+  document.getElementById('modalRecordCount').textContent=slips.length;
+  document.getElementById('modalTableSummaryText').innerHTML=`รวมทั้งหมด <strong>${slips.length}</strong> รายการ | ยอดรวม: <strong style="color:#1D4ED8">${tot.toLocaleString('th-TH',{minimumFractionDigits:2})}</strong> บาท`;
+}
+function filterModalTable(q){
+  const lq=q.toLowerCase();
+  renderTable(allSlips.filter(s=>['senderName','receiverName','transRef','fileName'].some(k=>String(s[k]||'').toLowerCase().includes(lq))));
+}
+function openSummaryModal(){ document.getElementById('summaryModalBackdrop').classList.add('open'); }
+function closeSummaryModal(){ document.getElementById('summaryModalBackdrop').classList.remove('open'); }
+function handleSfxAction(){ const pw=document.getElementById('exportPassword').value; if(!pw){alert('กรุณาใส่รหัสผ่าน');return;} alert(`🗃️ SFX Archive พร้อมรหัสผ่าน "${pw}" เรียบร้อย`); }
+function getPdfExportPages(){
+  const source = slices.length ? slices : [document.getElementById('activeSliceCanvas')];
+  return source.map((canvas) => canvas.toDataURL('image/png', 0.98));
+}
+async function handlePdfExportAction(){
+  const pages = getPdfExportPages();
+  if(!pages.length){ alert('ยังไม่มีหน้า A4 สำหรับสร้าง PDF'); return; }
+  const btn = event?.currentTarget;
+  const oldText = btn ? btn.textContent : '';
+  if(btn){ btn.disabled = true; btn.textContent = 'กำลังสร้าง PDF จริง...'; }
+  try{
+    const res = await fetch('/api/pdf/export', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({ title:'Evidence_Court_Report', pages })
+    });
+    const result = await res.json();
+    if(!res.ok || result.status !== 'ok') throw new Error(result.error || 'PDF export failed');
+    await openPdfPreview(result.url, result);
+  }catch(err){
+    alert('สร้าง PDF ไม่สำเร็จ: ' + err.message);
+  }finally{
+    if(btn){ btn.disabled = false; btn.textContent = oldText; }
+  }
+}
+async function openPdfPreview(pdfUrl, meta){
+  const backdrop = document.getElementById('pdfPreviewBackdrop');
+  const host = document.getElementById('pdfPreviewCanvasHost');
+  const link = document.getElementById('pdfDownloadLink');
+  const metaEl = document.getElementById('pdfPreviewMeta');
+  backdrop.classList.add('open');
+  host.innerHTML = '<div class="pdf-status">Loading PDF.js preview...</div>';
+  link.href = pdfUrl;
+  metaEl.textContent = `${meta.pages} page(s) · ${Math.round(meta.bytes/1024).toLocaleString('th-TH')} KB · ${meta.relativePath}`;
+
+  try{
+    const pdfjsLib = await import('/static/pdfjs/pdf.min.mjs');
+    pdfjsLib.GlobalWorkerOptions.workerSrc = '/static/pdfjs/pdf.worker.min.mjs';
+    const pdfBytes = new Uint8Array(await (await fetch(pdfUrl)).arrayBuffer());
+    const pdf = await pdfjsLib.getDocument({ data: pdfBytes, disableWorker: true }).promise;
+    host.innerHTML = '';
+    for(let pageNo=1; pageNo<=pdf.numPages; pageNo++){
+      const page = await pdf.getPage(pageNo);
+      const viewport = page.getViewport({ scale: 1.35 });
+      const canvas = document.createElement('canvas');
+      canvas.width = Math.floor(viewport.width);
+      canvas.height = Math.floor(viewport.height);
+      await page.render({ canvasContext: canvas.getContext('2d'), viewport }).promise;
+      host.appendChild(canvas);
+    }
+  }catch(err){
+    host.innerHTML = `<div class="pdf-status">PDF.js preview failed: ${err.message}</div>`;
+    throw err;
+  }
+}
+function closePdfPreview(){ document.getElementById('pdfPreviewBackdrop').classList.remove('open'); }
+
+window.addEventListener('DOMContentLoaded',()=>{ drawSample(); syncLiveData(); });
+</script>
+</body>
+</html>
