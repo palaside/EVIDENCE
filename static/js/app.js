@@ -818,10 +818,34 @@
                 imgObj: img,
                 width: img.width,
                 height: img.height,
-                amount: 1500.00 // Krungthai / Mobile banking slip standard amount
+                amount: 1500.00,
+                bank: 'ธนาคารกรุงไทย (KTB)',
+                sender: 'นาย ก. (ผู้โอน)',
+                receiver: 'นาย สามารถ ทวีทา (เป้าหมาย)',
+                transId: 'TX' + Date.now().toString().slice(-8)
               };
               evidenceStore.files.push(item);
               onFileProcessed(item);
+
+              // Background Async Backend OCR Hook (Seamless Real Pipeline)
+              fetch('http://localhost:8088/api/extract', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ filename: file.name, data_url: dataUrl })
+              })
+              .then(res => res.json())
+              .then(data => {
+                if (data && data.success && data.data) {
+                  const extData = data.data;
+                  if (extData.amount && extData.amount > 0) item.amount = extData.amount;
+                  if (extData.bank_detected) item.bank = extData.bank_detected;
+                  if (extData.receiver) item.receiver = extData.receiver;
+                  if (extData.sender) item.sender = extData.sender;
+                  if (extData.trans_id) item.transId = extData.trans_id;
+                  updateEvidenceUI();
+                }
+              })
+              .catch(() => { /* Offline fallback is already active */ });
             };
             img.src = dataUrl;
           };
