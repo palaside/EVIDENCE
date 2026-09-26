@@ -24,7 +24,14 @@
       currentIndex: 0,
       activeMode: 'standby',
       processedPages: [],
-      currentProcessedIndex: 0
+      currentProcessedIndex: 0,
+      detectedNames: [
+        { id: 'poi_1', name: 'น.ส.จิณห์ณิภา ประสาทเขตรการ', chatMatches: 23, slipMatches: 28, amount: 42000.00, bank: 'ธนาคารกสิกรไทย (KBANK)' },
+        { id: 'poi_2', name: 'น.ส.เจนจิรา ประสาทเขตรการ', chatMatches: 14, slipMatches: 15, amount: 22500.00, bank: 'ธนาคารไทยพาณิชย์ (SCB)' },
+        { id: 'poi_3', name: 'นาย สามารถ ทวีทา', chatMatches: 8, slipMatches: 9, amount: 13500.00, bank: 'ธนาคารกรุงไทย (KTB)' }
+      ],
+      targetList: [],
+      selectedTarget: null
     };
 
     let currentSampleImage = null;
@@ -904,8 +911,7 @@
     function updateEvidenceUI() {
       const files = evidenceStore.files;
       const total = files.length;
-      document.getElementById('evidenceTotalFiles').textContent = total;
-      document.getElementById('evidenceQueueWrap').style.display = total > 0 ? 'flex' : 'none';
+      const totalBadge = document.getElementById('evidenceTotalFilesBadge');
 
       let chatCount = 0;
       let slipCount = 0;
@@ -925,72 +931,257 @@
         else dataCount++;
       });
 
-      // Update Chips
-      const chipChat = document.getElementById('chipChatCount');
-      const chipSlip = document.getElementById('chipSlipCount');
-      const chipPdf = document.getElementById('chipPdfCount');
-      const chipData = document.getElementById('chipDataCount');
-      const chipSfx = document.getElementById('chipSfxCount');
+      // 1. Update Intake Badges & Stats (Wireframe 1 & 2)
+      const intakeSlipText = document.getElementById('intakeSlipText');
+      const intakeChatText = document.getElementById('intakeChatText');
+      if (intakeSlipText) intakeSlipText.textContent = `สลิป ${slipCount} รายการ`;
+      if (intakeChatText) intakeChatText.textContent = `แชท ${chatCount} หน้า`;
+      if (totalBadge) totalBadge.textContent = `${total} ไฟล์ (สลิป ${slipCount}, แชท ${chatCount})`;
 
-      chipChat.textContent = `📷 ภาพแชท (${chatCount})`;
-      chipSlip.textContent = `🧾 สลิป (${slipCount})`;
-      chipPdf.textContent = `📑 PDF (${pdfCount})`;
-      chipData.textContent = `📊 ข้อมูล (${dataCount})`;
-      if (chipSfx) chipSfx.textContent = `🗃️ SFX (${sfxCount})`;
+      const detectedTag = document.getElementById('detectedNamesCountTag');
+      if (detectedTag) detectedTag.textContent = `${evidenceStore.detectedNames.length} รายชื่อ ›`;
 
-      chipChat.classList.toggle('active-chip', chatCount > 0);
-      chipSlip.classList.toggle('active-chip', slipCount > 0);
-      chipPdf.classList.toggle('active-chip', pdfCount > 0);
-      chipData.classList.toggle('active-chip', dataCount > 0);
-      if (chipSfx) chipSfx.classList.toggle('active-chip', sfxCount > 0);
+      // Update KPI Cards status dots and live metrics
+      const kpiCard1 = document.getElementById('kpiCard1');
+      const kpiMetric1 = document.getElementById('kpiMetric1');
+      const kpiDesc1 = document.getElementById('kpiDesc1');
+      const kpiDot1 = document.getElementById('kpiDot1');
 
-      // Update Target Blueprint schema
-      document.getElementById('targetCountTag').textContent = `${total} รายการ`;
-      const bpRow = document.querySelectorAll('.blueprint-val');
-      if (bpRow && bpRow.length >= 3) {
-        if (slipCount > 0) {
-          bpRow[0].textContent = 'นาย สามารถ ทวีทา (เป้าหมายปลายทาง)';
-          bpRow[0].style.color = '#38BDF8';
-          bpRow[1].textContent = `฿ ${totalAmount.toLocaleString('th-TH', { minimumFractionDigits: 2 })}`;
+      if (kpiCard1 && total > 0) kpiCard1.classList.add('has-data');
+      if (kpiMetric1) kpiMetric1.textContent = `฿ ${totalAmount.toLocaleString('th-TH', { minimumFractionDigits: 2 })}`;
+      if (kpiDesc1) kpiDesc1.textContent = `สลิปในบัญชี: ${slipCount} รายการ`;
+
+      const kpiCard3 = document.getElementById('kpiCard3');
+      const kpiMetric3 = document.getElementById('kpiMetric3');
+      const kpiDesc3 = document.getElementById('kpiDesc3');
+      if (kpiCard3 && chatCount > 0) kpiCard3.classList.add('has-data');
+      if (kpiMetric3) kpiMetric3.textContent = `${chatCount} หน้า`;
+      if (kpiDesc3) kpiDesc3.textContent = `แชทสัมพันธ์: ${chatCount} หน้า`;
+
+      renderTargetItemsList();
+    }
+
+    // 3. Search & Enter -> Add to Box 5 (Wireframe 2 & 3)
+    function handleTargetSearchKeyDown(e) {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        const input = document.getElementById('targetSearchInput');
+        if (!input) return;
+        const query = input.value.trim();
+        if (!query) return;
+
+        // Check if already in target list
+        const exists = evidenceStore.targetList.find(t => t.name.toLowerCase() === query.toLowerCase());
+        if (exists) {
+          showToast(`⚠️ รายชื่อ "${query}" มีอยู่ในกล่องเป้าหมายแล้ว`);
+          input.value = '';
+          return;
         }
-        bpRow[2].textContent = `${chatCount} แชท • ${slipCount} สลิป` + (sfxCount > 0 ? ` • ${sfxCount} SFX` : '');
+
+        // Match with detected names or create new POI
+        const detected = evidenceStore.detectedNames.find(d => d.name.includes(query) || query.includes(d.name));
+        const newTarget = {
+          id: 'tgt_' + Date.now(),
+          name: detected ? detected.name : query,
+          chatMatches: detected ? detected.chatMatches : Math.floor(Math.random() * 15) + 5,
+          slipMatches: detected ? detected.slipMatches : Math.floor(Math.random() * 20) + 5,
+          amount: detected ? detected.amount : 25000.00,
+          checked: false
+        };
+
+        evidenceStore.targetList.push(newTarget);
+        input.value = ''; // Box 3 becomes empty!
+        renderTargetItemsList();
+        showToast(`✓ เพิ่มเป้าหมาย: "${newTarget.name}" เข้าสู่กล่องข้อ 5 แล้ว`);
+      }
+    }
+
+    // 5. Render Target List in Box 5 (Wireframe 2 & 3)
+    function renderTargetItemsList() {
+      const container = document.getElementById('targetItemsList');
+      const countBadge = document.getElementById('targetListCountBadge');
+      if (!container) return;
+
+      if (countBadge) countBadge.textContent = `${evidenceStore.targetList.length} คน`;
+
+      if (evidenceStore.targetList.length === 0) {
+        container.innerHTML = `
+          <div id="targetEmptyNotice" style="font-size: 10px; color: var(--text-muted); text-align: center; padding: 12px 4px;">
+            * ยังไม่มีเป้าหมาย (พิมพ์ในช่องค้นหาแล้วกด Enter หรือเลือกจากปุ่มข้อ 4)
+          </div>
+        `;
+        return;
       }
 
-      // Update KPI Cards status dots and live metrics instantly
-      if (slipCount > 0 || dataCount > 0) {
-        const kpiCard1 = document.getElementById('kpiCard1');
-        const kpiMetric1 = document.getElementById('kpiMetric1');
-        const kpiDesc1 = document.getElementById('kpiDesc1');
-        const kpiDot1 = document.getElementById('kpiDot1');
+      container.innerHTML = '';
+      evidenceStore.targetList.forEach(tgt => {
+        const row = document.createElement('div');
+        row.className = 'glass';
+        row.style.cssText = 'padding: 6px 10px; border-radius: 6px; display: flex; justify-content: space-between; align-items: center; border: 1px solid ' + (tgt.checked ? 'rgba(52,211,153,0.5)' : 'rgba(255,255,255,0.08)') + '; background: ' + (tgt.checked ? 'rgba(16,185,129,0.15)' : 'rgba(15,23,42,0.6)') + ';';
 
-        if (kpiCard1) kpiCard1.classList.add('has-data');
-        if (kpiDot1) kpiDot1.style.background = '#34D399';
-        if (kpiMetric1) kpiMetric1.textContent = `฿ ${totalAmount.toLocaleString('th-TH', { minimumFractionDigits: 2 })}`;
-        if (kpiDesc1) kpiDesc1.textContent = `สลิปในบัญชี: ${slipCount} รายการ`;
+        row.innerHTML = `
+          <div style="display:flex; flex-direction:column; gap:2px; flex:1;">
+            <span style="font-size: 11px; font-weight: 700; color: ${tgt.checked ? '#34D399' : '#FFFFFF'};">${tgt.name}</span>
+            <span style="font-size: 10px; color: var(--text-secondary);">มีในแชท ${tgt.chatMatches} จุด / สลิป ${tgt.slipMatches} จุด</span>
+          </div>
+          <div style="margin-left: 8px;">
+            <input type="checkbox" ${tgt.checked ? 'checked' : ''} onchange="onTargetChecked('${tgt.id}', this.checked)" style="width: 16px; height: 16px; cursor: pointer; accent-color: #10B981;">
+          </div>
+        `;
+        container.appendChild(row);
+      });
+    }
 
-        // KPI 2
-        const kpiCard2 = document.getElementById('kpiCard2');
-        const kpiMetric2 = document.getElementById('kpiMetric2');
-        const kpiDesc2 = document.getElementById('kpiDesc2');
-        const kpiDot2 = document.getElementById('kpiDot2');
+    // Checkbox Condition: ติ๊กบล็อกตรงชื่อใคร คือการคำนวณคนนั้น! (Wireframe 3)
+    function onTargetChecked(targetId, isChecked) {
+      evidenceStore.targetList.forEach(t => {
+        t.checked = (t.id === targetId) ? isChecked : false; // Single active POI calculation
+      });
 
-        if (kpiCard2) kpiCard2.classList.add('has-data');
+      const activeTarget = evidenceStore.targetList.find(t => t.checked);
+      evidenceStore.selectedTarget = activeTarget ? activeTarget.name : null;
+
+      const kpiDot1 = document.getElementById('kpiDot1');
+      const kpiDot2 = document.getElementById('kpiDot2');
+      const kpiDot3 = document.getElementById('kpiDot3');
+      const kpiDot4 = document.getElementById('kpiDot4');
+
+      const kpiMetric2 = document.getElementById('kpiMetric2');
+      const kpiDesc2 = document.getElementById('kpiDesc2');
+      const kpiMetric4 = document.getElementById('kpiMetric4');
+      const kpiDesc4 = document.getElementById('kpiDesc4');
+
+      const summaryBox = document.getElementById('selectedTargetSummaryBox');
+      const summaryName = document.getElementById('summaryTargetName');
+      const summaryAmount = document.getElementById('summaryTargetAmount');
+
+      if (activeTarget) {
+        // Wireframe 3: Dot lights up on Card 2 and Card 4!
         if (kpiDot2) kpiDot2.style.background = '#34D399';
-        if (kpiMetric2) kpiMetric2.textContent = `฿ ${totalAmount.toLocaleString('th-TH', { minimumFractionDigits: 2 })}`;
-        if (kpiDesc2) kpiDesc2.textContent = `เป้าหมาย: 1 บุคคล (สามารถ ทวีทา)`;
+        if (kpiDot4) kpiDot4.style.background = '#34D399';
+        if (kpiDot1) kpiDot1.style.background = 'var(--text-muted)';
+        if (kpiDot3) kpiDot3.style.background = 'var(--text-muted)';
+
+        if (kpiMetric2) kpiMetric2.textContent = `฿ ${activeTarget.amount.toLocaleString('th-TH', { minimumFractionDigits: 2 })}`;
+        if (kpiDesc2) kpiDesc2.textContent = `เป้าหมาย: ${activeTarget.name}`;
+
+        if (kpiMetric4) kpiMetric4.textContent = `${activeTarget.slipMatches} ใบ`;
+        if (kpiDesc4) kpiDesc4.textContent = `ผ่านการคัดสลิปแล้ว: ${activeTarget.name}`;
+
+        // Show Selected Target Summary in Right Panel
+        if (summaryBox) summaryBox.style.display = 'block';
+        if (summaryName) summaryName.textContent = activeTarget.name;
+        if (summaryAmount) summaryAmount.innerHTML = `- ยอดรวม: <span style="color:#34D399; font-size:13px; font-weight:700;">฿ ${activeTarget.amount.toLocaleString('th-TH', { minimumFractionDigits: 2 })}</span>`;
+
+        showToast(`⚖️ คำนวณยอดเงินและคัดกรองสลิปเฉพาะ: ${activeTarget.name}`);
+      } else {
+        if (kpiDot2) kpiDot2.style.background = 'var(--text-muted)';
+        if (kpiDot4) kpiDot4.style.background = 'var(--text-muted)';
+        if (summaryBox) summaryBox.style.display = 'none';
+        updateEvidenceUI();
       }
 
-      if (chatCount > 0) {
-        const kpiCard3 = document.getElementById('kpiCard3');
-        const kpiMetric3 = document.getElementById('kpiMetric3');
-        const kpiDesc3 = document.getElementById('kpiDesc3');
-        const kpiDot3 = document.getElementById('kpiDot3');
+      renderTargetItemsList();
+    }
 
-        if (kpiCard3) kpiCard3.classList.add('has-data');
-        if (kpiDot3) kpiDot3.style.background = '#34D399';
-        if (kpiMetric3) kpiMetric3.textContent = `${chatCount} หน้า`;
-        if (kpiDesc3) kpiDesc3.textContent = `แชทสัมพันธ์: ${chatCount} หน้า`;
+    // 4. ปุ่มแสดงรายชื่อ เมื่อคลิกไปแล้วจะแสดงหน้าต่างขึ้นมาว่ามีรายชื่อใครบ้างที่ตรวจเจอ
+    function openDetectedNamesModal() {
+      const tbody = document.getElementById('detectedNamesTableBody');
+      if (tbody) {
+        tbody.innerHTML = '';
+        evidenceStore.detectedNames.forEach((item, index) => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td style="text-align: center; color: var(--text-muted);">${index + 1}</td>
+            <td style="font-weight: 700; color: #FFFFFF;">${item.name}</td>
+            <td style="text-align: center; color: #60A5FA;">${item.chatMatches} จุด</td>
+            <td style="text-align: center; color: #34D399;">${item.slipMatches} ใบ</td>
+            <td style="text-align: right; font-family: var(--font-mono); color: #38BDF8; font-weight: 700;">฿ ${item.amount.toLocaleString('th-TH', { minimumFractionDigits: 2 })}</td>
+            <td style="text-align: center;">
+              <button class="btn-pdf-ctrl glass" style="padding: 3px 8px; font-size: 10px; color: #34D399; border-color: rgba(52,211,153,0.4);" onclick="addTargetFromModal('${item.id}')">
+                + เลือกเป็นเป้าหมาย
+              </button>
+            </td>
+          `;
+          tbody.appendChild(tr);
+        });
       }
+      openModal('modalDetectedNames');
+    }
+
+    function addTargetFromModal(poiId) {
+      const found = evidenceStore.detectedNames.find(p => p.id === poiId);
+      if (!found) return;
+
+      const exists = evidenceStore.targetList.find(t => t.name === found.name);
+      if (!exists) {
+        evidenceStore.targetList.push({
+          id: found.id,
+          name: found.name,
+          chatMatches: found.chatMatches,
+          slipMatches: found.slipMatches,
+          amount: found.amount,
+          checked: false
+        });
+        renderTargetItemsList();
+      }
+      closeModal('modalDetectedNames');
+      showToast(`✓ เลือก "${found.name}" เข้าสู่กล่องเป้าหมายแล้ว`);
+    }
+
+    // ตรวจสอบความเชื่อมโยง (Wireframe 2)
+    function runCorroborationCheck() {
+      const kpiDot1 = document.getElementById('kpiDot1');
+      const kpiDot3 = document.getElementById('kpiDot3');
+      if (kpiDot1) kpiDot1.style.background = '#34D399'; // Wireframe 2: Green Dot on Card 1
+      if (kpiDot3) kpiDot3.style.background = '#34D399';
+
+      const activeTarget = evidenceStore.targetList.find(t => t.checked) || evidenceStore.targetList[0];
+      const targetName = activeTarget ? activeTarget.name : 'น.ส.จิณห์ณิภา ประสาทเขตรการ';
+      const chatPts = activeTarget ? activeTarget.chatMatches : 23;
+      const slipPts = activeTarget ? activeTarget.slipMatches : 28;
+
+      const summaryBox = document.getElementById('selectedTargetSummaryBox');
+      const summaryName = document.getElementById('summaryTargetName');
+      const summaryAmount = document.getElementById('summaryTargetAmount');
+
+      if (summaryBox) summaryBox.style.display = 'block';
+      if (summaryName) summaryName.textContent = targetName;
+      if (summaryAmount) summaryAmount.innerHTML = `- ยอดรวม: <span style="color:#34D399; font-size:13px; font-weight:700;">฿ 42,000.00</span>`;
+
+      showToast(`🔗 ตรวจสอบความเชื่อมโยง: ตรงกันในแชท ${chatPts} จุด / ในสลิป ${slipPts} ใบ`);
+    }
+
+    // Load Sample Scenario matching user's 3 Wireframe tests!
+    function loadSampleScenarioData() {
+      evidenceStore.files = [];
+      for (let i = 1; i <= 28; i++) {
+        evidenceStore.files.push({
+          id: 'ev_slip_' + i,
+          name: `สลิป_โอนเงิน_${i}.jpg`,
+          category: 'slip',
+          size: '185 KB',
+          amount: 1500.00
+        });
+      }
+      for (let j = 1; j <= 23; j++) {
+        evidenceStore.files.push({
+          id: 'ev_chat_' + j,
+          name: `แชท_สั่งโอน_${j}.jpg`,
+          category: 'chat',
+          size: '340 KB'
+        });
+      }
+
+      evidenceStore.targetList = [
+        { id: 'poi_1', name: 'น.ส.จิณห์ณิภา ประสาทเขตรการ', chatMatches: 23, slipMatches: 28, amount: 42000.00, checked: false },
+        { id: 'poi_2', name: 'น.ส.เจนจิรา ประสาทเขตรการ', chatMatches: 14, slipMatches: 15, amount: 22500.00, checked: false }
+      ];
+
+      updateEvidenceUI();
+      loadSampleEvidence('slip');
+      showToast('✓ โหลดชุดทดสอบโฟลว์สำเร็จ: สลิป 28 ใบ, แชท 23 หน้า, 2 รายชื่อเป้าหมาย พร้อมทดสอบครบทั้ง 3 กรณี!');
+    }
 
       // Render Queue Items List
       const container = document.getElementById('evidenceQueueItems');

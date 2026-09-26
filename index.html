@@ -142,106 +142,69 @@
         </div>
 
         <div class="panel-body">
-          <!-- 01 — Upload & File Queue (Standard Evidence Intake) -->
+          <!-- 1. อัพโหลดไฟล์ -->
           <div class="upload-dropzone glass" id="uploadDropzone" onclick="document.getElementById('evidenceFileInput').click()">
-            <div class="upload-title">นำเข้าพยานหลักฐาน (Drag & Drop หรือคลิกเลือกไฟล์)</div>
-            <div class="upload-subtitle">รองรับไฟล์ภาพแชท (PNG, JPG), สลิปโอนเงิน, เอกสารสำนวน PDF, บัญชี CSV/JSON, ZIP/SFX</div>
-            <div style="display:flex; gap:8px; justify-content:center; margin: 10px 0 6px 0;">
-              <button type="button" class="btn-pdf-ctrl glass" style="padding:5px 12px; font-size:11px; background:rgba(56,189,248,0.20); border-color:rgba(56,189,248,0.4);" onclick="event.stopPropagation(); document.getElementById('evidenceFileInput').click();">📂 เลือกไฟล์จากเครื่อง</button>
-              <button type="button" class="btn-pdf-ctrl glass" style="padding:5px 12px; font-size:11px; background:rgba(34,197,94,0.20); border-color:rgba(34,197,94,0.4); color:#34D399;" onclick="event.stopPropagation(); loadSampleEvidence('slip');">✨ โหลดตัวอย่าง 95 หน้า</button>
+            <div class="upload-title" style="font-size: 13px; font-weight: 700; color: #38BDF8;">1. อัพโหลดไฟล์</div>
+            <div id="uploadStatusText" style="font-size: 11px; color: #E2E8F0; margin-top: 4px; line-height: 1.5;">
+              • ตรวจจับเป็นสลิป: <span id="intakeSlipText" style="color:#34D399; font-weight:700;">สลิป 0 รายการ</span><br>
+              • ตรวจจับเป็นแชท: <span id="intakeChatText" style="color:#60A5FA; font-weight:700;">แชท 0 หน้า</span>
             </div>
-            <div class="upload-chips">
-              <span class="upload-chip glass" id="chipChatCount" onclick="event.stopPropagation(); handleChipClick('chat')" title="คลิกเพื่อนำเข้าหรือกรองภาพแชท">📷 ภาพแชท (PNG/JPG)</span>
-              <span class="upload-chip glass" id="chipSlipCount" onclick="event.stopPropagation(); handleChipClick('slip')" title="คลิกเพื่อนำเข้าหรือกรองสลิปโอนเงิน">🧾 สลิปโอนเงิน</span>
-              <span class="upload-chip glass" id="chipPdfCount" onclick="event.stopPropagation(); handleChipClick('pdf')" title="คลิกเพื่อนำเข้าหรือกรองเอกสาร PDF">📑 เอกสาร PDF</span>
-              <span class="upload-chip glass" id="chipDataCount" onclick="event.stopPropagation(); handleChipClick('data')" title="คลิกเพื่อเปิดดูตารางบัญชี CSV/JSON">📊 ข้อมูล CSV/JSON</span>
-              <span class="upload-chip glass" id="chipSfxCount" onclick="event.stopPropagation(); handleChipClick('sfx')" title="คลิกเพื่อเปิดศูนย์สร้างแฟ้ม SFX">🗃️ แฟ้ม SFX (.exe)</span>
+            <div style="display:flex; gap:8px; justify-content:center; margin: 8px 0 4px 0;">
+              <button type="button" class="btn-pdf-ctrl glass" style="padding:4px 10px; font-size:10px; background:rgba(56,189,248,0.20); border-color:rgba(56,189,248,0.4);" onclick="event.stopPropagation(); document.getElementById('evidenceFileInput').click();">📂 เลือกไฟล์</button>
+              <button type="button" class="btn-pdf-ctrl glass" style="padding:4px 10px; font-size:10px; background:rgba(34,197,94,0.20); border-color:rgba(34,197,94,0.4); color:#34D399;" onclick="event.stopPropagation(); loadSampleScenarioData();">✨ โหลดชุดทดสอบโฟลว์</button>
             </div>
           </div>
 
-          <!-- Evidence Queue List (Active when files are loaded) -->
-          <div class="evidence-queue-wrap glass" id="evidenceQueueWrap" style="display: none;">
-            <div class="evidence-queue-header">
-              <span style="font-size: 11px; font-weight: 700; color: #FFFFFF;">📁 คิวไฟล์หลักฐาน (<span id="evidenceTotalFiles">0</span>)</span>
-              <button class="btn-clear-queue glass" onclick="clearEvidenceQueue(event)">ล้างคิว</button>
-            </div>
-            <div class="evidence-queue-items" id="evidenceQueueItems"></div>
+          <!-- 2. แสดงรายละเอียด โดยเป็นตัวเลขบอก จำนวนไฟล์ (ไม่ต้องเลือกแสดงรายชื่อ) -->
+          <div class="glass" style="padding: 8px 12px; border-radius: 8px; font-size: 11px; display: flex; justify-content: space-between; align-items: center; border: 1px solid rgba(255,255,255,0.08); background: rgba(15,23,42,0.6);">
+            <span style="color: var(--text-secondary); font-weight: 600;">2. จำนวนไฟล์ทั้งหมด:</span>
+            <span id="evidenceTotalFilesBadge" style="font-family: var(--font-mono); font-weight: 700; color: #38BDF8; font-size: 12px;">0 ไฟล์ (สลิป 0, แชท 0)</span>
           </div>
 
-          <!-- 02 — Search & Target Matching -->
-          <div style="display: flex; flex-direction: column; gap: 6px;">
-            <div style="font-size: 12px; font-weight: 700; color: var(--text-main);">02 — Search & Target Matching</div>
-            <div class="search-box-wrap glass">
+          <!-- 3. ค้นหา ไว้สำหรับกรอกชื่อเป้าหมาย (เมื่อกรอกหรือวางชื่อ กด Enter ชื่อจะตกลงไปช่องที่ 5 และช่องค้นหาจะว่างเปล่า) -->
+          <div style="display: flex; flex-direction: column; gap: 4px;">
+            <label style="font-size: 11px; font-weight: 700; color: var(--text-main);">3. ค้นหาชื่อเป้าหมาย (กด Enter เพื่อเพิ่มเป็นเป้าหมาย):</label>
+            <div class="search-box-wrap glass" style="padding: 2px 8px;">
               <span>🔍</span>
-              <input type="text" class="search-input" placeholder="ค้นหาบุคคลเป้าหมายหรือคำสั่งโอน..." oninput="handleSearchInput(event)">
+              <input type="text" id="targetSearchInput" class="search-input" placeholder="พิมพ์/วางชื่อเป้าหมาย แล้วกด Enter..." onkeydown="handleTargetSearchKeyDown(event)" style="font-size: 11px;">
             </div>
           </div>
 
-          <!-- 03 — Corroboration Switch (ความสอดคล้องแห่งคดี) -->
-          <div class="switch-card glass">
-            <div class="switch-label-wrap">
-              <span class="switch-title">แสดงเฉพาะหลักฐานที่สอดคล้องกัน</span>
-              <span class="switch-desc">คัดกรองเฉพาะแชทสั่งโอนคู่สลิปจริง (Corroborated 1:1)</span>
-            </div>
-            <label class="toggle-ui">
-              <input type="checkbox" id="corroboratedToggle" onchange="toggleCorroborated(this.checked)">
-              <span class="toggle-slider"></span>
-            </label>
-          </div>
+          <!-- 4. ปุ่มแสดงรายชื่อ เมื่อคลิกไปแล้วจะแสดงหน้าต่างขึ้นมาว่ามีรายชื่อใครบ้างที่ตรวจเจอ -->
+          <button type="button" class="btn-action-row glass" onclick="openDetectedNamesModal()" style="padding: 7px 12px; font-size: 11px; font-weight: 600; color: #38BDF8; border-color: rgba(56,189,248,0.3);">
+            <span>4. 📋 แสดงรายชื่อทั้งหมดที่ตรวจพบในคดี</span>
+            <span id="detectedNamesCountTag" style="font-size: 10px; background: rgba(56,189,248,0.2); padding: 2px 6px; border-radius: 4px;">0 รายชื่อ ›</span>
+          </button>
 
-          <!-- Target Blueprint Schema State (NO FAKE NAMES) -->
-          <div class="target-schema-container glass">
-            <div class="target-schema-header">
-              <span class="target-schema-title">📋 รายชื่อเป้าหมายที่ตรวจพบในคดี</span>
-              <span class="panel-tag glass" id="targetCountTag">0 รายการ</span>
+          <!-- 5. แสดงรายชื่อเป้าหมาย (เช็คบล็อกตรงชื่อใคร คือการคำนวณคนนั้น) -->
+          <div class="target-schema-container glass" style="padding: 10px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+              <span style="font-size: 11px; font-weight: 700; color: #FFFFFF;">5. รายชื่อเป้าหมาย (ติ๊กเพื่อคำนวณรายคน):</span>
+              <span class="panel-tag glass" id="targetListCountBadge" style="font-size: 10px;">0 คน</span>
             </div>
-
-            <!-- Blueprint Card showing schema instead of hardcoded people -->
-            <div class="target-schema-blueprint glass">
-              <div class="blueprint-row">
-                <span class="blueprint-label">โครงสร้างข้อมูลเป้าหมาย:</span>
-                <span class="blueprint-val">[ ชื่อ - นามสกุลจริง ]</span>
-              </div>
-              <div class="blueprint-row">
-                <span class="blueprint-label">ยอดเงินรวมที่สัมพันธ์:</span>
-                <span class="blueprint-val">฿ 0.00</span>
-              </div>
-              <div class="blueprint-row">
-                <span class="blueprint-label">หลักฐานที่ตรวจพบ:</span>
-                <span class="blueprint-val">0 แชท • 0 สลิป</span>
-              </div>
-              <div class="blueprint-desc">
-                * ระบบจะแสดงรายชื่อบุคคลเป้าหมายอัตโนมัติเมื่อนำเข้าไฟล์หลักฐานและผ่านกระบวนการ OCR สกัดชื่อระดับพิกเซล (คัดกรองคำนำหน้าชื่อ และแยกสำนวน 1 เป้าหมาย / 1 เล่ม)
+            
+            <div id="targetItemsList" style="display: flex; flex-direction: column; gap: 6px; max-height: 140px; overflow-y: auto;">
+              <div id="targetEmptyNotice" style="font-size: 10px; color: var(--text-muted); text-align: center; padding: 12px 4px;">
+                * ยังไม่มีเป้าหมาย (พิมพ์ในช่องค้นหาแล้วกด Enter หรือเลือกจากปุ่มข้อ 4)
               </div>
             </div>
           </div>
 
-          <!-- 03 — Primary Processing Action Center -->
-          <div class="process-action-container">
-            <button class="btn-primary-process glass" id="btnRunProcessing" onclick="startForensicProcessing()">
-              <span style="font-size: 16px;">⚡</span>
-              <span>เริ่มประมวลผลพยานหลักฐานดิจิทัล (Start Processing)</span>
+          <!-- เริ่มประมวลผล & Progress Bar -->
+          <div class="process-action-container" style="margin-top: 4px;">
+            <button class="btn-primary-process glass" id="btnRunProcessing" onclick="startForensicProcessing()" style="padding: 9px 12px; font-size: 12px;">
+              <span style="font-size: 14px;">⚡</span>
+              <span>เริ่มประมวลผล (Start Processing)</span>
             </button>
-            <div class="sub-process-grid">
-              <button class="btn-sub-process glass" onclick="runBatchOcrOnly()" title="รันเฉพาะกระบวนการสกัดตัวอักษร OCR ระดับพิกเซล">
-                <span>🔍 OCR พิกเซล</span>
-              </button>
-              <button class="btn-sub-process glass" onclick="runDuplicateDetection()" title="รันตรวจจับภาพซ้ำและสลิปซ้ำ 3 มิติ">
-                <span>🛡️ ตรวจซ้ำ</span>
-              </button>
-              <button class="btn-sub-process glass" onclick="runNetLossReconcile()" title="คำนวณยอดเงินสุทธิป้องกัน Double-Counting">
-                <span>⚖️ ยอดสุทธิ</span>
-              </button>
-            </div>
           </div>
 
-          <!-- 04 — Processing & Pixel-Level OCR Progress -->
-          <div class="processing-card glass">
-            <div class="processing-header">
-              <span style="color: var(--text-secondary); font-weight: 600;">Pixel-Level Inspection:</span>
+          <!-- Processing & Pixel-Level OCR Progress -->
+          <div class="processing-card glass" style="padding: 6px 10px;">
+            <div class="processing-header" style="font-size: 10px;">
+              <span style="color: var(--text-secondary); font-weight: 600;">สถานะการประมวลผล:</span>
               <span id="processStatusReadout" style="font-family: var(--font-mono); color: var(--text-muted); font-weight: 700;">0% STANDBY</span>
             </div>
-            <div class="progress-track">
+            <div class="progress-track" style="height: 6px; margin-top: 4px;">
               <div class="progress-fill" id="processProgressFill" style="width: 0%;"></div>
             </div>
           </div>
@@ -352,48 +315,39 @@
             </div>
           </div>
 
-          <!-- 02 & 03 — Evidence Summary Table & Master Slips Buttons -->
-          <div class="action-button-list">
-            <button class="btn-action-row glass" onclick="openLedgerModal()">
-              <span>⊞ ดูตารางสรุปหลักฐาน 13 ช่อง</span>
+          <!-- Action Buttons from Wireframe -->
+          <div class="action-button-list" style="margin-top: 10px; display: flex; flex-direction: column; gap: 8px;">
+            <button class="btn-action-row glass" onclick="openLedgerModal()" style="padding: 9px 12px; font-size: 11px; font-weight: 600; color: #38BDF8;">
+              <span>📊 ตารางสรุปหลักฐานแบบ 13 ช่อง</span>
               <span>›</span>
             </button>
-            <button class="btn-action-row glass" onclick="openMasterSlipsModal()">
-              <span>🛡️ ศูนย์ตรวจสอบสลิปต้นฉบับ (Master Slips)</span>
+            <button class="btn-action-row glass" onclick="runCorroborationCheck()" style="padding: 9px 12px; font-size: 11px; font-weight: 600; color: #34D399; border-color: rgba(52,211,153,0.3);">
+              <span>🔗 ตรวจสอบความเชื่อมโยง (แชทคู่สลิป)</span>
               <span>›</span>
             </button>
           </div>
 
-          <!-- 03.5 — Security & Password Box (SFX & Court Encryption) -->
-          <div class="password-vault-card glass" id="passwordVaultCard">
-            <div style="display:flex; justify-content:space-between; align-items:center;">
-              <label class="password-card-label" for="mainPasswordInput">
-                <span>🔑 รหัสผ่านล็อกไฟล์ (SFX / PDF)</span>
-              </label>
-              <span class="password-sync-badge glass">✓ ซิงค์อัตโนมัติ</span>
-            </div>
-            <div class="password-input-wrapper">
-              <input type="password" id="mainPasswordInput" class="main-password-input glass" value="DigitalEv@2026" placeholder="กำหนดรหัสผ่านความปลอดภัย..." oninput="onMainPasswordChanged(this.value)">
-              <button type="button" class="btn-eye-toggle-main glass" onclick="toggleMainPasswordVisibility()" title="เปิด/ปิดการมองเห็นรหัสผ่าน">
-                <span id="mainEyeIcon">👁️</span>
-              </button>
-            </div>
-            <div class="password-sub-note">
-              * เข้ารหัสล็อกแฟ้ม WinRAR SFX (-hp) และสำนวนหลักฐานส่งศาล กรอกครั้งเดียวซิงค์เบื้องหลังอัตโนมัติ
+          <!-- กล่องแสดงข้อมูลบุคคลเป้าหมายที่ถูกเลือก -->
+          <div class="glass" id="selectedTargetSummaryBox" style="margin-top: 10px; padding: 10px 12px; border-radius: 8px; border: 1px solid rgba(56,189,248,0.3); background: rgba(15,23,42,0.7); display: none;">
+            <div id="summaryTargetName" style="font-size: 12px; font-weight: 700; color: #38BDF8;">น.ส.จิณห์ณิภา ประสาทเขตรการ</div>
+            <div id="summaryTargetAmount" style="font-size: 11px; color: #F8FAFC; margin-top: 4px; font-family: var(--font-mono); font-weight: 600;">
+              - ยอดรวม: <span style="color:#34D399; font-size:13px;">฿ 0.00</span>
             </div>
           </div>
 
-          <!-- 04 — Document Actions & Master Export -->
-          <div class="export-card-wrap glass">
-            <button class="btn-master-export glass" onclick="triggerCourtExport()">
-              <span>📄 EXPORT PDF ส่งศาล (10-Dimension Pass)</span>
+          <!-- Divider -->
+          <div style="margin: 12px 0; text-align: center; color: rgba(148,163,184,0.4); font-family: var(--font-mono); font-size: 10px; letter-spacing: 2px;">
+            ✦ ✦ ✦ ✦ ✦ ✦ ✦ ✦ ✦ ✦ ✦ ✦ ✦
+          </div>
+
+          <!-- EXPORT & SFX -->
+          <div style="display: flex; flex-direction: column; gap: 8px;">
+            <button class="btn-master-export glass" onclick="triggerCourtExport()" style="padding: 10px 12px; font-size: 12px;">
+              <span>📄 EXPORT (จัดพิมพ์สำนวนศาล PDF)</span>
             </button>
-            <button class="btn-master-export glass" style="margin-top: 4px; background: rgba(30, 58, 138, 0.45) !important; border-color: rgba(96, 165, 250, 0.5) !important;" onclick="openSfxModal()">
-              <span>🗃️ สร้างแฟ้ม SFX ล็อกรหัสผ่าน (WinRAR SFX .exe)</span>
+            <button class="btn-master-export glass" style="padding: 8px 12px; font-size: 11px; background: rgba(30, 58, 138, 0.45) !important; border-color: rgba(96, 165, 250, 0.5) !important;" onclick="openSfxModal()">
+              <span>🗃️ SFX (แฟ้มพยานหลักฐานดิจิทัล .exe)</span>
             </button>
-            <div class="export-note">
-              จัดรูปแบบตามมาตรฐานรับรองพยานหลักฐานดิจิทัล พ.ร.บ.ธุรกรรมฯ พ.ศ. ๒๕๔๔ & WinRAR SFX Encryption
-            </div>
           </div>
         </div>
       </section>
@@ -802,6 +756,48 @@
           <span>🚀 บันทึกและสร้างแฟ้ม SFX (.exe)</span>
         </button>
         <button class="btn-pdf-ctrl glass" onclick="closeModal('modalSfx')">ปิด</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       MODAL: DETECTED PERSONS LIST (ปุ่มหมายเลข 4)
+       ============================================================ -->
+  <div class="modal-overlay" id="modalDetectedNames">
+    <div class="modal-card glass" style="max-width: 800px; max-height: 85vh;">
+      <div class="modal-header">
+        <div style="display:flex; align-items:center; gap:10px;">
+          <span style="font-size: 20px;">📋</span>
+          <div>
+            <span class="modal-title">รายชื่อบุคคลทั้งหมดที่ตรวจพบในพยานหลักฐาน (Detected Persons)</span>
+            <div style="font-size: 11px; color: var(--text-secondary); margin-top: 2px;">
+              * สแกนสกัดรายชื่อจากภาพแชทและสลิปโอนเงิน (คลิก "เลือกเป็นเป้าหมาย" เพื่อนำเข้าสู่กล่องเป้าหมายข้อ 5)
+            </div>
+          </div>
+        </div>
+        <button class="btn-pdf-ctrl glass" onclick="closeModal('modalDetectedNames')">✕</button>
+      </div>
+      <div class="modal-body" style="overflow-y: auto;">
+        <div class="glass" style="overflow-x: auto; border-radius: 8px;">
+          <table class="ledger-table" style="width: 100%;">
+            <thead>
+              <tr>
+                <th style="width: 50px; text-align: center;">ลำดับ</th>
+                <th>ชื่อ - นามสกุล ที่ตรวจพบ</th>
+                <th style="text-align: center;">พบในแชท</th>
+                <th style="text-align: center;">พบในสลิป</th>
+                <th style="text-align: right;">ยอดเงินรวม</th>
+                <th style="text-align: center; width: 130px;">การจัดการ</th>
+              </tr>
+            </thead>
+            <tbody id="detectedNamesTableBody">
+              <!-- Rendered dynamically -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-pdf-ctrl glass" onclick="closeModal('modalDetectedNames')">ปิดหน้าต่าง</button>
       </div>
     </div>
   </div>
