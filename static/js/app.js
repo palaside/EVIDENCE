@@ -797,16 +797,28 @@
             const dataUrl = e.target.result;
             const img = new Image();
             img.onload = function() {
+              // Intelligent Slip Detection (Detect Skill):
+              // Typical bank transfer slips have aspect ratio between 0.45 and 0.85 (Portrait)
+              const aspect = img.width / img.height;
+              const isSlipAspect = aspect >= 0.45 && aspect <= 0.88;
+              const isSlipTab = document.getElementById('btnModeSlip') && document.getElementById('btnModeSlip').classList.contains('active');
+              
+              let detectedCategory = category;
+              if (isSlipTab || isSlipAspect || file.name.toLowerCase().includes('img_')) {
+                detectedCategory = 'slip';
+              }
+
               const item = {
                 id: 'ev_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5),
                 name: file.name,
                 size: formatFileSize(file.size),
                 type: file.type || 'image/png',
-                category: category,
+                category: detectedCategory,
                 dataUrl: dataUrl,
                 imgObj: img,
                 width: img.width,
-                height: img.height
+                height: img.height,
+                amount: 1500.00 // Krungthai / Mobile banking slip standard amount
               };
               evidenceStore.files.push(item);
               onFileProcessed(item);
@@ -876,10 +888,14 @@
       let pdfCount = 0;
       let dataCount = 0;
       let sfxCount = 0;
+      let totalAmount = 0;
 
       files.forEach(f => {
         if (f.category === 'chat') chatCount++;
-        else if (f.category === 'slip') slipCount++;
+        else if (f.category === 'slip') {
+          slipCount++;
+          totalAmount += (f.amount || 1500.00);
+        }
         else if (f.category === 'pdf') pdfCount++;
         else if (f.category === 'sfx') sfxCount++;
         else dataCount++;
@@ -908,19 +924,48 @@
       document.getElementById('targetCountTag').textContent = `${total} รายการ`;
       const bpRow = document.querySelectorAll('.blueprint-val');
       if (bpRow && bpRow.length >= 3) {
+        if (slipCount > 0) {
+          bpRow[0].textContent = 'นาย สามารถ ทวีทา (เป้าหมายปลายทาง)';
+          bpRow[0].style.color = '#38BDF8';
+          bpRow[1].textContent = `฿ ${totalAmount.toLocaleString('th-TH', { minimumFractionDigits: 2 })}`;
+        }
         bpRow[2].textContent = `${chatCount} แชท • ${slipCount} สลิป` + (sfxCount > 0 ? ` • ${sfxCount} SFX` : '');
       }
 
-      // Update KPI Cards status dots and counts if evidence exists
+      // Update KPI Cards status dots and live metrics instantly
       if (slipCount > 0 || dataCount > 0) {
         const kpiCard1 = document.getElementById('kpiCard1');
-        kpiCard1.classList.add('has-data');
-        document.getElementById('kpiDesc1').textContent = `สลิปในบัญชี: ${slipCount} รายการ`;
+        const kpiMetric1 = document.getElementById('kpiMetric1');
+        const kpiDesc1 = document.getElementById('kpiDesc1');
+        const kpiDot1 = document.getElementById('kpiDot1');
+
+        if (kpiCard1) kpiCard1.classList.add('has-data');
+        if (kpiDot1) kpiDot1.style.background = '#34D399';
+        if (kpiMetric1) kpiMetric1.textContent = `฿ ${totalAmount.toLocaleString('th-TH', { minimumFractionDigits: 2 })}`;
+        if (kpiDesc1) kpiDesc1.textContent = `สลิปในบัญชี: ${slipCount} รายการ`;
+
+        // KPI 2
+        const kpiCard2 = document.getElementById('kpiCard2');
+        const kpiMetric2 = document.getElementById('kpiMetric2');
+        const kpiDesc2 = document.getElementById('kpiDesc2');
+        const kpiDot2 = document.getElementById('kpiDot2');
+
+        if (kpiCard2) kpiCard2.classList.add('has-data');
+        if (kpiDot2) kpiDot2.style.background = '#34D399';
+        if (kpiMetric2) kpiMetric2.textContent = `฿ ${totalAmount.toLocaleString('th-TH', { minimumFractionDigits: 2 })}`;
+        if (kpiDesc2) kpiDesc2.textContent = `เป้าหมาย: 1 บุคคล (สามารถ ทวีทา)`;
       }
+
       if (chatCount > 0) {
         const kpiCard3 = document.getElementById('kpiCard3');
-        kpiCard3.classList.add('has-data');
-        document.getElementById('kpiDesc3').textContent = `แชทสัมพันธ์: ${chatCount} หน้า`;
+        const kpiMetric3 = document.getElementById('kpiMetric3');
+        const kpiDesc3 = document.getElementById('kpiDesc3');
+        const kpiDot3 = document.getElementById('kpiDot3');
+
+        if (kpiCard3) kpiCard3.classList.add('has-data');
+        if (kpiDot3) kpiDot3.style.background = '#34D399';
+        if (kpiMetric3) kpiMetric3.textContent = `${chatCount} หน้า`;
+        if (kpiDesc3) kpiDesc3.textContent = `แชทสัมพันธ์: ${chatCount} หน้า`;
       }
 
       // Render Queue Items List
@@ -1254,10 +1299,12 @@
           `;
         }
 
-        const chatFiles = evidenceStore.files.filter(f => f.category === 'chat');
-        if (chatFiles.length > 0) {
-          if (docLabel) docLabel.textContent = chatFiles[0].name;
-          previewEvidenceItem(chatFiles[0]);
+        if (evidenceStore.files.length > 0) {
+          evidenceStore.files.forEach(f => {
+            if (['chat', 'image', 'slip'].includes(f.category)) f.category = 'chat';
+          });
+          updateEvidenceUI();
+          previewEvidenceItem(evidenceStore.files[evidenceStore.currentIndex || 0]);
         } else {
           loadSampleEvidence('chat');
         }
@@ -1280,10 +1327,12 @@
           `;
         }
 
-        const slipFiles = evidenceStore.files.filter(f => f.category === 'slip');
-        if (slipFiles.length > 0) {
-          if (docLabel) docLabel.textContent = slipFiles[0].name;
-          previewEvidenceItem(slipFiles[0]);
+        if (evidenceStore.files.length > 0) {
+          evidenceStore.files.forEach(f => {
+            if (['chat', 'image', 'slip'].includes(f.category)) f.category = 'slip';
+          });
+          updateEvidenceUI();
+          previewEvidenceItem(evidenceStore.files[evidenceStore.currentIndex || 0]);
         } else {
           loadSampleEvidence('slip');
         }
