@@ -323,13 +323,24 @@
             </div>
           </div>
 
-          <!-- Divider -->
-          <div style="margin: 12px 0; text-align: center; color: rgba(148,163,184,0.4); font-family: var(--font-mono); font-size: 10px; letter-spacing: 2px;">
-            ✦ ✦ ✦ ✦ ✦ ✦ ✦ ✦ ✦ ✦ ✦ ✦ ✦
+          <!-- Password Vault Box (รหัสผ่านล็อกไฟล์ SFX / PDF) -->
+          <div class="password-vault-card glass" id="passwordVaultCard" style="margin-top: 10px; padding: 10px 12px; border-radius: 8px;">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <label class="password-card-label" for="mainPasswordInput" style="font-size: 11px; font-weight: 700; color: #FFFFFF;">
+                <span>🔑 รหัสผ่านล็อกไฟล์ (SFX / PDF)</span>
+              </label>
+              <span class="password-sync-badge glass" style="font-size: 10px; color: #34D399; padding: 2px 6px; border-radius: 4px;">✓ ซิงค์อัตโนมัติ</span>
+            </div>
+            <div class="password-input-wrapper" style="margin-top: 6px; display: flex; gap: 4px;">
+              <input type="password" id="mainPasswordInput" class="main-password-input glass" value="DigitalEv@2026" placeholder="กำหนดรหัสผ่านความปลอดภัย..." oninput="onMainPasswordChanged(this.value)" style="flex: 1; padding: 6px 10px; font-size: 11px;">
+              <button type="button" class="btn-eye-toggle-main glass" onclick="toggleMainPasswordVisibility()" title="เปิด/ปิดการมองเห็นรหัสผ่าน" style="padding: 4px 8px;">
+                <span id="mainEyeIcon">👁️</span>
+              </button>
+            </div>
           </div>
 
           <!-- EXPORT & SFX -->
-          <div style="display: flex; flex-direction: column; gap: 8px;">
+          <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 10px;">
             <button class="btn-master-export glass" onclick="triggerCourtExport()" style="padding: 10px 12px; font-size: 12px;">
               <span>📄 EXPORT (จัดพิมพ์สำนวนศาล PDF)</span>
             </button>
