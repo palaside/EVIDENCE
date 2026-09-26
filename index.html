@@ -144,6 +144,7 @@
         <div class="panel-body">
           <!-- 1. อัพโหลดไฟล์ -->
           <div class="upload-dropzone glass" id="uploadDropzone" onclick="document.getElementById('evidenceFileInput').click()">
+            <input type="file" id="evidenceFileInput" multiple style="display: none;" accept="image/*,application/pdf,.csv,.xlsx,.xls,.json,.sfx,.exe,.zip,.rar" onchange="handleEvidenceFiles(this.files); this.value='';">
             <div class="upload-title" style="font-size: 13px; font-weight: 700; color: #38BDF8;">1. อัพโหลดไฟล์</div>
             <div id="uploadStatusText" style="font-size: 11px; color: #E2E8F0; margin-top: 4px; line-height: 1.5;">
               • ตรวจจับเป็นสลิป: <span id="intakeSlipText" style="color:#34D399; font-weight:700;">สลิป 0 รายการ</span><br>

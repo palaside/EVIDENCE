@@ -2484,6 +2484,32 @@ pause
       initPdfViewer();
       startLiveClock();
 
+      // Drag & Drop Intake Engine
+      const dropzone = document.getElementById('uploadDropzone');
+      if (dropzone) {
+        dropzone.addEventListener('dragover', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          dropzone.style.borderColor = '#38BDF8';
+          dropzone.style.background = 'rgba(56,189,248,0.15)';
+        });
+        dropzone.addEventListener('dragleave', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          dropzone.style.borderColor = '';
+          dropzone.style.background = '';
+        });
+        dropzone.addEventListener('drop', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          dropzone.style.borderColor = '';
+          dropzone.style.background = '';
+          if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+            handleEvidenceFiles(e.dataTransfer.files);
+          }
+        });
+      }
+
       // Keyboard Shortcuts for Instant Court Review
       window.addEventListener('keydown', (e) => {
         if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
