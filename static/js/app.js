@@ -1180,16 +1180,48 @@
       showToast('ปรับหน้ากระดาษพอดีหน้าจอ (Fit to Width)');
     }
 
-    // Toggle KPI Cards
+    // Enhanced Interactive KPI Cards (Deep-Dive Detail Modals & Filters)
     function toggleKpi(id) {
       const card = document.getElementById(`kpiCard${id}`);
-      card.classList.toggle('active');
-      if (pdfState.activeKpis.has(id)) {
-        pdfState.activeKpis.delete(id);
-        showToast(`ปลดการพ่วงมิติที่ ${id}`);
-      } else {
-        pdfState.activeKpis.add(id);
-        showToast(`✓ พ่วงมิติที่ ${id} เข้าสู่สารบัญหลักฐาน`);
+      if (card) {
+        card.classList.add('active');
+        setTimeout(() => card.classList.remove('active'), 800);
+      }
+
+      if (id === 1) {
+        // Card 1: 1. ยอดรวม & สลิป -> เปิดตารางสรุปเส้นทางการเงิน ๑๓ คอลัมน์ (Forensic Financial Ledger)
+        if (evidenceStore.files.length === 0 && !currentSampleImage) {
+          loadSampleEvidence('slip');
+        }
+        populateLedgerTable('');
+        document.getElementById('modalLedger').classList.add('open');
+        showToast('📊 [มิติที่ ๑] เปิดตารางสรุปเส้นทางการเงิน ๑๓ คอลัมน์ (ยอดรวม & สลิปทั้งหมด)');
+      } else if (id === 2) {
+        // Card 2: 2. ยอดเป้าหมาย -> กรองตารางเฉพาะบุคคลเป้าหมาย (POI Detail View)
+        if (evidenceStore.files.length === 0 && !currentSampleImage) {
+          loadSampleEvidence('slip');
+        }
+        const targetName = 'ธัญสิริ';
+        populateLedgerTable(targetName);
+        document.getElementById('modalLedger').classList.add('open');
+        showToast('🎯 [มิติที่ ๒] เจาะลึกรายการธุรกรรมเฉพาะบุคคลเป้าหมาย (POI: ธัญสิริ จิรโรจน์สิริ)');
+      } else if (id === 3) {
+        // Card 3: 3. หน้าสัมพันธ์ -> สลับและเปิดโหมดแชทคู่สลิปจริง (Corroborated 1:1)
+        if (evidenceStore.files.length === 0 && !currentSampleImage) {
+          loadSampleEvidence('chat');
+        }
+        const corToggle = document.getElementById('corroboratedToggle');
+        if (corToggle) corToggle.checked = true;
+        toggleCorroborated(true);
+        setEvidenceMode('chat');
+        showToast('⚖️ [มิติที่ ๓] เจาะลึกหน้าแชทสั่งโอนคู่สลิปจริง (Corroborated 1:1 Only)');
+      } else if (id === 4) {
+        // Card 4: 4. สลิปซ้ำ (NET) -> เปิดศูนย์ตรวจสอบสลิปต้นฉบับ & การตัดยอดซ้ำ (Master Slips & NET)
+        if (evidenceStore.files.length === 0 && !currentSampleImage) {
+          loadSampleEvidence('slip');
+        }
+        openMasterSlipsModal();
+        showToast('🛡️ [มิติที่ ๔] เจาะลึกศูนย์สลิปต้นฉบับ SHA-256 และการตัดยอดซ้ำ (Forensic NET)');
       }
     }
 
