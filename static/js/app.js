@@ -673,7 +673,11 @@
       const pageCanvas = createA4Canvas();
       const ctx = pageCanvas.getContext('2d');
 
-      drawHeaderRibbon(ctx, 'SLIP', item.name, pageNum, totalPagesInDoc);
+      const amtStr = (typeof item.amount === 'number') ? item.amount.toLocaleString('th-TH', { minimumFractionDigits: 2 }) : (item.amount || '700.00');
+      const dtStr = item.datetime || item.date_time || '04 ก.พ. 2568 - 20:01';
+      const corrobStr = `สลิปหลักฐานโอนเงิน ลำดับที่ ${String(pageNum).padStart(2, '0')} | ยอดเงิน: ${amtStr} บาท (${dtStr})`;
+
+      drawHeaderRibbon(ctx, 'SLIP', corrobStr, pageNum, totalPagesInDoc);
 
       // Slip Block: 645 x 890 Centered (Center X: 174 + 322.5 = 496.5, Center Y: 247 + 445 = 692)
       const scale = Math.min(645 / img.width, 890 / img.height);
