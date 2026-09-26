@@ -1183,40 +1183,6 @@
       showToast('✓ โหลดชุดทดสอบโฟลว์สำเร็จ: สลิป 28 ใบ, แชท 23 หน้า, 2 รายชื่อเป้าหมาย พร้อมทดสอบครบทั้ง 3 กรณี!');
     }
 
-      // Render Queue Items List
-      const container = document.getElementById('evidenceQueueItems');
-      container.innerHTML = '';
-      files.forEach((f, idx) => {
-        const row = document.createElement('div');
-        row.className = 'evidence-queue-item glass' + (idx === evidenceStore.currentIndex ? ' active-item' : '');
-        
-        let icon = '📄';
-        if (f.category === 'chat') icon = '📷';
-        else if (f.category === 'slip') icon = '🧾';
-        else if (f.category === 'pdf') icon = '📑';
-        else if (f.category === 'data') icon = '📊';
-        else if (f.category === 'sfx') icon = '🗃️';
-        else if (f.category === 'archive') icon = '📦';
-
-        row.innerHTML = `
-          <div style="display:flex; align-items:center; gap:6px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:180px;">
-            <span>${icon}</span>
-            <span style="color:#FFFFFF; font-weight:600;">${f.name}</span>
-          </div>
-          <span style="font-size:10px; color:var(--text-muted); font-family:var(--font-mono);">${f.size}</span>
-        `;
-        row.onclick = (e) => {
-          e.stopPropagation();
-          evidenceStore.currentIndex = idx;
-          previewEvidenceItem(f);
-          updateQueueItemSelection();
-        };
-        container.appendChild(row);
-      });
-
-      showToast(`✓ อัปเดตคลังพยานหลักฐาน: ${total} ไฟล์ (แชท ${chatCount}, สลิป ${slipCount}, PDF ${pdfCount}, SFX ${sfxCount})`);
-    }
-
     function updateQueueItemSelection() {
       const items = document.querySelectorAll('.evidence-queue-item');
       items.forEach((item, idx) => {
